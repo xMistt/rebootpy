@@ -1,0 +1,3 @@
+aiohttp>=3.3
+aioxmpp>=0.13.2
+aioconsole>=0.1.15
