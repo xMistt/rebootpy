@@ -9,7 +9,7 @@ be found, it will simply use email and password or prompt you to enter a
 new authorization code to generate a new file.
 """
 
-import fortnitepy
+import rebootpy
 import asyncio
 import functools
 import os
@@ -48,11 +48,11 @@ def store_device_auth_details(email, details):
     with open(filename, 'w') as fp:
         json.dump(existing, fp)
 
-class MyClient(fortnitepy.Client):
+class MyClient(rebootpy.Client):
     def __init__(self):
         device_auths = get_device_auth_details()
         super().__init__(
-            auth=fortnitepy.AdvancedAuth(
+            auth=rebootpy.AdvancedAuth(
                 email=email,
                 password=password,
                 prompt_authorization_code=True,
@@ -86,8 +86,8 @@ class MyClient(fortnitepy.Client):
         clients = []
         device_auths = get_device_auth_details()
         for email, password in credentials.items():
-            client = fortnitepy.Client(
-                auth=fortnitepy.AdvancedAuth(
+            client = rebootpy.Client(
+                auth=rebootpy.AdvancedAuth(
                     email=email,
                     password=password,
                     prompt_authorization_code=True,
@@ -95,9 +95,9 @@ class MyClient(fortnitepy.Client):
                     delete_existing_device_auths=True,
                     **device_auths.get(email, {})
                 ),
-                default_party_member_config=fortnitepy.DefaultPartyMemberConfig(
+                default_party_member_config=rebootpy.DefaultPartyMemberConfig(
                     meta=(
-                        functools.partial(fortnitepy.ClientPartyMember.set_outfit, 'CID_175_Athena_Commando_M_Celestial'), # galaxy skin
+                        functools.partial(rebootpy.ClientPartyMember.set_outfit, 'CID_175_Athena_Commando_M_Celestial'), # galaxy skin
                     )
                 )
             )
@@ -110,17 +110,17 @@ class MyClient(fortnitepy.Client):
             clients.append(client)
 
         try:
-            await fortnitepy.start_multiple(
+            await rebootpy.start_multiple(
                 clients,
                 ready_callback=self.event_sub_ready,
                 all_ready_callback=lambda: print('All sub clients ready')
             )
-        except fortnitepy.AuthException:
+        except rebootpy.AuthException:
             print('An error occured while starting sub clients. Closing gracefully.')
             await self.close()
 
     async def event_before_close(self):
-        await fortnitepy.close_multiple(list(self.instances.values()))
+        await rebootpy.close_multiple(list(self.instances.values()))
         print('Successfully logged out of all sub accounts.')
 
     async def event_friend_request(self, request):

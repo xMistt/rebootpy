@@ -1,4 +1,4 @@
-"""This example makes use of discord integration with fortnitepy. If captcha
+"""This example makes use of discord integration with rebootpy. If captcha
 is enforced for the accounts, you will only have to enter the authorization code
 the first time you run this script.
 
@@ -9,15 +9,13 @@ be found, it will simply use email and password or prompt you to enter a
 new authorization code to generate a new file.
 """
 
-import fortnitepy
+import rebootpy
 import json
 import os
 
-from fortnitepy.ext import commands as fortnite_commands
+from rebootpy.ext import commands as fortnite_commands
 from discord.ext import commands as discord_commands
 
-email = 'email@email.com'
-password = 'password1'
 discord_bot_token = ''  # the discord bots token
 filename = 'device_auths.json'
 description = 'My discord + fortnite bot!'
@@ -42,9 +40,7 @@ device_auth_details = get_device_auth_details().get(email, {})
 fortnite_bot = fortnite_commands.Bot(
     command_prefix='!',
     description=description,
-    auth=fortnitepy.AdvancedAuth(
-        email=email,
-        password=password,
+    auth=rebootpy.AdvancedAuth(
         prompt_authorization_code=True,
         prompt_code_if_invalid=True,
         delete_existing_device_auths=True,

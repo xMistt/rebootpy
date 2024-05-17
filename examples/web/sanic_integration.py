@@ -1,4 +1,4 @@
-"""This example showcases how to use fortnitepy with the asynchronous
+"""This example showcases how to use rebootpy with the asynchronous
 web framework sanic. If captcha is enforced for the accounts, you will
 only have to enter the authorization code the first time you run this script.
 
@@ -9,12 +9,12 @@ be found, it will simply use email and password or prompt you to enter a
 new authorization code to generate a new file.
 """
 
-import fortnitepy
+import rebootpy
 import json
 import os
 import sanic
 
-from fortnitepy.ext import commands
+from rebootpy.ext import commands
 
 
 email = 'email@email.com'
@@ -39,7 +39,7 @@ def store_device_auth_details(email, details):
 device_auth_details = get_device_auth_details().get(email, {})
 bot = commands.Bot(
     command_prefix='!',
-    auth=fortnitepy.AdvancedAuth(
+    auth=rebootpy.AdvancedAuth(
         email=email,
         password=password,
         prompt_authorization_code=True,

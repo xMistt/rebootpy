@@ -1,4 +1,4 @@
-"""This example showcases how to use fortnitepy within a subclass. If captcha
+"""This example showcases how to use rebootpy within a subclass. If captcha
 is enforced for the accounts, you will only have to enter the authorization code
 the first time you run this script.
 
@@ -9,11 +9,11 @@ be found, it will simply use email and password or prompt you to enter a
 new authorization code to generate a new file.
 """
 
-import fortnitepy
+import rebootpy
 import json
 import os
 
-from fortnitepy.ext import commands
+from rebootpy.ext import commands
 
 
 email = 'email@email.com'
@@ -40,7 +40,7 @@ class MyBot(commands.Bot):
         super().__init__(
             command_prefix='!',
             description=description,
-            auth=fortnitepy.AdvancedAuth(
+            auth=rebootpy.AdvancedAuth(
                 email=email,
                 password=password,
                 prompt_authorization_code=True,

@@ -1,4 +1,4 @@
-"""This example showcases how to use fortnitepy. If captcha is enforced for
+"""This example showcases how to use rebootpy. If captcha is enforced for
 the account, you will only have to enter the authorization code the first time
 you run this script.
 
@@ -9,15 +9,13 @@ be found, it will simply use email and password or prompt you to enter a
 new authorization code to generate a new file.
 """
 
-import fortnitepy
+import rebootpy
 import json
 import os
 
-from fortnitepy.ext import commands
+from rebootpy.ext import commands
 
 
-email = 'email@email.com'
-password = 'password1'
 filename = 'device_auths.json'
 
 def get_device_auth_details():
@@ -37,9 +35,7 @@ def store_device_auth_details(email, details):
 device_auth_details = get_device_auth_details().get(email, {})
 bot = commands.Bot(
     command_prefix='!',
-    auth=fortnitepy.AdvancedAuth(
-        email=email,
-        password=password,
+    auth=rebootpy.AdvancedAuth(
         prompt_authorization_code=True,
         prompt_code_if_invalid=True,
         delete_existing_device_auths=True,

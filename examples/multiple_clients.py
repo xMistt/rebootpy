@@ -9,7 +9,7 @@ be found, it will simply use email and password or prompt you to enter a
 new authorization code to generate a new file.
 """
 
-import fortnitepy
+import rebootpy
 import asyncio
 import functools
 import os
@@ -17,18 +17,6 @@ import json
 
 instances = {}
 filename = 'device_auths.json'
-credentials = {
-    "email1": "password1",
-    "email2": "password2",
-    "email3": "password3",
-    "email4": "password4",
-    "email5": "password5",
-    "email6": "password6",
-    "email7": "password7",
-    "email8": "password8",
-    "email9": "password9",
-    "email10": "password10",
-}
 
 def get_device_auth_details():
     if os.path.isfile(filename):
@@ -61,20 +49,18 @@ async def event_sub_party_member_join(member):
 clients = []
 device_auths = get_device_auth_details()
 for email, password in credentials.items():
-    authentication = fortnitepy.AdvancedAuth(
-        email=email,
-        password=password,
+    authentication = rebootpy.AdvancedAuth(
         prompt_authorization_code=True,
         prompt_code_if_invalid=True,
         delete_existing_device_auths=True,
         **device_auths.get(email, {})
     )
 
-    client = fortnitepy.Client(
+    client = rebootpy.Client(
         auth=authentication,
-        default_party_member_config=fortnitepy.DefaultPartyMemberConfig(
+        default_party_member_config=rebootpy.DefaultPartyMemberConfig(
             meta=(
-                functools.partial(fortnitepy.ClientPartyMember.set_outfit, 'CID_175_Athena_Commando_M_Celestial'), # galaxy skin
+                functools.partial(rebootpy.ClientPartyMember.set_outfit, 'CID_175_Athena_Commando_M_Celestial'), # galaxy skin
             )
         )
     )
@@ -86,7 +72,7 @@ for email, password in credentials.items():
 
     clients.append(client)
 
-fortnitepy.run_multiple(
+rebootpy.run_multiple(
     clients,
     ready_callback=event_sub_ready,
     all_ready_callback=lambda: print('All clients ready')
