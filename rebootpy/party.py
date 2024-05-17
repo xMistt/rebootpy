@@ -869,6 +869,27 @@ class PartyMemberMeta(MetaBase):
         return base['AthenaCosmeticLoadout'].get('scratchpad', [])
 
     @property
+    def has_crown(self) -> list:
+        base = self.get_prop('Default:AthenaCosmeticLoadout_j')
+        return base['AthenaCosmeticLoadout'].get(
+            'cosmeticStats', [{}, {}, {}, {"statName": "HasCrown", "statValue": 0}]
+        )[3]['statValue']
+
+    @property
+    def victory_crowns(self) -> list:
+        base = self.get_prop('Default:AthenaCosmeticLoadout_j')
+        return base['AthenaCosmeticLoadout'].get(
+            'cosmeticStats', [{}, {}, {"statName": "TotalRoyalRoyales", "statValue": 0}, {}]
+        )[2]['statValue']
+
+    @property
+    def rank(self) -> list:
+        base = self.get_prop('Default:AthenaCosmeticLoadout_j')
+        return base['AthenaCosmeticLoadout'].get(
+            'cosmeticStats', [{"statName": "HabaneroProgression", "statValue": 0}, {}, {}, {}]
+        )[0]['statValue']
+
+    @property
     def custom_data_store(self) -> list:
         base = self.get_prop('Default:ArbitraryCustomDataStore_j')
         return base['ArbitraryCustomDataStore']
@@ -1064,6 +1085,7 @@ class PartyMemberMeta(MetaBase):
         key = 'Default:BattlePassInfo_j'
         return {key: self.set_prop(key, final)}
 
+    # to fix
     def set_cosmetic_loadout(self, *,
                              character: Optional[str] = None,
                              character_ekey: Optional[str] = None,
@@ -1073,10 +1095,16 @@ class PartyMemberMeta(MetaBase):
                              pickaxe_ekey: Optional[str] = None,
                              contrail: Optional[str] = None,
                              contrail_ekey: Optional[str] = None,
-                             scratchpad: Optional[list] = None
+                             scratchpad: Optional[list] = None,
+                             has_crown: Optional[bool] = None,
+                             victory_crowns: Optional[int] = None,
+                             rank: Optional[int] = None
                              ) -> Dict[str, Any]:
+
+
         prop = self.get_prop('Default:AthenaCosmeticLoadout_j')
         data = prop['AthenaCosmeticLoadout']
+        print(json.dumps(data, sort_keys=False, indent=4))
 
         if character is not None:
             data['characterPrimaryAssetId'] = character
@@ -1096,6 +1124,14 @@ class PartyMemberMeta(MetaBase):
             data['contrailEKey'] = contrail_ekey
         if scratchpad is not None:
             data['scratchpad'] = scratchpad
+        if has_crown is not None:
+            data['cosmeticStats'][3]['statValue'] = has_crown
+        if victory_crowns is not None:
+            data['cosmeticStats'][2]['statValue'] = victory_crowns
+        if rank is not None:
+            data['cosmeticStats'][0]['statValue'] = rank
+
+        print(json.dumps(data, sort_keys=False, indent=4))
 
         final = {'AthenaCosmeticLoadout': data}
         key = 'Default:AthenaCosmeticLoadout_j'
@@ -1686,6 +1722,24 @@ class PartyMemberBase(User):
                                 return float(stored)
                             except ValueError:
                                 pass
+
+    @property
+    def has_crown(self) -> List[Tuple[int, int]]:
+        """:class:`int`: If this member currently has a crown or not.
+        """
+        return bool(self.meta.has_crown)
+
+    @property
+    def victory_crowns(self) -> List[Tuple[int, int]]:
+        """:class:`int`: The current crown wins of this member.
+        """
+        return self.meta.victory_crowns
+
+    @property
+    def rank(self) -> List[Tuple[int, int]]:
+        """:class:`int`: The current rank of this member.
+        """
+        return self.meta.rank
 
     @property
     def emote(self) -> Optional[str]:
@@ -2650,6 +2704,75 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
         if not self.edit_lock.locked():
             return await self.patch(updated={**prop, **prop2})
+
+    async def equip_crown(self, hold_crown: int = True) -> None:
+        """|coro|
+
+        Set whether the user is wearing a crown or not.
+
+        Parameters
+        ----------
+        hold_crown: Optional[:class:`str`]
+            | Whether you want the user to wear a crown or not.
+            | Defaults to True.
+
+        Raises
+        ------
+        HTTPException
+            An error occured while requesting.
+        """
+        prop = self.meta.set_cosmetic_loadout(
+            has_crown=int(hold_crown)
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
+
+    async def set_victory_crowns(self, crowns: int = 0) -> None:
+        """|coro|
+
+        Set the amount of victory crowns the user has (must use the 'Crowning Achievement' to show).
+
+        Parameters
+        ----------
+        crowns: Optional[:class:`int`]
+            | Amount of crowns the user has.
+            | Defaults to 0 to clear crowns.
+
+        Raises
+        ------
+        HTTPException
+            An error occured while requesting.
+        """
+        prop = self.meta.set_cosmetic_loadout(
+            victory_crowns=crowns
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
+
+    async def set_rank(self, rank: int = 0) -> None:
+        """|coro|
+
+        Set the current rank of the user.
+
+        Parameters
+        ----------
+        rank: Optional[:class:`int`]
+            | Rank to change to.
+            | Defaults to 0 to set to unranked.
+
+        Raises
+        ------
+        HTTPException
+            An error occured while requesting.
+        """
+        prop = self.meta.set_cosmetic_loadout(
+            rank=crowns
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
 
     async def clear_contrail(self) -> None:
         """|coro|
