@@ -33,11 +33,8 @@ import rebootpy
 import json
 import os
 
-from fortnitepy.ext import commands
+from rebootpy.ext import commands
 
-filename = 'device_auths.json'
-
-device_auth_details = get_device_auth_details().get(email, {})
 bot = commands.Bot(
     command_prefix='!',
     auth=fortnitepy.AuthorizationCodeAuth()
