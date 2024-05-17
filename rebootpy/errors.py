@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 
 class FortniteException(Exception):
-    """Base exception for fortnitepy.
+    """Base exception for rebootpy.
 
     This could in theory be caught to handle all exceptions thrown by this
     library.

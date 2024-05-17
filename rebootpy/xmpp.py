@@ -54,7 +54,7 @@ log = logging.getLogger(__name__)
 _party_meta_attrs = {'playlist_info': 'playlist', 'squad_fill': None,
                      'privacy': None}
 
-_member_meta_attrs = ('ready', 'input', 'assisted_challenge', 'outfit',
+_member_meta_attrs = ('ready', 'input', 'outfit',
                       'backpack', 'pet', 'pickaxe', 'contrail', 'emote',
                       'emoji', 'banner', 'battlepass_info', 'in_match',
                       'match_players_left', 'enlightenments', 'corruption',

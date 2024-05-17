@@ -24,9 +24,9 @@ DEALINGS IN THE SOFTWARE.
 
 
 from typing import Any, Optional, Union
-from fortnitepy.party import ClientParty, PartyMember, ClientPartyMember
-from fortnitepy.friend import Friend
-from fortnitepy.user import ClientUser
+from rebootpy.party import ClientParty, PartyMember, ClientPartyMember
+from rebootpy.friend import Friend
+from rebootpy.user import ClientUser
 
 
 class Context:
@@ -205,23 +205,23 @@ class Context:
 
     @property
     def party(self) -> ClientParty:
-        """Optional[:class:`fortnitepy.ClientParty`]: The party this message
+        """Optional[:class:`rebootpy.ClientParty`]: The party this message
         was sent from. ``None`` if the message was not sent from a party.
         """
         return getattr(self.message, 'party', None)
 
     @property
     def author(self) -> Union[Friend, PartyMember]:
-        """Optional[:class:`fortnitepy.Friend`, :class:`fortnitepy.PartyMember`]:
+        """Optional[:class:`rebootpy.Friend`, :class:`rebootpy.PartyMember`]:
         The author of the message.
         """  # noqa
         return self.message.author
 
     @property
     def me(self) -> Union[ClientPartyMember, ClientUser]:
-        """Union[:class:`fortnitepy.ClientPartyMember`, :class:`fortnitepy.ClientUser`]:
-        Similar to :attr:`fortnitepy.ClientPartyMember` except that it returns
-        :class:`fortnitepy.ClientUser` when not sent from a party.
+        """Union[:class:`rebootpy.ClientPartyMember`, :class:`rebootpy.ClientUser`]:
+        Similar to :attr:`rebootpy.ClientPartyMember` except that it returns
+        :class:`rebootpy.ClientUser` when not sent from a party.
         """  # noqa
         return self.party.me if self.party is not None else self.bot.user
 

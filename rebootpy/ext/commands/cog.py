@@ -28,7 +28,7 @@ import asyncio
 
 from typing import (TYPE_CHECKING, Union, Awaitable, Any, List, Dict, Iterable,
                     Optional)
-from fortnitepy.typedefs import MaybeCoro
+from rebootpy.typedefs import MaybeCoro
 
 from ._types import _BaseCommand
 from .context import Context

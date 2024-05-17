@@ -26,7 +26,7 @@ DEALINGS IN THE SOFTWARE.
 import time
 import asyncio
 
-from fortnitepy.enums import Enum
+from rebootpy.enums import Enum
 from collections import deque
 from typing import Any, Optional
 

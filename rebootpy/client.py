@@ -102,7 +102,7 @@ async def _start_client(client: 'BasicClient', *,
 
     if not isinstance(client, BasicClient):
         raise TypeError(
-            'client must be an instance derived from fortnitepy.BasicClient'
+            'client must be an instance derived from rebootpy.BasicClient'
         )
 
     async def starter():
@@ -1266,7 +1266,7 @@ class BasicClient:
         if not isinstance(platform, UserSearchPlatform):
             raise TypeError(
                 'The platform passed must be a constant from '
-                'fortnitepy.UserSearchPlatform'
+                'rebootpy.UserSearchPlatform'
             )
 
         res = await self.http.user_search_by_prefix(
@@ -1709,7 +1709,7 @@ class BasicClient:
         Any
             Returns arguments based on the event you are waiting for. An event
             might return no arguments, one argument or a tuple of arguments.
-            Check the :ref:`event reference <fortnitepy-events-api> for more
+            Check the :ref:`event reference <rebootpy-events-api> for more
             information about the returning arguments.`
         """  # noqa
         future = self.loop.create_future()
@@ -1983,9 +1983,9 @@ class BasicClient:
 
             async def stat_function():
                 stats = [
-                    fortnitepy.StatsV2.create_stat('placetop1', fortnitepy.V2Input.KEYBOARDANDMOUSE, 'defaultsolo'),
-                    fortnitepy.StatsV2.create_stat('kills', fortnitepy.V2Input.KEYBOARDANDMOUSE, 'defaultsolo'),
-                    fortnitepy.StatsV2.create_stat('matchesplayed', fortnitepy.V2Input.KEYBOARDANDMOUSE, 'defaultsolo')
+                    rebootpy.StatsV2.create_stat('placetop1', rebootpy.V2Input.KEYBOARDANDMOUSE, 'defaultsolo'),
+                    rebootpy.StatsV2.create_stat('kills', rebootpy.V2Input.KEYBOARDANDMOUSE, 'defaultsolo'),
+                    rebootpy.StatsV2.create_stat('matchesplayed', rebootpy.V2Input.KEYBOARDANDMOUSE, 'defaultsolo')
                 ]
 
                 # get the users and create a list of their ids.
@@ -2016,9 +2016,9 @@ class BasicClient:
             Example: ::
 
                 [
-                    fortnitepy.StatsV2.create_stat('placetop1', fortnitepy.V2Input.KEYBOARDANDMOUSE, 'defaultsolo'),
-                    fortnitepy.StatsV2.create_stat('kills', fortnitepy.V2Input.KEYBOARDANDMOUSE, 'defaultsolo'),
-                    fortnitepy.StatsV2.create_stat('matchesplayed', fortnitepy.V2Input.KEYBOARDANDMOUSE, 'defaultsolo')
+                    rebootpy.StatsV2.create_stat('placetop1', rebootpy.V2Input.KEYBOARDANDMOUSE, 'defaultsolo'),
+                    rebootpy.StatsV2.create_stat('kills', rebootpy.V2Input.KEYBOARDANDMOUSE, 'defaultsolo'),
+                    rebootpy.StatsV2.create_stat('matchesplayed', rebootpy.V2Input.KEYBOARDANDMOUSE, 'defaultsolo')
                 ]
 
         start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonStartTimestamp`]]
@@ -2274,9 +2274,9 @@ class BasicClient:
         Example usage: ::
 
             async def get_leaderboard():
-                stat = fortnitepy.StatsV2.create_stat(
+                stat = rebootpy.StatsV2.create_stat(
                     'wins',
-                    fortnitepy.V2Input.KEYBOARDANDMOUSE,
+                    rebootpy.V2Input.KEYBOARDANDMOUSE,
                     'defaultsquad'
                 )
 
@@ -2519,7 +2519,7 @@ class Client(BasicClient):
         the same as the above connector.
     status: :class:`str`
         The status you want the client to send with its presence to friends.
-        Defaults to: ``Battle Royale Lobby - {party playercount} / {party max playercount}``
+        Defaults to: ``Lobby - {party playercount} / {party max playercount}``
     away: :class:`AwayStatus`
         The away status the client should use for its presence. Defaults to
         :attr:`AwayStatus.ONLINE`.
@@ -2599,7 +2599,7 @@ class Client(BasicClient):
                  **kwargs: Any) -> None:
         super().__init__(auth=auth, **kwargs)
 
-        self.status = kwargs.get('status', 'Battle Royale Lobby - {party_size} / {party_max_size}')  # noqa
+        self.status = kwargs.get('status', 'Lobby - {party_size} / {party_max_size}')  # noqa
         self.away = kwargs.get('away', AwayStatus.ONLINE)
         self.platform = kwargs.get('platform', Platform.WINDOWS)
         self.net_cl = kwargs.get('net_cl', '')

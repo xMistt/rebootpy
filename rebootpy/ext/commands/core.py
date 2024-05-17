@@ -30,8 +30,8 @@ import datetime
 
 from collections import OrderedDict
 from typing import Iterable, Optional, Union, Awaitable, Any, Set
-from fortnitepy.errors import FortniteException
-from fortnitepy.typedefs import MaybeCoro
+from rebootpy.errors import FortniteException
+from rebootpy.typedefs import MaybeCoro
 
 from . import converter as converters
 from . import errors
@@ -431,7 +431,7 @@ class Command(_BaseCommand):
         except AttributeError:
             pass
         else:
-            if module is not None and (module.startswith('fortnitepy.')
+            if module is not None and (module.startswith('rebootpy.')
                                        and not module.endswith('converter')):
                 converter = getattr(
                     converters,

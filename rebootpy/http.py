@@ -181,7 +181,7 @@ class Route:
 
     Example usage: ::
 
-        class SocialBanPublicService(fortnitepy.Route):
+        class SocialBanPublicService(rebootpy.Route):
             BASE = 'https://social-ban-public-service-prod.ol.epicgames.com'
             AUTH = 'FORTNITE_ACCESS_TOKEN'
 

@@ -24,7 +24,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 from typing import Union
-from fortnitepy import FriendMessage, PartyMessage
+from rebootpy import FriendMessage, PartyMessage
 
 
 Message = Union[FriendMessage, PartyMessage]

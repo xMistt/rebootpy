@@ -468,7 +468,7 @@ class Friend(FriendBase):
 
             If the request is accepted by the receiving friend, the bot will
             receive a regular party invitation. Unlike the fortnite client,
-            fortnitepy will not automatically accept this invitation. You have
+            rebootpy will not automatically accept this invitation. You have
             to make some logic for doing that yourself.
 
         Raises

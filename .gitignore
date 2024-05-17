@@ -114,3 +114,5 @@ todo.txt
 
 examples/api_integrations/terax_api.py
 device_auths.json
+
+.DS_Store

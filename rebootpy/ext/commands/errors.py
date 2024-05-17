@@ -25,7 +25,7 @@ DEALINGS IN THE SOFTWARE.
 
 from inspect import Parameter
 from typing import TYPE_CHECKING, Optional, List, Tuple
-from fortnitepy.errors import FortniteException
+from rebootpy.errors import FortniteException
 
 if TYPE_CHECKING:
     from .cooldown import Cooldown, BucketType
@@ -66,7 +66,7 @@ __all__ = (
 class CommandError(FortniteException):
     r"""The base exception type for all command related errors.
 
-    This inherits from :exc:`fortnitepy.FortniteException`.
+    This inherits from :exc:`rebootpy.FortniteException`.
 
     This exception and exceptions inherited from it are handled
     in a special way as they are caught and passed into a special event
@@ -277,7 +277,7 @@ class ConversionError(CommandError):
 
     Attributes
     ----------
-    converter: :class:`fortnitepy.ext.commands.Converter`
+    converter: :class:`rebootpy.ext.commands.Converter`
         The converter that failed.
     original
         The original exception that was raised. You can also get this via
@@ -396,7 +396,7 @@ class ExpectedClosingQuoteError(ArgumentParsingError):
 class ExtensionError(FortniteException):
     """Base exception for extension related errors.
 
-    This inherits from :exc:`~fortnitepy.FortniteException`.
+    This inherits from :exc:`~rebootpy.FortniteException`.
 
     Attributes
     ------------

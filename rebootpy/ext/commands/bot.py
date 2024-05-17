@@ -33,9 +33,9 @@ import collections
 import traceback
 
 from typing import Any, List, Optional, Mapping, Set
-from fortnitepy.client import Client
-from fortnitepy.auth import Auth
-from fortnitepy.typedefs import MaybeCoro, ListOrTuple
+from rebootpy.client import Client
+from rebootpy.auth import Auth
+from rebootpy.typedefs import MaybeCoro, ListOrTuple
 
 from ._types import _BaseCommand
 from .errors import (ExtensionFailed, ExtensionMissingEntryPoint,
@@ -68,8 +68,8 @@ _default = _DefaultRepr()
 class Bot(GroupMixin, Client):
     """Represents a fortnite bot.
 
-    This class is a subclass of :class:`fortnitepy.Client` and as a result
-    anything that you can do with a :class:`fortnitepy.Client` you can do with
+    This class is a subclass of :class:`rebootpy.Client` and as a result
+    anything that you can do with a :class:`rebootpy.Client` you can do with
     this bot.
 
     This class also subclasses :class:`.GroupMixin` to provide the
@@ -81,8 +81,8 @@ class Bot(GroupMixin, Client):
         The command prefix is what the message content must contain initially
         to have a command invoked. This prefix could either be a string to
         indicate what the prefix should be, or a callable that takes in the bot
-        as its first parameter and :class:`fortnitepy.FriendMessage` or
-        :class:`fortnitepy.PartyMessage` as its second parameter and returns
+        as its first parameter and :class:`rebootpy.FriendMessage` or
+        :class:`rebootpy.PartyMessage` as its second parameter and returns
         the prefix. This is to facilitate "dynamic" command prefixes. This
         callable can be either a regular function or a coroutine.
 
@@ -691,7 +691,7 @@ class Bot(GroupMixin, Client):
 
         Parameters
         ----------
-        message: Union[:class:`fortnitepy.FriendMessage`, :class:`fortnitepy.PartyMessage`]
+        message: Union[:class:`rebootpy.FriendMessage`, :class:`rebootpy.PartyMessage`]
             The message context to get the prefix of.
 
         Returns
@@ -745,7 +745,7 @@ class Bot(GroupMixin, Client):
 
         Parameters
         ----------
-        message: Union[:class:`fortnitepy.FriendMessage`, :class:`fortnitepy.PartyMessage`]
+        message: Union[:class:`rebootpy.FriendMessage`, :class:`rebootpy.PartyMessage`]
             The message to get the invocation context from.
         cls
             The factory class that will be used to create the context.
@@ -907,7 +907,7 @@ class Bot(GroupMixin, Client):
 
         Parameters
         -----------
-        message: Union[:class:`fortnitepy.FriendMessage`, :class:`fortnitepy.PartyMessage`]
+        message: Union[:class:`rebootpy.FriendMessage`, :class:`rebootpy.PartyMessage`]
             The message to process commands for.
         """  # noqa
 

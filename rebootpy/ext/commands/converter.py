@@ -26,9 +26,9 @@ DEALINGS IN THE SOFTWARE.
 import re
 
 from typing import Any, Optional
-from fortnitepy.user import User
-from fortnitepy.party import PartyMember
-from fortnitepy.friend import Friend
+from rebootpy.user import User
+from rebootpy.party import PartyMember
+from rebootpy.friend import Friend
 
 from .errors import BadArgument
 from .context import Context
@@ -50,7 +50,7 @@ class Converter:
     to be passed to be useful.
 
     This allows you to implement converters that function similar to the
-    special cased ``fortnitepy`` classes.
+    special cased ``rebootpy`` classes.
 
     Classes that derive from this should override the
     :meth:`~.Converter.convert` method to do its conversion logic. This method
@@ -85,7 +85,7 @@ class IDConverter(Converter):
 
 
 class UserConverter(IDConverter):
-    """Converts to a :class:`~fortnitepy.User`.
+    """Converts to a :class:`~rebootpy.User`.
 
     The lookup strategy is as follows (in order):
     1. Cache lookup by ID.
@@ -111,7 +111,7 @@ class UserConverter(IDConverter):
 
 
 class PartyMemberConverter(IDConverter):
-    """Converts to a :class:`~fortnitepy.PartyMember`.
+    """Converts to a :class:`~rebootpy.PartyMember`.
 
     All lookups are done via the bots party member cache.
 
@@ -142,7 +142,7 @@ class PartyMemberConverter(IDConverter):
 
 
 class FriendConverter(IDConverter):
-    """Converts to a :class:`~fortnitepy.Friend`.
+    """Converts to a :class:`~rebootpy.Friend`.
 
     All lookups are via the friend cache.
 

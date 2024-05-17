@@ -32,9 +32,9 @@ import unicodedata
 from collections import OrderedDict
 from typing import (TYPE_CHECKING, Any, List, Dict, Optional, Iterable,
                     Callable, Sequence, Union, Tuple)
-from fortnitepy.typedefs import MaybeCoro
-from fortnitepy.party import ClientParty
-from fortnitepy.friend import Friend
+from rebootpy.typedefs import MaybeCoro
+from rebootpy.party import ClientParty
+from rebootpy.friend import Friend
 
 from .core import Group, Command
 from .errors import CommandError
@@ -578,8 +578,8 @@ class HelpCommand:
         return max(as_lengths, default=0)
 
     def get_destination(self) -> Union[Friend, ClientParty]:
-        """Returns either :class:`fortnitepy.Friend` or
-        :class:`fortnitepy.ClientParty` where the help command will be output.
+        """Returns either :class:`rebootpy.Friend` or
+        :class:`rebootpy.ClientParty` where the help command will be output.
 
         You can override this method to customise the behaviour.
 
