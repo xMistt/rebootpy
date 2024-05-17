@@ -25,21 +25,21 @@ extras_require = {
 }
 
 setuptools.setup(
-    name="fortnitepy",
-    url="https://github.com/Terbau/fortnitepy",
+    name="rebootpy",
+    url="https://github.com/xMistt/rebootpy",
     project_urls={
         "Documentation": "https://fortnitepy.readthedocs.io/en/latest/",
-        "Issue tracker": "https://github.com/Terbau/fortnitepy/issues",
+        "Issue tracker": "https://github.com/xMistt/rebootpy/issues",
     },
     version=version,
-    author="Terbau",
+    author="xMistt",
     description="Library for interacting with fortnite services",
     long_description=long_description,
     license='MIT',
     long_description_content_type="text/markdown",
     install_requires=requirements,
     extras_require=extras_require,
-    packages=['fortnitepy', 'fortnitepy.ext.commands'],
+    packages=['rebootpy', 'rebootpy.ext.commands'],
     python_requires='>=3.5.3',
     classifiers=[
         'License :: OSI Approved :: MIT License',
