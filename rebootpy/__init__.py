@@ -27,15 +27,16 @@ SOFTWARE.
 
 __version__ = '0.0.1'
 
-from .client import BasicClient, Client, run_multiple, start_multiple, close_multiple
+from .client import (BasicClient, Client, run_multiple, start_multiple,
+                     close_multiple)
 from .auth import (Auth, EmailAndPasswordAuth, ExchangeCodeAuth,
                    AuthorizationCodeAuth, DeviceAuth, RefreshTokenAuth,
                    AdvancedAuth)
 from .friend import Friend, IncomingPendingFriend, OutgoingPendingFriend
 from .message import FriendMessage, PartyMessage
 from .party import (DefaultPartyConfig, DefaultPartyMemberConfig, PartyMember,
-                    ClientPartyMember, JustChattingClientPartyMember, Party, 
-                    ClientParty, ReceivedPartyInvitation, SentPartyInvitation,
+                    ClientPartyMember, Party,  ClientParty,
+                    ReceivedPartyInvitation, SentPartyInvitation,
                     PartyJoinConfirmation, PartyJoinRequest, SquadAssignment)
 from .presence import Presence, PresenceGameplayStats, PresenceParty
 from .user import (ClientUser, User, BlockedUser, ExternalAuth,

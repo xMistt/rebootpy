@@ -38,7 +38,7 @@ from .errors import PartyError, Forbidden, HTTPException, NotFound
 from .user import User
 from .friend import Friend
 from .enums import (PartyPrivacy, PartyDiscoverability, PartyJoinability,
-                    DefaultCharactersChapter2, Region, ReadyState, Platform)
+                    DefaultCharactersChapter3, Region, ReadyState, Platform)
 from .utils import MaybeLock, to_iso, from_iso
 
 if TYPE_CHECKING:
@@ -573,7 +573,7 @@ class PartyMemberMeta(MetaBase):
         self.meta_ready_event = asyncio.Event()
         self.has_been_updated = True
 
-        self.def_character = DefaultCharactersChapter2.get_random_name()
+        self.def_character = DefaultCharactersChapter3.get_random_name()
 
         self.schema = {
             "Default:CurrentIsland_j": json.dumps({
@@ -613,7 +613,7 @@ class PartyMemberMeta(MetaBase):
             }),
             "Default:AthenaCosmeticLoadout_j": json.dumps({
                 "AthenaCosmeticLoadout": {
-                    "characterPrimaryAssetId": ("AthenaCharacter:{0}".format(self.def_character)),
+                    "characterPrimaryAssetId": f"AthenaCharacter:{self.def_character}",
                     "characterEKey": "",
                     "backpackDef": "None",
                     "backpackEKey": "",
@@ -753,7 +753,7 @@ class PartyMemberMeta(MetaBase):
                     "version": 0
                 }
             }),
-            "Default:NumAthenaPlayersLeft_U": "0",
+            "Default:NumAthenaPlayersLeft_U": 0,
             "Default:PackedState_j": json.dumps({
                 "PackedState": {
                     "subGame": "Athena",
@@ -912,10 +912,10 @@ class PartyMemberMeta(MetaBase):
         base = self.get_prop('Default:LobbyState_j')
         return base['LobbyState']['hasPreloadedAthena']
 
-    # to fix
-    # @property
-    # def spectate_party_member_available(self) -> bool:
-    #     return self.get_prop('Default:SpectateAPartyMemberAvailable_b')
+    @property
+    def spectate_party_member_available(self) -> bool:
+        base = self.get_prop('Default:Default:SpectateInfo_j')
+        return bool(base['SpectateInfo']['gameSessionKey'])
 
     @property
     def players_left(self) -> int:
@@ -1117,34 +1117,14 @@ class PartyMemberMeta(MetaBase):
         key = 'Default:ArbitraryCustomDataStore_j'
         return {key: self.set_prop(key, final)}
 
-    # to fix
-    def set_match_state(self, *,
-                        location: str = None,
-                        has_preloaded: bool = None,
-                        spectate_party_member_available: bool = None,
-                        players_left: bool = None,
-                        started_at: datetime.datetime = None
-                        ) -> Dict[str, Any]:
-        result = {}
+    def set_match_state(self, location: str = None) -> Dict[str, Any]:
+        data = (self.get_prop('Default:PackedState_j'))
 
         if location is not None:
-            key = 'Default:Location_s'
-            result[key] = self.set_prop(key, location)
-        if has_preloaded is not None:
-            key = 'Default:HasPreloadedAthena_b'
-            result[key] = self.set_prop(key, has_preloaded)
-        if spectate_party_member_available is not None:
-            key = 'Default:SpectateAPartyMemberAvailable_b'
-            result[key] = self.set_prop(key, spectate_party_member_available)
-        if players_left is not None:
-            key = 'Default:NumAthenaPlayersLeft_U'
-            result[key] = self.set_prop(key, players_left)
-        if started_at is not None:
-            key = 'Default:UtcTimeStartedMatchAthena_s'
-            timestamp = to_iso(started_at)
-            result[key] = self.set_prop(key, timestamp)
+            data['PackedState']['location'] = location
 
-        return result
+        key = 'Default:PackedState_j'
+        return {key: self.set_prop(key, data)}
 
 
 class PartyMeta(MetaBase):
@@ -1325,12 +1305,10 @@ class PartyMeta(MetaBase):
 
     @property
     def playlist_info(self) -> Tuple[str]:
-        base = self.get_prop('Default:PlaylistData_j')
-        info = base['PlaylistData']
+        base = self.get_prop('Default:SelectedIsland_j')
+        info = base['SelectedIsland']
 
-        return (info['playlistName'],
-                info['tournamentId'],
-                info['eventWindowId'])
+        return (info['linkId']['mnemonic'], info['sessionId'])
 
     @property
     def region(self) -> str:
@@ -1372,26 +1350,18 @@ class PartyMeta(MetaBase):
         key = 'Default:RawSquadAssignments_j'
         return {key: self.set_prop(key, final)}
     
-    # to fix
-    def set_playlist(self, playlist: Optional[str] = None, *,
-                     tournament: Optional[str] = None,
-                     event_window: Optional[str] = None) -> Dict[str, Any]:
-        data = (self.get_prop('Default:PlaylistData_j'))['PlaylistData']
+    def set_playlist(self, playlist: str) -> Dict[str, Any]:
+        data = (self.get_prop('Default:SelectedIsland_j'))
 
         if playlist is not None:
-            data['playlistName'] = playlist
-        if tournament is not None:
-            data['tournamentId'] = tournament
-        if event_window is not None:
-            data['eventWindowId'] = event_window
+            data['SelectedIsland']['linkId']['mnemonic'] = playlist
 
-        final = {'PlaylistData': data}
-        key = 'Default:PlaylistData_j'
-        return {key: self.set_prop(key, final)}
+        key = 'Default:SelectedIsland_j'
+        return {key: self.set_prop(key, data)}
 
     def set_region(self, region: Region)  -> Dict[str, Any]:
         key = 'Default:RegionId_s'
-        return {key: self.set_prop(key, region)}
+        return {key: self.set_prop(key, region.value)}
 
     def set_custom_key(self, key: str) -> Dict[str, Any]:
         _key = 'Default:CustomMatchKey_s'
@@ -2625,7 +2595,6 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         if not self.edit_lock.locked():
             return await self.patch(updated={**prop, **prop2})
 
-    # to fix
     async def set_contrail(self, asset: Optional[str] = None, *,
                            key: Optional[str] = None,
                            variants: Optional[List[Dict[str, str]]] = None
@@ -2657,8 +2626,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         """
         if asset is not None:
             if asset != '' and '.' not in asset:
-                asset = ("AthenaContrailItemDefinition'/Game/Athena/Items/"
-                         "Cosmetics/Contrails/{0}.{0}'".format(asset))
+                asset = f'/BRCosmetics/Athena/Items/Cosmetics/Contrails/{asset}.{asset}'
         else:
             prop = self.meta.get_prop('Default:AthenaCosmeticLoadout_j')
             asset = prop['AthenaCosmeticLoadout']['contrailDef']
@@ -2952,9 +2920,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
 
-    # to fix
-    async def set_in_match(self, *, players_left: int = 100,
-                           started_at: datetime.timedelta = None) -> None:
+    async def set_in_match(self) -> None:
         """|coro|
 
         Sets the clients party member in a visible match state.
@@ -2964,42 +2930,19 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             This is only visual in the party and is not a method for
             joining a match.
 
-        Parameters
-        ----------
-        players_left: :class:`int`
-            How many players that should be displayed left in your game.
-            Defaults to 100.
-        started_at: :class:`datetime.datetime`
-            The match start time in UTC. A timer is visually displayed showing
-            how long the match has lasted. Defaults to the current time (utcnow).
-
         Raises
         ------
         HTTPException
             An error occured while requesting.
         """  # noqa
-        if not 0 <= players_left <= 255:
-            raise ValueError('players_left must be an integer between 0 '
-                             'and 255')
-
-        if started_at is not None:
-            if not isinstance(started_at, datetime.datetime):
-                raise TypeError('started_at must be None or datetime.datetime')
-        else:
-            started_at = datetime.datetime.utcnow()
 
         prop = self.meta.set_match_state(
-            location='InGame',
-            has_preloaded=True,
-            spectate_party_member_available=True,
-            players_left=players_left,
-            started_at=started_at
+            location='InGame'
         )
 
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
 
-    # to fix
     async def clear_in_match(self) -> None:
         """|coro|
 
@@ -3011,11 +2954,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             An error occured while requesting.
         """
         prop = self.meta.set_match_state(
-            location='PreLobby',
-            has_preloaded=False,
-            spectate_party_member_available=False,
-            players_left=0,
-            started_at=datetime.datetime(1, 1, 1)
+            location='PreLobby'
         )
 
         if not self.edit_lock.locked():
@@ -3126,8 +3065,8 @@ class PartyBase:
     # to fix
     @property
     def playlist_info(self) -> Tuple[str]:
-        """:class:`tuple`: A tuple containing the name, tournament, event
-        window and region of the currently set playlist.
+        """:class:`tuple`: A tuple containing the name and
+        session id (if in-game) of the currently set playlist.
 
         Example output: ::
 
@@ -3135,14 +3074,12 @@ class PartyBase:
             (
                 'Playlist_DefaultDuo',
                 '',
-                ''
             )
 
-            # output for arena trios
+            # output for esl capture the flag (when player is in-game)
             (
-                'Playlist_ShowdownAlt_Trios',
-                'epicgames_Arena_S10_Trios',
-                'Arena_S10_Division1_Trios'
+                '0363-4024-8917',
+                '820665c477184929aa5d0e1f56902cfd'
             )
         """
         return self.meta.playlist_info
@@ -4008,11 +3945,8 @@ class ClientParty(PartyBase, Patchable):
                 deleted=deleted,
                 config=config,
             )
-        
-    # to fix
-    async def set_playlist(self, playlist: Optional[str] = None,
-                           tournament: Optional[str] = None,
-                           event_window: Optional[str] = None) -> None:
+    
+    async def set_playlist(self, playlist: str) -> None:
         """|coro|
 
         Sets the current playlist of the party.
@@ -4023,23 +3957,16 @@ class ClientParty(PartyBase, Patchable):
                 playlist='Playlist_DefaultDuo',
             )
 
-        Sets the playlist to Arena Trios (Replace ``Trios`` with ``Solo``
-        for arena solo): ::
+        Sets the playlist to ESL Capture The Flag: ::
 
             await party.set_playlist(
-                playlist='Playlist_ShowdownAlt_Trios',
-                tournament='epicgames_Arena_S13_Trios',
-                event_window='Arena_S13_Division1_Trios'
+                playlist='0363-4024-8917'
             )
 
         Parameters
         ----------
-        playlist: Optional[:class:`str`]
-            The name of the playlist.
-        tournament: Optional[:class:`str`]
-            The tournament id.
-        event_window: Optional[:class:`str`]
-            The event window id.
+        playlist: :class:`str`
+            The playlist id or island code.
 
         Raises
         ------
@@ -4051,9 +3978,7 @@ class ClientParty(PartyBase, Patchable):
 
 
         prop = self.meta.set_playlist(
-            playlist=playlist,
-            tournament=tournament,
-            event_window=event_window,
+            playlist=playlist
         )
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)

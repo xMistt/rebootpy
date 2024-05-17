@@ -1,7 +1,7 @@
  # fortnitepy
 
-[![Supported py versions](https://img.shields.io/pypi/pyversions/fortnitepy.svg)](https://pypi.org/project/fortnitepy/)
-[![Current pypi version](https://img.shields.io/pypi/v/fortnitepy.svg)](https://pypi.org/project/fortnitepy/)
+[![Supported py versions](https://img.shields.io/pypi/pyversions/fortnitepy.svg)](https://pypi.org/project/rebootpy/)
+[![Current pypi version](https://img.shields.io/pypi/v/fortnitepy.svg)](https://pypi.org/project/rebootpy/)
 [![Donate link](https://img.shields.io/badge/paypal-donate-blue.svg)](https://www.paypal.me/terbau)
 
 Asynchronous library for interacting with Fortnite and EpicGames' API and XMPP services.
@@ -20,15 +20,15 @@ https://fortnitepy.readthedocs.io/en/latest/
 # Installing
 ```
 # windows
-py -3 -m pip install -U fortnitepy
+py -3 -m pip install -U rebootpy
 
 # linux
-python3 -m pip install -U fortnitepy
+python3 -m pip install -U rebootpy
 ```
 
 # Basic usage
 ```py
-import fortnitepy
+import rebootpy
 import json
 import os
 
