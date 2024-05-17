@@ -1,10 +1,11 @@
- # fortnitepy
+ # rebootpy
 
 [![Supported py versions](https://img.shields.io/pypi/pyversions/fortnitepy.svg)](https://pypi.org/project/rebootpy/)
 [![Current pypi version](https://img.shields.io/pypi/v/fortnitepy.svg)](https://pypi.org/project/rebootpy/)
 [![Donate link](https://img.shields.io/badge/paypal-donate-blue.svg)](https://www.paypal.me/terbau)
 
 Asynchronous library for interacting with Fortnite and EpicGames' API and XMPP services.
+This library is a fork of [Terbau](https://github.com/Terbau/)'s [fortnitepy](https://github.com/Terbau/fortnitepy) which was abandoned.
 
 **Note:** This library is still under developement so breaking changes might happen at any time.
 
@@ -34,47 +35,17 @@ import os
 
 from fortnitepy.ext import commands
 
-email = 'email@email.com'
-password = 'password1'
 filename = 'device_auths.json'
-
-def get_device_auth_details():
-    if os.path.isfile(filename):
-        with open(filename, 'r') as fp:
-            return json.load(fp)
-    return {}
-
-def store_device_auth_details(email, details):
-    existing = get_device_auth_details()
-    existing[email] = details
-
-    with open(filename, 'w') as fp:
-        json.dump(existing, fp)
 
 device_auth_details = get_device_auth_details().get(email, {})
 bot = commands.Bot(
     command_prefix='!',
-    auth=fortnitepy.AdvancedAuth(
-        email=email,
-        password=password,
-        prompt_authorization_code=True,
-        prompt_code_if_invalid=True,
-        delete_existing_device_auths=True,
-        **device_auth_details
-    )
+    auth=fortnitepy.AuthorizationCodeAuth()
 )
 
 @bot.event
-async def event_device_auth_generate(details, email):
-    store_device_auth_details(email, details)
-
-@bot.event
 async def event_ready():
-    print('----------------')
-    print('Bot ready as')
-    print(bot.user.display_name)
-    print(bot.user.id)
-    print('----------------')
+    print(f'Bot ready as {bot.user.display_name} ({bot.user.id})')
 
 @bot.event
 async def event_friend_request(request):
