@@ -5,6 +5,7 @@
 [![Donate link](https://img.shields.io/badge/paypal-donate-blue.svg)](https://www.paypal.me/terbau)
 
 Asynchronous library for interacting with Fortnite and EpicGames' API and XMPP services.
+
 This library is a fork of [Terbau](https://github.com/Terbau/)'s [fortnitepy](https://github.com/Terbau/fortnitepy) which was abandoned.
 
 **Note:** This library is still under developement so breaking changes might happen at any time.
