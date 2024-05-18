@@ -991,14 +991,6 @@ ClientPartyMember
 	:members:
 	:inherited-members:
 
-JustChattingClientPartyMember
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. attributetable:: JustChattingClientPartyMember
-
-.. autoclass:: JustChattingClientPartyMember
-	:members:
-
 Party
 ~~~~~
 
