@@ -1085,7 +1085,6 @@ class PartyMemberMeta(MetaBase):
         key = 'Default:BattlePassInfo_j'
         return {key: self.set_prop(key, final)}
 
-    # to fix
     def set_cosmetic_loadout(self, *,
                              character: Optional[str] = None,
                              character_ekey: Optional[str] = None,
@@ -3185,7 +3184,6 @@ class PartyBase:
             if member.leader:
                 return member
 
-    # to fix
     @property
     def playlist_info(self) -> Tuple[str]:
         """:class:`tuple`: A tuple containing the name and
