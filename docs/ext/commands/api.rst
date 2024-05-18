@@ -1,18 +1,18 @@
-.. currentmodule:: fortnitepy
+.. currentmodule:: rebootpy
 
 API Reference
 ===============
 
-The following section outlines the API of fortnitepy's command extension module.
+The following section outlines the API of rebootpy's command extension module.
 
 .. _ext_commands_api_bot:
 
 Bot
 ----
 
-.. attributetable:: fortnitepy.ext.commands.Bot
+.. attributetable:: rebootpy.ext.commands.Bot
 
-.. autoclass:: fortnitepy.ext.commands.Bot
+.. autoclass:: rebootpy.ext.commands.Bot
     :members:
     :inherited-members:
 
@@ -21,7 +21,7 @@ Bot
 Event Reference
 -----------------
 
-These events function similar to :ref:`the regular events <fortnitepy-api-events>`, except they
+These events function similar to :ref:`the regular events <rebootpy-api-events>`, except they
 are custom to the command extension module.
 
 .. function:: event_command_error(ctx, error)
@@ -75,37 +75,37 @@ Command
 command()
 ~~~~~~~~~
 
-.. autofunction:: fortnitepy.ext.commands.command
+.. autofunction:: rebootpy.ext.commands.command
 
 group()
 ~~~~~~~
 
-.. autofunction:: fortnitepy.ext.commands.group
+.. autofunction:: rebootpy.ext.commands.group
 
 Command
 ~~~~~~~
 
-.. attributetable:: fortnitepy.ext.commands.Command
+.. attributetable:: rebootpy.ext.commands.Command
 
-.. autoclass:: fortnitepy.ext.commands.Command
+.. autoclass:: rebootpy.ext.commands.Command
     :members:
     :special-members: __call__
 
 Group
 ~~~~~
 
-.. attributetable:: fortnitepy.ext.commands.Group
+.. attributetable:: rebootpy.ext.commands.Group
 
-.. autoclass:: fortnitepy.ext.commands.Group
+.. autoclass:: rebootpy.ext.commands.Group
     :members:
     :inherited-members:
 
 GroupMixin
 ~~~~~~~~~~
 
-.. attributetable:: fortnitepy.ext.commands.GroupMixin
+.. attributetable:: rebootpy.ext.commands.GroupMixin
 
-.. autoclass:: fortnitepy.ext.commands.GroupMixin
+.. autoclass:: rebootpy.ext.commands.GroupMixin
     :members:
 
 .. _ext_commands_api_cogs:
@@ -116,17 +116,17 @@ Cogs
 Cog
 ~~~
 
-.. attributetable:: fortnitepy.ext.commands.Cog
+.. attributetable:: rebootpy.ext.commands.Cog
 
-.. autoclass:: fortnitepy.ext.commands.Cog
+.. autoclass:: rebootpy.ext.commands.Cog
     :members:
 
 CogMeta
 ~~~~~~~
 
-.. attributetable:: fortnitepy.ext.commands.CogMeta
+.. attributetable:: rebootpy.ext.commands.CogMeta
 
-.. autoclass:: fortnitepy.ext.commands.CogMeta
+.. autoclass:: rebootpy.ext.commands.CogMeta
     :members:
 
 .. _ext_commands_api_formatters:
@@ -137,32 +137,32 @@ Help Commands
 HelpCommand
 ~~~~~~~~~~~
 
-.. attributetable:: fortnitepy.ext.commands.HelpCommand
+.. attributetable:: rebootpy.ext.commands.HelpCommand
 
-.. autoclass:: fortnitepy.ext.commands.HelpCommand
+.. autoclass:: rebootpy.ext.commands.HelpCommand
     :members:
 
 FortniteHelpCommand
 ~~~~~~~~~~~~~~~~~~~
 
-.. attributetable:: fortnitepy.ext.commands.FortniteHelpCommand
+.. attributetable:: rebootpy.ext.commands.FortniteHelpCommand
 
-.. autoclass:: fortnitepy.ext.commands.FortniteHelpCommand
+.. autoclass:: rebootpy.ext.commands.FortniteHelpCommand
     :members:
     :exclude-members: send_bot_help, send_cog_help, send_group_help, send_command_help, prepare_help_command
 
 Paginator
 ~~~~~~~~~
 
-.. attributetable:: fortnitepy.ext.commands.Paginator
+.. attributetable:: rebootpy.ext.commands.Paginator
 
-.. autoclass:: fortnitepy.ext.commands.Paginator
+.. autoclass:: rebootpy.ext.commands.Paginator
     :members:
 
 Enums
 ------
 
-.. class:: fortnitepy.ext.commands.BucketType
+.. class:: rebootpy.ext.commands.BucketType
 
     Specifies a type of bucket for, e.g. a cooldown.
 
@@ -179,32 +179,32 @@ Enums
 Checks
 -------
 
-.. autofunction:: fortnitepy.ext.commands.check
+.. autofunction:: rebootpy.ext.commands.check
 
-.. autofunction:: fortnitepy.ext.commands.check_any
+.. autofunction:: rebootpy.ext.commands.check_any
 
-.. autofunction:: fortnitepy.ext.commands.cooldown
+.. autofunction:: rebootpy.ext.commands.cooldown
 
-.. autofunction:: fortnitepy.ext.commands.max_concurrency
+.. autofunction:: rebootpy.ext.commands.max_concurrency
 
-.. autofunction:: fortnitepy.ext.commands.before_invoke
+.. autofunction:: rebootpy.ext.commands.before_invoke
 
-.. autofunction:: fortnitepy.ext.commands.after_invoke
+.. autofunction:: rebootpy.ext.commands.after_invoke
 
-.. autofunction:: fortnitepy.ext.commands.party_only
+.. autofunction:: rebootpy.ext.commands.party_only
 
-.. autofunction:: fortnitepy.ext.commands.dm_only
+.. autofunction:: rebootpy.ext.commands.dm_only
 
-.. autofunction:: fortnitepy.ext.commands.is_owner
+.. autofunction:: rebootpy.ext.commands.is_owner
 
 .. _ext_commands_api_context:
 
 Context
 --------
 
-.. attributetable:: fortnitepy.ext.commands.Context
+.. attributetable:: rebootpy.ext.commands.Context
 
-.. autoclass:: fortnitepy.ext.commands.Context
+.. autoclass:: rebootpy.ext.commands.Context
     :members:
     :inherited-members:
 
@@ -213,16 +213,16 @@ Context
 Converters
 ------------
 
-.. autoclass:: fortnitepy.ext.commands.Converter
+.. autoclass:: rebootpy.ext.commands.Converter
     :members:
 
-.. autoclass:: fortnitepy.ext.commands.UserConverter
+.. autoclass:: rebootpy.ext.commands.UserConverter
     :members:
 
-.. autoclass:: fortnitepy.ext.commands.FriendConverter
+.. autoclass:: rebootpy.ext.commands.FriendConverter
     :members:
 
-.. autoclass:: fortnitepy.ext.commands.PartyMemberConverter
+.. autoclass:: rebootpy.ext.commands.PartyMemberConverter
     :members:
 
 .. data:: ext.commands.Greedy
@@ -252,83 +252,83 @@ Converters
 Exceptions
 -----------
 
-.. autoexception:: fortnitepy.ext.commands.CommandError
+.. autoexception:: rebootpy.ext.commands.CommandError
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.ConversionError
+.. autoexception:: rebootpy.ext.commands.ConversionError
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.MissingRequiredArgument
+.. autoexception:: rebootpy.ext.commands.MissingRequiredArgument
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.ArgumentParsingError
+.. autoexception:: rebootpy.ext.commands.ArgumentParsingError
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.UnexpectedQuoteError
+.. autoexception:: rebootpy.ext.commands.UnexpectedQuoteError
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.InvalidEndOfQuotedStringError
+.. autoexception:: rebootpy.ext.commands.InvalidEndOfQuotedStringError
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.ExpectedClosingQuoteError
+.. autoexception:: rebootpy.ext.commands.ExpectedClosingQuoteError
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.BadArgument
+.. autoexception:: rebootpy.ext.commands.BadArgument
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.BadUnionArgument
+.. autoexception:: rebootpy.ext.commands.BadUnionArgument
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.PrivateMessageOnly
+.. autoexception:: rebootpy.ext.commands.PrivateMessageOnly
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.PartyMessageOnly
+.. autoexception:: rebootpy.ext.commands.PartyMessageOnly
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.CheckFailure
+.. autoexception:: rebootpy.ext.commands.CheckFailure
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.CheckAnyFailure
+.. autoexception:: rebootpy.ext.commands.CheckAnyFailure
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.CommandNotFound
+.. autoexception:: rebootpy.ext.commands.CommandNotFound
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.DisabledCommand
+.. autoexception:: rebootpy.ext.commands.DisabledCommand
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.CommandInvokeError
+.. autoexception:: rebootpy.ext.commands.CommandInvokeError
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.TooManyArguments
+.. autoexception:: rebootpy.ext.commands.TooManyArguments
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.UserInputError
+.. autoexception:: rebootpy.ext.commands.UserInputError
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.CommandOnCooldown
+.. autoexception:: rebootpy.ext.commands.CommandOnCooldown
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.MaxConcurrencyReached
+.. autoexception:: rebootpy.ext.commands.MaxConcurrencyReached
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.NotOwner
+.. autoexception:: rebootpy.ext.commands.NotOwner
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.ExtensionError
+.. autoexception:: rebootpy.ext.commands.ExtensionError
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.ExtensionAlreadyLoaded
+.. autoexception:: rebootpy.ext.commands.ExtensionAlreadyLoaded
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.ExtensionNotLoaded
+.. autoexception:: rebootpy.ext.commands.ExtensionNotLoaded
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.ExtensionMissingEntryPoint
+.. autoexception:: rebootpy.ext.commands.ExtensionMissingEntryPoint
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.ExtensionFailed
+.. autoexception:: rebootpy.ext.commands.ExtensionFailed
     :members:
 
-.. autoexception:: fortnitepy.ext.commands.ExtensionNotFound
+.. autoexception:: rebootpy.ext.commands.ExtensionNotFound
     :members:

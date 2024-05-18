@@ -1,4 +1,4 @@
-Welcome to fortnitepy's documentation!
+Welcome to rebootpy's documentation!
 ======================================
 
 Documentation Contents

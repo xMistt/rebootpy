@@ -1,4 +1,4 @@
-.. currentmodule:: fortnitepy
+.. currentmodule:: rebootpy
 
 Frequently Asked Questions (FAQ)
 ================================
@@ -10,7 +10,7 @@ Why are there so many different authentication methods?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 With the introduction of captcha on email and password authentication, there was
-a need of different ways to authenticate. Therefore, fortnitepy tries to offer
+a need of different ways to authenticate. Therefore, rebootpy tries to offer
 as many different authentication methods as possible. You can read more about the
 different possibilities over `here <https://github.com/MixV2/EpicResearch/tree/master/docs/auth/grant_types>`_.
 
@@ -22,7 +22,7 @@ The answer to this question depends completely on what information you already
 have, but it usually comes down to :class:`AdvancedAuth` no matter what. It's
 simply the best right now as it combines other authentication methods and handles
 all of the annoying stuff like creating device auths etc. If you are unsure how to
-use :class:`AdvancedAuth`, you can take a look at the `examples folder <https://github.com/Terbau/fortnitepy/tree/master/examples>`_
+use :class:`AdvancedAuth`, you can take a look at the `examples folder <https://github.com/Terbau/rebootpy/tree/master/examples>`_
 where it's used in all of the examples.
 
 
@@ -31,7 +31,7 @@ Whats the best way of storing the device auth details of an account?
 
 This depends on the complexity of the bot with multiple accounts in mind. For
 a program running a single bot, the easiest method of storage would be using
-a json file. A method for this is showcased in all `examples <https://github.com/Terbau/fortnitepy/tree/master/examples>`_.
+a json file. A method for this is showcased in all `examples <https://github.com/Terbau/rebootpy/tree/master/examples>`_.
 
 For bots with multiple accounts I suggest using a database for the single reason
 that file io is blocking and sometimes the operating system might spit out
@@ -62,7 +62,7 @@ in an understandable way.
 Where can I find usage examples?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can find example code in the `examples folder <https://github.com/Terbau/fortnitepy/tree/master/examples>`_
+You can find example code in the `examples folder <https://github.com/Terbau/rebootpy/tree/master/examples>`_
 in the github repository.
 
 
@@ -106,8 +106,8 @@ client.
 
 .. code-block:: python3
 
-    client = fortnitepy.Client(
-        auth=fortnitepy.Auth, // Here goes an authentication method like fortnitepy.AdvancedAuth or fortnitepy.EmailAndPasswordAuth
+    client = rebootpy.Client(
+        auth=rebootpy.Auth, // Here goes an authentication method like rebootpy.AdvancedAuth or rebootpy.EmailAndPasswordAuth
         status="This is my status"
     )
 
@@ -157,7 +157,7 @@ How can I fix the "Incompatible net_cl" error?
 
 .. note::
 
-    Since fortnitepy v0.9.0 net_cl is not needed and this error will therefore not be an issue. For legacy and possibly
+    Since rebootpy v0.9.0 net_cl is not needed and this error will therefore not be an issue. For legacy and possibly
     future use, it will remain in the faq.
 
 When fortnite releases a new content update they also update a specific number named netcl needed for the party 
@@ -176,8 +176,8 @@ with the correct one yourself.
 .. code-block::
 
     # pass the netcl to with the net_cl keyword when initializing the client.
-    client = fortnitepy.Client(
-        auth=fortnitepy.Auth, // Here goes an authentication method like fortnitepy.AdvancedAuth or fortnitepy.EmailAndPasswordAuth
+    client = rebootpy.Client(
+        auth=rebootpy.Auth, // Here goes an authentication method like rebootpy.AdvancedAuth or rebootpy.EmailAndPasswordAuth
         net_cl='7605985'
     )
 

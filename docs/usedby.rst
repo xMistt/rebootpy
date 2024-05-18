@@ -1,4 +1,4 @@
-.. currentmodule:: fortnitepy
+.. currentmodule:: rebootpy
 
 Who uses fortnitepy?
 ====================
@@ -41,9 +41,3 @@ EasyFortniteStats
    :height: 100
 
 EasyFortniteStats is a discord bot built around fortnite stats and news. It features graphical stats, item shop, ingame radio and more.
-
-
-Get your application added
---------------------------
-
-If you have made a decently sized or a unique application built with fortnitepy and you want it added on this page, you can contact ``Terbau#8523`` on discord about it. Please note that applications are reviewed and might not get added to the list depending on different factors.

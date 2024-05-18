@@ -22,12 +22,12 @@ sys.path.append(os.path.abspath('localexts'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'fortnitepy'
+project = 'rebootpy'
 copyright = '2019-2021, Terbau'
 author = 'Terbau'
 
 version = ''
-with open('../fortnitepy/__init__.py') as f:
+with open('../rebootpy/__init__.py') as f:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE).group(1)
 
 # The full version, including alpha/beta/rc tags.
