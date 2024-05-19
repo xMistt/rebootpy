@@ -1129,6 +1129,12 @@ class HTTPClient:
         r = AccountPublicService('/account/api/public/account')
         return await self.get(r, params=params, **kwargs)
 
+    async def account_create_device_code(self, **kwargs: Any) -> list:
+        r = AccountPublicService(
+            '/account/api/oauth/deviceAuthorization'
+        )
+        return await self.post(r, **kwargs)
+
     async def account_graphql_get_multiple_by_user_id(self,
                                                       user_ids: List[str],
                                                       **kwargs: Any

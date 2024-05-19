@@ -2711,7 +2711,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
         Parameters
         ----------
-        hold_crown: Optional[:class:`str`]
+        hold_crown: :class:`bool`
             | Whether you want the user to wear a crown or not.
             | Defaults to True.
 
@@ -2734,7 +2734,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
         Parameters
         ----------
-        crowns: Optional[:class:`int`]
+        crowns: :class:`int`
             | Amount of crowns the user has.
             | Defaults to 0 to clear crowns.
 
@@ -2757,7 +2757,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
         Parameters
         ----------
-        rank: Optional[:class:`int`]
+        rank: :class:`int`
             | Rank to change to.
             | Defaults to 0 to set to unranked.
 

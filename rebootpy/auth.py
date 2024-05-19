@@ -29,6 +29,7 @@ import asyncio
 import logging
 import uuid
 import time
+import webbrowser
 
 from random import randint
 from aioconsole import ainput
@@ -348,133 +349,6 @@ class Auth:
             device_id
         )
 
-
-class EmailAndPasswordAuth(Auth):
-    """Authenticates by email and password.
-
-    .. warning::
-
-        Some users might experience an error saying captcha was invalid.
-        If this is the case, use :class:`AdvancedAuth` with an exchange code
-        to generate a device auth.
-
-    Parameters
-    ----------
-    email: :class:`str`
-        The accounts email.
-    password: :class:`str`
-        The accounts password.
-    two_factor_code: Optional[:class:`int`]
-        The current two factor code if needed. If not passed here, it
-        will be prompted later.
-    device_id: Optional[:class:`str`]
-        A 32 char hex representing your device.
-    ios_token: Optional[:class:`str`]
-        The ios token to use with authentication. You should generally
-        not need to set this manually.
-    fortnite_token: Optional[:class:`str`]
-        The fortnite token to use with authentication. You should generally
-        not need to set this manually.
-    """
-    def __init__(self, email: str, password: str, *,
-                 two_factor_code: Optional[int] = None,
-                 **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.email = email
-        self.password = password
-        self.two_factor_code = two_factor_code
-
-    @property
-    def identifier(self) -> str:
-        return self.email
-
-    async def fetch_xsrf_token(self) -> str:
-        response = await self.client.http.epicgames_get_csrf()
-        return response.cookies['XSRF-TOKEN'].value
-
-    async def ios_authenticate(self) -> dict:
-        log.info('Fetching valid xsrf token.')
-        token = await self.fetch_xsrf_token()
-
-        await self.client.http.epicgames_reputation(token)
-
-        try:
-            log.info('Logging in.')
-            await self.client.http.epicgames_login(
-                self.email,
-                self.password,
-                token
-            )
-        except HTTPException as e:
-            m = 'errors.com.epicgames.account.invalid_account_credentials'
-            if e.message_code == m:
-                raise AuthException(
-                    'Invalid account credentials passed.',
-                    e
-                ) from e
-
-            if e.message_code != ('errors.com.epicgames.common.'
-                                  'two_factor_authentication.required'):
-                raise
-
-            log.info('Logging in interrupted. 2fa required.')
-            log.info('Fetching new valid xsrf token.')
-            token = await self.fetch_xsrf_token()
-
-            code = self.two_factor_code
-            if code is None:
-                async with _prompt_lock:
-                    code = await ainput(
-                        'Please enter the 2fa code:\n',
-                    )
-
-            try:
-                await self.client.http.epicgames_mfa_login(
-                    e.raw['metadata']['twoFactorMethod'],
-                    code,
-                    token
-                )
-            except HTTPException as exc:
-                m = (
-                    'errors.com.epicgames.accountportal.mfa_code_invalid',
-                    'errors.com.epicgames.accountportal.validation'
-                )
-                if exc.message_code in m:
-                    raise AuthException(
-                        'Invalid 2fa code passed.',
-                        exc
-                    ) from exc
-
-                raise
-
-        await self.client.http.epicgames_redirect(token)
-
-        token = await self.fetch_xsrf_token()
-        log.info('Fetching exchange code.')
-        data = await self.client.http.epicgames_get_exchange_data(token)
-
-        log.info('Exchanging code.')
-        data = await self.exchange_code_for_session(
-            self.ios_token,
-            data['code']
-        )
-        return data
-
-    async def authenticate(self, **kwargs) -> None:
-        data = await self.ios_authenticate()
-        self._update_ios_data(data)
-
-        if self.client.kill_other_sessions:
-            await self.kill_other_sessions()
-
-        code = await self.get_exchange_code()
-        data = await self.exchange_code_for_session(
-            self.fortnite_token,
-            code
-        )
-        self._update_data(data)
-
-
 class ExchangeCodeAuth(Auth):
     """Authenticates by an exchange code.
 
@@ -789,12 +663,9 @@ class AdvancedAuth(Auth):
 
     1. By :class:`DeviceAuth` if ``device_id``, ``account_id`` and ``secret``
     are present.
-    2. By :class:`EmailAndPasswordAuth` if ``email`` and ``password`` is
-    present. If authentication fails because of required captcha, it then
-    attempts to authenticate with the next step.
-    3. :class:`ExchangeCodeAuth` is tried if ``exchange_code`` is present
+    2. :class:`ExchangeCodeAuth` is tried if ``exchange_code`` is present
     or if ``prompt_exchange_code`` is ``True``.
-    4. :class:`AuthorizationCodeAuth` is tried if ``authorization_code`` is
+    3. :class:`AuthorizationCodeAuth` is tried if ``authorization_code`` is
     present or if ``prompt_authorization_code`` is ``True``.
 
     If the authentication was not done by step 1, a device auth is
@@ -804,10 +675,7 @@ class AdvancedAuth(Auth):
 
     Parameters
     ----------
-    email: Optional[:class:`str`]
-        The email to use for the login.
-    password: Optional[:class:`str`]
-        The password to use for the login.
+
     two_factor_code: Optional[:class:`int`]
         The two factor code to use for the login if needed. If this is
         not passed but later needed, you will be prompted to enter it
@@ -869,8 +737,7 @@ class AdvancedAuth(Auth):
         The fortnite token to use with authentication. You should generally
         not need to set this manually.
     """
-    def __init__(self, email: Optional[str] = None,
-                 password: Optional[str] = None,
+    def __init__(self,
                  two_factor_code: Optional[int] = None,
                  exchange_code: Optional[StrOrMaybeCoro] = None,
                  authorization_code: Optional[StrOrMaybeCoro] = None,
@@ -878,15 +745,13 @@ class AdvancedAuth(Auth):
                  account_id: Optional[str] = None,
                  secret: Optional[str] = None,
                  prompt_exchange_code: bool = False,
-                 prompt_authorization_code: bool = False,
+                 prompt_authorization_code: bool = True,
                  prompt_code_if_invalid: bool = False,
                  prompt_code_if_throttled: bool = False,
                  delete_existing_device_auths: bool = False,
                  **kwargs: Any) -> None:
         super().__init__(**kwargs)
 
-        self.email = email
-        self.password = password
         self.two_factor_code = two_factor_code
         self.exchange_code = exchange_code
         self.authorization_code = authorization_code
@@ -911,13 +776,10 @@ class AdvancedAuth(Auth):
 
     @property
     def identifier(self) -> str:
-        return self.email or self.account_id or self.exchange_code
+        return self.exchange_code
 
     def eula_check_needed(self) -> bool:
         return self._used_auth.eula_check_needed()
-
-    def email_and_password_ready(self) -> bool:
-        return self.email and self.password
 
     def exchange_code_ready(self) -> bool:
         return self.exchange_code is not None
@@ -939,18 +801,6 @@ class AdvancedAuth(Auth):
             return 'exchange'
         elif self.prompt_authorization_code:
             return 'authorization'
-
-    async def run_email_and_password_authenticate(self) -> dict:
-        auth = EmailAndPasswordAuth(
-            email=self.email,
-            password=self.password,
-            two_factor_code=self.two_factor_code,
-            **self.kwargs
-        )
-        auth.initialize(self.client)
-        self._used_auth = auth
-
-        return await auth.ios_authenticate()
 
     async def run_exchange_code_authenticate(self) -> dict:
         auth = ExchangeCodeAuth(
@@ -1015,49 +865,16 @@ class AdvancedAuth(Auth):
 
                 prompt_message = 'Invalid device auth details passed. '
 
-        elif self.email_and_password_ready():
-            try:
-                data = await self.run_email_and_password_authenticate()
-            except HTTPException as e:
-                m = {
-                    'errors.com.epicgames.accountportal.captcha_invalid': 'Captcha was enforced. '  # noqa
-                }
-                if self.prompt_enabled() and self.prompt_code_if_throttled:
-                    m['errors.com.epicgames.common.throttled'] = 'Account was throttled. '  # noqa
-
-                if e.message_code not in m:
-                    raise
-
-                short = m.get(e.message_code)
-                if (short is not None
-                        and not self.code_ready()
-                        and not self.prompt_enabled()):
-                    raise AuthException(
-                        'This account requires an exchange or authorization '
-                        'code.',
-                        e
-                    ) from e
-
-                prompt_message = short
-
         if data is None:
             prompted = False
             code = None
             if not self.code_ready() and self.prompt_enabled():
                 prompted = True
                 code_type = self.get_prompt_type_name()
-                if self.email is not None:
-                    text = '{0}Please enter a valid {1} code ' \
-                           'for {2}\n'.format(
-                                prompt_message,
-                                code_type,
-                                self.email
-                            )
-                else:
-                    text = '{0}Please enter a valid {1} code.\n'.format(
-                        prompt_message,
-                        code_type
-                    )
+                text = '{0}Please enter a valid {1} code.\n'.format(
+                    prompt_message,
+                    code_type
+                )
 
                 async with _prompt_lock:
                     code = await ainput(
@@ -1094,15 +911,9 @@ class AdvancedAuth(Auth):
         }
         self.__dict__.update(details)
 
-        account_data = await self.client.http.account_get_by_user_id(
-            self.ios_account_id,
-            auth='IOS_ACCESS_TOKEN'
-        )
-
         self.client.dispatch_event(
             'device_auth_generate',
-            details,
-            account_data['email']
+            details
         )
 
         return data
@@ -1141,3 +952,145 @@ class AdvancedAuth(Auth):
         )
         self._update_data(data)
         log.debug('Successfully reauthenticated.')
+
+
+class DeviceCodeAuth(Auth):
+    """Authenticate with device code.
+
+    .. note::
+
+        All device auths generated for an account is removed once the accounts
+        password gets reset. If you managed to leak you device_id and secret,
+        simply reset the accounts password and everything should be fine.
+
+    Parameters
+    ----------
+    open_link_in_browser: :class:`bool`
+        Whether or not to automatically open the Epic Games login in the default browser.
+    ios_token: Optional[:class:`str`]
+        The ios token to use with authentication. You should generally
+        not need to set this manually.
+    switch_token: Optional[:class:`str`]
+        The switch token to use with authentication. You should generally
+        not need to set this manually.
+    fortnite_token: Optional[:class:`str`]
+        The fortnite token to use with authentication. You should generally
+        not need to set this manually.
+    """
+    def __init__(self, open_link_in_browser: bool = True,
+                 **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.switch_token = kwargs.get('switch_token', 'OThmN2U0MmMyZTNhNGY4NmE3NGViNDNmYmI0MWVkMzk6MGEyNDQ5YTItMDAxYS00NTFlLWFmZWMtM2U4MTI5MDFjNGQ3')
+        self.open_link_in_browser = open_link_in_browser
+
+    @property
+    def identifier(self) -> str:
+        return self.account_id
+
+    def eula_check_needed(self) -> bool:
+        return False
+
+    async def device_code_authenticate(self, priority: int = 0) -> dict:
+        switch_token = await self.client.http.account_oauth_grant(
+            auth=f'basic {self.switch_token}',
+            data={
+                'grant_type': 'client_credentials'
+            },
+            priority=priority
+        )
+
+        device_code = await self.client.http.account_create_device_code(
+            auth=f'bearer {switch_token["access_token"]}',
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            priority=priority
+        )
+
+        if self.open_link_in_browser:
+            webbrowser.open(device_code['verification_uri_complete'], new=1)
+        print(f"Please login via {device_code['verification_uri_complete']}")
+
+        while True:
+            try:
+                exchange_access_token = await self.client.http.account_oauth_grant(
+                    auth=f'basic {self.switch_token}',
+                    data={
+                        "grant_type": "device_code",
+                        "device_code": device_code['device_code']
+                    },
+                    headers={
+                    "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    priority=priority
+                )
+
+                if 'access_token' in exchange_access_token:
+                    break
+            except HTTPException as exc:
+                if exc.message_code == 'errors.com.epicgames.account.oauth.authorization_pending':
+                    pass
+                elif exc.message_code == 'errors.com.epicgames.not_found':
+                    pass
+                elif exc.message_code == 'errors.com.epicgames.oauth.corrective_action_required':
+                    action = exc.raw.get('correctiveAction')
+                    log.debug("Corrective action is required: " + action)
+                    if action == 'DATE_OF_BIRTH':
+                        client_credentials = await self.get_ios_client_credentials()
+                        client_access_token = client_credentials.get('access_token')
+
+                        random_date = "{:04d}-{:02d}-{:02d}".format(randint(1990, 2002), randint(1, 12), randint(1, 28))
+
+                        await self.client.http.account_put_date_of_birth_correction(
+                            continuation=exc.raw.get('continuation'),
+                            date_of_birth=random_date,
+                            auth='bearer {0}'.format(client_access_token)
+                        )
+                        return await self.ios_authenticate(priority)
+                    raise AuthException(
+                        'Required corrective action {} is not supported'.format(action),
+                        exc
+                    ) from exc
+                else:
+                    raise AuthException(f'Unknown error when checking device code - {exc.message_code}', exc)
+                    
+            await asyncio.sleep(10)
+
+        exchange_code = await self.client.http.account_get_exchange_data(
+            auth=f"bearer {exchange_access_token['access_token']}",
+            priority=priority
+        )
+
+        data = await self.client.http.account_oauth_grant(
+            auth=f'basic {self.ios_token}',
+            data={
+                "grant_type": "exchange_code",
+                "exchange_code": exchange_code['code']
+            },
+            priority=priority
+        )
+
+        return data
+
+    async def authenticate(self, priority: int = 0) -> None:
+        data = await self.device_code_authenticate(priority=priority)
+        self._update_ios_data(data)
+
+        if self.client.kill_other_sessions:
+            await self.kill_other_sessions(priority=priority)
+
+        code = await self.get_exchange_code(priority=priority)
+        data = await self.exchange_code_for_session(
+            self.fortnite_token,
+            code,
+            priority=priority
+        )
+        self._update_data(data)
+
+    async def reauthenticate(self, priority: int = 0) -> None:
+        """Used for reauthenticating if refreshing fails."""
+        log.debug('Starting reauthentication.')
+
+        ret = await self.authenticate(priority=priority)
+        log.debug('Successfully reauthenicated.')
+        return ret
