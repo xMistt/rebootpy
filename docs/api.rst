@@ -29,6 +29,8 @@ how you can set up this auth with file storage for the preferred login which is 
 
 .. autoclass:: AdvancedAuth
 
+.. autoclass:: DeviceCodeAuth
+
 
 Clients
 -------
@@ -208,6 +210,24 @@ Enumerations
     .. attribute:: SEASON_10
     .. attribute:: SEASON_11
     .. attribute:: SEASON_12
+	.. attribute:: SEASON_13
+	.. attribute:: SEASON_14
+	.. attribute:: SEASON_15
+	.. attribute:: SEASON_16
+	.. attribute:: SEASON_17
+	.. attribute:: SEASON_18
+	.. attribute:: SEASON_19
+	.. attribute:: SEASON_20
+	.. attribute:: SEASON_21
+	.. attribute:: SEASON_21
+	.. attribute:: SEASON_22
+	.. attribute:: SEASON_23
+	.. attribute:: SEASON_24
+	.. attribute:: SEASON_25
+	.. attribute:: SEASON_26
+	.. attribute:: SEASON_27
+	.. attribute:: SEASON_28
+	.. attribute:: SEASON_29
 
 .. class:: SeasonEndTimestamp
 
@@ -224,6 +244,23 @@ Enumerations
     .. attribute:: SEASON_9
     .. attribute:: SEASON_10
     .. attribute:: SEASON_11
+    .. attribute:: SEASON_12
+	.. attribute:: SEASON_13
+	.. attribute:: SEASON_14
+	.. attribute:: SEASON_15
+	.. attribute:: SEASON_16
+	.. attribute:: SEASON_17
+	.. attribute:: SEASON_18
+	.. attribute:: SEASON_19
+	.. attribute:: SEASON_20
+	.. attribute:: SEASON_21
+	.. attribute:: SEASON_21
+	.. attribute:: SEASON_22
+	.. attribute:: SEASON_23
+	.. attribute:: SEASON_24
+	.. attribute:: SEASON_25
+	.. attribute:: SEASON_26
+	.. attribute:: SEASON_27
 
 .. class:: StatsCollectionType
 
