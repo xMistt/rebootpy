@@ -496,11 +496,6 @@ class HTTPClient:
         if auth is not None:
             headers['Authorization'] = self.get_auth(auth)
 
-        device_id = kwargs.pop('device_id', None)
-        if device_id is not None:
-            headers['X-Epic-Device-ID'] = (self.device_id if device_id is True
-                                           else device_id)
-
         if graphql is not None:
             is_multiple = isinstance(graphql, (list, tuple))
 

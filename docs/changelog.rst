@@ -9,6 +9,14 @@ Detailed version changes.
 v1.0.0
 ------
 
+Changes
+~~~~~~~
+
+- (**Breaking**) Removed :class:`EmailAndPasswordAuth`.
+- (**Breaking**) :class:`AdvancedAuth` no longer accepts `email` & `password` and instead by default uses device code if there are no device auths.
+- Added `prompt_device_code` & `open_link_in_browser` parameters to  :class:`AdvancedAuth`.
+
+
 Added
 ~~~~~
 

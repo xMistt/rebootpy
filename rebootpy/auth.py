@@ -30,6 +30,7 @@ import logging
 import uuid
 import time
 import webbrowser
+import json
 
 from random import randint
 from aioconsole import ainput
@@ -157,7 +158,6 @@ class Auth:
 
         return await self.client.http.account_oauth_grant(
             auth='basic {0}'.format(auth_token),
-            device_id=True,
             data=payload,
             priority=priority
         )
@@ -181,7 +181,6 @@ class Auth:
 
         return await self.client.http.account_oauth_grant(
             auth='basic {0}'.format(token),
-            device_id=True,
             data=payload,
             priority=priority
         )
@@ -489,7 +488,6 @@ class AuthorizationCodeAuth(ExchangeCodeAuth):
         try:
             data = await self.client.http.account_oauth_grant(
                 auth='basic {0}'.format(self.ios_token),
-                device_id=True,
                 data=payload
             )
         except HTTPException as e:
@@ -663,9 +661,11 @@ class AdvancedAuth(Auth):
 
     1. By :class:`DeviceAuth` if ``device_id``, ``account_id`` and ``secret``
     are present.
-    2. :class:`ExchangeCodeAuth` is tried if ``exchange_code`` is present
+    2. :class:`DeviceCodeAuth` is tried if ``prompt_device_code``
+    is ``True``.
+    3. :class:`ExchangeCodeAuth` is tried if ``exchange_code`` is present
     or if ``prompt_exchange_code`` is ``True``.
-    3. :class:`AuthorizationCodeAuth` is tried if ``authorization_code`` is
+    4. :class:`AuthorizationCodeAuth` is tried if ``authorization_code`` is
     present or if ``prompt_authorization_code`` is ``True``.
 
     If the authentication was not done by step 1, a device auth is
@@ -676,10 +676,7 @@ class AdvancedAuth(Auth):
     Parameters
     ----------
 
-    two_factor_code: Optional[:class:`int`]
-        The two factor code to use for the login if needed. If this is
-        not passed but later needed, you will be prompted to enter it
-        in the console.
+
     exchange_code: Optional[Union[:class:`str`, Callable, Awaitable]]
         The exchange code or a function/coroutine that when called returns
         the exchange code.
@@ -692,6 +689,15 @@ class AdvancedAuth(Auth):
         The account id to use for the login.
     secret: Optional[:class:`str`]
         The secret to use for the login.
+    prompt_device_code: :class:`bool`
+        If this is set to ``True`` and no exchange code is passed,
+        you will be prompted to enter the exchange code in the console
+        if needed.
+
+        .. note::
+
+            Both ``prompt_exchange_code`` and ``prompt_authorization_code``
+            cannot be True at the same time.
     prompt_exchange_code: :class:`bool`
         If this is set to ``True`` and no exchange code is passed,
         you will be prompted to enter the exchange code in the console
@@ -738,21 +744,21 @@ class AdvancedAuth(Auth):
         not need to set this manually.
     """
     def __init__(self,
-                 two_factor_code: Optional[int] = None,
                  exchange_code: Optional[StrOrMaybeCoro] = None,
                  authorization_code: Optional[StrOrMaybeCoro] = None,
                  device_id: Optional[str] = None,
                  account_id: Optional[str] = None,
                  secret: Optional[str] = None,
                  prompt_exchange_code: bool = False,
-                 prompt_authorization_code: bool = True,
+                 prompt_authorization_code: bool = False,
+                 prompt_device_code: bool = True,
+                 open_link_in_browser: bool = True,
                  prompt_code_if_invalid: bool = False,
                  prompt_code_if_throttled: bool = False,
                  delete_existing_device_auths: bool = False,
                  **kwargs: Any) -> None:
         super().__init__(**kwargs)
 
-        self.two_factor_code = two_factor_code
         self.exchange_code = exchange_code
         self.authorization_code = authorization_code
         self.device_id = device_id
@@ -762,6 +768,8 @@ class AdvancedAuth(Auth):
         self.delete_existing_device_auths = delete_existing_device_auths
         self.prompt_exchange_code = prompt_exchange_code
         self.prompt_authorization_code = prompt_authorization_code
+        self.prompt_device_code = prompt_device_code
+        self.open_link_in_browser = open_link_in_browser
 
         if self.prompt_exchange_code and self.prompt_authorization_code:
             raise ValueError('Both prompt_exchange_code and '
@@ -822,6 +830,15 @@ class AdvancedAuth(Auth):
 
         return await auth.ios_authenticate()
 
+    async def run_device_code_authenticate(self) -> dict:
+        auth = DeviceCodeAuth(
+            open_link_in_browser=self.open_link_in_browser
+        )
+        auth.initialize(self.client)
+        self._used_auth = auth
+
+        return await auth.ios_authenticate()
+
     async def run_device_authenticate(self, device_id: Optional[str] = None,
                                       account_id: Optional[str] = None,
                                       secret: Optional[str] = None,
@@ -864,6 +881,14 @@ class AdvancedAuth(Auth):
                         raise
 
                 prompt_message = 'Invalid device auth details passed. '
+
+        if self.prompt_device_code:
+            try:
+                data = await self.run_device_code_authenticate()
+            except AuthException as exc:
+                original = exc.original
+                if not self.prompt_enabled() or not self.prompt_code_if_invalid:  # noqa
+                    raise
 
         if data is None:
             prompted = False
@@ -990,7 +1015,7 @@ class DeviceCodeAuth(Auth):
     def eula_check_needed(self) -> bool:
         return False
 
-    async def device_code_authenticate(self, priority: int = 0) -> dict:
+    async def ios_authenticate(self, priority: int = 0) -> dict:
         switch_token = await self.client.http.account_oauth_grant(
             auth=f'basic {self.switch_token}',
             data={
@@ -1017,7 +1042,8 @@ class DeviceCodeAuth(Auth):
                     auth=f'basic {self.switch_token}',
                     data={
                         "grant_type": "device_code",
-                        "device_code": device_code['device_code']
+                        "device_code": device_code['device_code'],
+                        'token_type': 'eg1'
                     },
                     headers={
                     "Content-Type": "application/x-www-form-urlencoded"
@@ -1065,7 +1091,8 @@ class DeviceCodeAuth(Auth):
             auth=f'basic {self.ios_token}',
             data={
                 "grant_type": "exchange_code",
-                "exchange_code": exchange_code['code']
+                "exchange_code": exchange_code['code'],
+                'token_type': 'eg1'
             },
             priority=priority
         )
@@ -1073,7 +1100,7 @@ class DeviceCodeAuth(Auth):
         return data
 
     async def authenticate(self, priority: int = 0) -> None:
-        data = await self.device_code_authenticate(priority=priority)
+        data = await self.ios_authenticate(priority=priority)
         self._update_ios_data(data)
 
         if self.client.kill_other_sessions:
