@@ -849,19 +849,19 @@ class PartyMemberMeta(MetaBase):
 
     @property
     def outfit_variants(self) -> List[Dict[str, str]]:
-        return self.variants.get('AthenaCharacter', {}).get('i', [])
+        return self.variants.get('athenaCharacter', {}).get('i', [])
 
     @property
     def backpack_variants(self) -> List[Dict[str, str]]:
-        return self.variants.get('AthenaBackpack', {}).get('i', [])
+        return self.variants.get('athenaBackpack', {}).get('i', [])
 
     @property
     def pickaxe_variants(self) -> List[Dict[str, str]]:
-        return self.variants.get('AthenaPickaxe', {}).get('i', [])
+        return self.variants.get('athenaPickaxe', {}).get('i', [])
 
     @property
     def contrail_variants(self) -> List[Dict[str, str]]:
-        return self.variants.get('AthenaContrail', {}).get('i', [])
+        return self.variants.get('athenaContrail', {}).get('i', [])
 
     @property
     def scratchpad(self) -> list:
@@ -1590,11 +1590,7 @@ class PartyMemberBase(User):
         """:class:`str`: The CID of the outfit this user currently has
         equipped.
         """
-        asset = self.meta.outfit
-        result = re.search(r".*\.([^\'\"]*)", asset.strip("'"))
-
-        if result is not None and result.group(1) != 'None':
-            return result.group(1)
+        return self.meta.outfit.split(':')[1]
 
     @property
     def backpack(self) -> str:

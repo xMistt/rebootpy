@@ -33,3 +33,4 @@ Bug Fixes
 ~~~~~~~~~
 
 - Updated party & party member meta to reflect changes from C4 & C5 which completely broke them.
+- Fixed broken events which either never dispatched or returned None.
