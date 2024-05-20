@@ -1,7 +1,7 @@
  # rebootpy
 
-[![Supported py versions](https://img.shields.io/pypi/pyversions/fortnitepy.svg)](https://pypi.org/project/rebootpy/)
-[![Current pypi version](https://img.shields.io/pypi/v/fortnitepy.svg)](https://pypi.org/project/rebootpy/)
+[![Supported py versions](https://img.shields.io/pypi/pyversions/rebootpy.svg)](https://pypi.org/project/rebootpy/)
+[![Current pypi version](https://img.shields.io/pypi/v/rebootpy.svg)](https://pypi.org/project/rebootpy/)
 [![Donate link](https://img.shields.io/badge/paypal-donate-blue.svg)](https://www.paypal.me/terbau)
 
 Asynchronous library for interacting with Fortnite and EpicGames' API and XMPP services.
