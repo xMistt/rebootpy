@@ -181,19 +181,20 @@ as the path, example usage for a dance would be:
         async with aiohttp.ClientSession() as session:
             async with session.request(
                 method="GET",
-                url="https://fortnite-api.com/v2/cosmetics/br/search/all?name=" \
-                f"{search}t&matchMethod=contains&backendType=AthenaDance"
+                url="https://fortnite-api.com/v2/cosmetics/br/search?name=" \
+                f"{search}&matchMethod=contains&backendType=AthenaDance"
             ) as request:
                 if request.status == 404:
-                    await ctx.send('Skin not found!')
+                    return await ctx.send('Dance not found!')
 
                 data = await request.json()
 
-        if "brcosmetics" in data['data']['path']:
-            await bot.party.me.set_outfit(asset=data['data']['id'])
+        if "brcosmetics" in data['data']['path'].lower():
+            await bot.party.me.set_emote(asset=data['data']['id'])
         else:
-            path = f"/Game/Athena/Items/Cosmetics/Dances/{cosmetic.id}.{cosmetic.id}'"
-            await bot.party.me.set_outfit(asset=path)
+            path = f"/Game/Athena/Items/Cosmetics/Dances/{data['data']['id']}.{data['data']['id']}"
+            await bot.party.me.set_emote(asset=path)
+
 
 A full example can be found `here <https://github.com/xMistt/rebootpy/blob/main/examples/fortnite_api_path.py>`_.
 

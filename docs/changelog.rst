@@ -32,6 +32,13 @@ Added
 
 - Added :class:`DeviceCodeAuth`.
 
+
+Removed
+~~~~~~~
+
+- Removed `Client.fetch_user_by_email()` as it had been deprecated by epic.
+
+
 Bug Fixes
 ~~~~~~~~~
 

@@ -1173,63 +1173,6 @@ class BasicClient:
                         _users.append(u)
         return _users
 
-    async def fetch_user_by_email(self, email, *,
-                                  cache: bool = False,
-                                  raw: bool = False) -> Optional[User]:
-        """|coro|
-
-        Fetches a single user by the email.
-
-        .. warning::
-
-            Because of epicgames throttling policy, you can only do this
-            request three times in a timespan of 600 seconds. If you were
-            to do more than three requests in that timespan, a
-            :exc:`HTTPException` would be raised.
-
-        Parameters
-        ----------
-        email: :class:`str`
-            The email of the account you are requesting.
-        cache: :class:`bool`
-            If set to True it will try to get the user from the friends or
-            user cache and fall back to an api request if not found.
-
-            .. note::
-
-                This method does two api requests but with this set to False
-                only one request will be done as long as the user is found in
-                one of the caches.
-
-        raw: :class:`bool`
-            If set to True it will return the data as you would get it from
-            the api request.
-
-            .. note::
-
-                Setting raw to True does not work with cache set to True.
-
-        Raises
-        ------
-        HTTPException
-            An error occured while requesting the user.
-
-        Returns
-        -------
-        Optional[:class:`User`]
-            The user requested. If not found it will return ``None``
-        """
-        try:
-            res = await self.http.account_get_by_email(email)
-        except HTTPException as e:
-            m = 'errors.com.epicgames.account.account_not_found'
-            if e.message_code == m:
-                return None
-            raise
-
-        account_id = res['id']
-        return await self.fetch_user(account_id, cache=cache, raw=raw)
-
     async def search_users(self, prefix: str,
                            platform: UserSearchPlatform
                            ) -> List[UserSearchEntry]:

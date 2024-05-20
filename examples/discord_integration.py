@@ -1,15 +1,14 @@
-"""This example makes use of discord integration with rebootpy. If captcha
-is enforced for the accounts, you will only have to enter the authorization code
-the first time you run this script.
+"""This example makes use of discord integration with rebootpy.
 
 NOTE: This example uses AdvancedAuth and stores the details in a file.
 It is important that this file is moved whenever the script itself is moved
 because it relies on the stored details. However, if the file is nowhere to
-be found, it will simply use email and password or prompt you to enter a
-new authorization code to generate a new file.
+be found, it will simply prompt you to enter a new authorization code 
+to generate a new file.
 """
 
 import rebootpy
+import discord
 import json
 import os
 
@@ -28,7 +27,7 @@ def get_device_auth_details():
     return {}
 
 
-def store_device_auth_details(email, details):
+def store_device_auth_details(details):
     with open(filename, 'w') as fp:
         json.dump(details, fp)
 
@@ -39,16 +38,17 @@ fortnite_bot = fortnite_commands.Bot(
     description=description,
     auth=rebootpy.AdvancedAuth(
         prompt_authorization_code=True,
-        prompt_code_if_invalid=True,
-        prompt_device_code=False
+        prompt_device_code=False,
         **device_auth_details
     )
 )
 
+intents = discord.Intents.all()
 discord_bot = discord_commands.Bot(
     command_prefix='!',
     description=description,
-    case_insensitive=True
+    case_insensitive=True,
+    intents=intents
 )
 
 
@@ -59,8 +59,8 @@ async def event_ready():
 
 
 @fortnite_bot.event
-async def event_device_auth_generate(details, email):
-    store_device_auth_details(email, details)
+async def event_device_auth_generate(details):
+    store_device_auth_details(details)
 
 
 @fortnite_bot.event

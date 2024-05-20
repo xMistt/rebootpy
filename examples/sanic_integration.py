@@ -23,7 +23,7 @@ device_auths = get_device_auth_details()
 bot = commands.Bot(
     command_prefix='!',
     auth=rebootpy.DeviceAuth(
-        **device_auth
+        **device_auths
     )
 )
 
@@ -46,18 +46,14 @@ async def get_friends_handler(request):
 async def event_ready():
     global server
 
-    print('----------------')
-    print('Bot ready as')
-    print(bot.user.display_name)
-    print(bot.user.id)
-    print('----------------')
+    print(f'Bot ready as {bot.user.display_name} ({bot.user.id}).')
 
-    coro = sanic_app.create_server(
-        host='0.0.0.0',
-        port=8000,
-        return_asyncio_server=True,
+    server = await sanic_app.create_server(
+        port=80, host="0.0.0.0", return_asyncio_server=True
     )
-    server = await coro
+
+    await server.startup()
+    await server.serve_forever()
 
 
 @bot.event

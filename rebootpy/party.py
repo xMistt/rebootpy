@@ -1103,7 +1103,6 @@ class PartyMemberMeta(MetaBase):
 
         prop = self.get_prop('Default:AthenaCosmeticLoadout_j')
         data = prop['AthenaCosmeticLoadout']
-        print(json.dumps(data, sort_keys=False, indent=4))
 
         if character is not None:
             data['characterPrimaryAssetId'] = character
@@ -1129,8 +1128,6 @@ class PartyMemberMeta(MetaBase):
             data['cosmeticStats'][2]['statValue'] = victory_crowns
         if rank is not None:
             data['cosmeticStats'][0]['statValue'] = rank
-
-        print(json.dumps(data, sort_keys=False, indent=4))
 
         final = {'AthenaCosmeticLoadout': data}
         key = 'Default:AthenaCosmeticLoadout_j'

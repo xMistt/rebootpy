@@ -21,19 +21,18 @@ def get_device_auth_details():
 
 async def event_sub_ready(client):
     instances[client.user.id] = client
-    print('{0.user.display_name} ready.'.format(client))
+    print(f'Bot ready as {bot.user.display_name} ({bot.user.id}).')
 
 async def event_sub_friend_request(request):
     print('{0.client.user.display_name} received a friend request.'.format(request))
     await request.accept()
 
 async def event_sub_party_member_join(member):
-    print("{0.display_name} joined {0.client.user.display_name}'s party.".format(member))            
-
+    print("{0.display_name} joined {0.client.user.display_name}'s party.".format(member))
 
 clients = []
 device_auths = get_device_auth_details()
-for device_auth in credentials.items():
+for device_auth in device_auths:
     authentication = rebootpy.DeviceAuth(
         **device_auth
     )
@@ -48,7 +47,6 @@ for device_auth in credentials.items():
     )
 
     # register events here
-    client.add_event_handler('device_auth_generate', event_sub_device_auth_generate)
     client.add_event_handler('friend_request', event_sub_friend_request)
     client.add_event_handler('party_member_join', event_sub_party_member_join)
 

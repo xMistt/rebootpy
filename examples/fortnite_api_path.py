@@ -24,7 +24,7 @@ def get_device_auth_details():
     return {}
 
 
-def store_device_auth_details(email, details):
+def store_device_auth_details(details):
     with open(filename, 'w') as fp:
         json.dump(details, fp)
 
@@ -41,13 +41,13 @@ bot = commands.Bot(
 
 
 @bot.event
-async def event_device_auth_generate(details, email):
-    store_device_auth_details(email, details)
+async def event_device_auth_generate(details):
+    store_device_auth_details(details)
 
 
 @bot.event
 async def event_ready():
-    print(f'Bot ready as {bot.user.display_name}.')
+    print(f'Bot ready as {bot.user.display_name} ({bot.user.id}).')
 
 
 @bot.event
@@ -55,24 +55,29 @@ async def event_friend_request(request):
     await request.accept()
 
 
+@bot.event
+async def event_party_invite(invite):
+    await invite.accept()
+
+
 @bot.command()
 async def emote(ctx, *, search: str):
     async with aiohttp.ClientSession() as session:
         async with session.request(
             method="GET",
-            url="https://fortnite-api.com/v2/cosmetics/br/search/all?name=" \
-            f"{search}t&matchMethod=contains&backendType=AthenaDance"
+            url="https://fortnite-api.com/v2/cosmetics/br/search?name=" \
+            f"{search}&matchMethod=contains&backendType=AthenaDance"
         ) as request:
             if request.status == 404:
-                await ctx.send('Skin not found!')
+                return await ctx.send('Dance not found!')
 
             data = await request.json()
 
-    if "brcosmetics" in data['data']['path']:
-        await bot.party.me.set_outfit(asset=data['data']['id'])
+    if "brcosmetics" in data['data']['path'].lower():
+        await bot.party.me.set_emote(asset=data['data']['id'])
     else:
-        path = f"/Game/Athena/Items/Cosmetics/Dances/{cosmetic.id}.{cosmetic.id}'"
-        await bot.party.me.set_outfit(asset=path)
+        path = f"/Game/Athena/Items/Cosmetics/Dances/{data['data']['id']}.{data['data']['id']}"
+        await bot.party.me.set_emote(asset=path)
 
 
 bot.run()

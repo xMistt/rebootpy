@@ -22,7 +22,7 @@ def get_device_auth_details():
     return {}
 
 
-def store_device_auth_details(email, details):
+def store_device_auth_details(details):
     with open(filename, 'w') as fp:
         json.dump(details, fp)
 
@@ -39,13 +39,13 @@ bot = commands.Bot(
 
 
 @bot.event
-async def event_device_auth_generate(details, email):
-    store_device_auth_details(email, details)
+async def event_device_auth_generate(details):
+    store_device_auth_details(details)
 
 
 @bot.event
 async def event_ready():
-    print(f'Bot ready as {bot.user.display_name}.')
+    print(f'Bot ready as {bot.user.display_name} ({bot.user.id}).')
 
 
 @bot.event

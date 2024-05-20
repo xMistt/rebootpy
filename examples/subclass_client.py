@@ -15,10 +15,9 @@ import os
 from rebootpy.ext import commands
 
 
-email = 'email@email.com'
-password = 'password'
 filename = 'device_auths.json'
 description = 'My awesome fortnite bot!'
+
 
 def get_device_auth_details():
     if os.path.isfile(filename):
@@ -26,38 +25,30 @@ def get_device_auth_details():
             return json.load(fp)
     return {}
 
-def store_device_auth_details(email, details):
-    existing = get_device_auth_details()
-    existing[email] = details
 
+def store_device_auth_details(details):
     with open(filename, 'w') as fp:
-        json.dump(existing, fp)
+        json.dump(details, fp)
+
 
 class MyBot(commands.Bot):
     def __init__(self):
-        device_auth_details = get_device_auth_details().get(email, {})
+        device_auth_details = get_device_auth_details()
         super().__init__(
             command_prefix='!',
             description=description,
             auth=rebootpy.AdvancedAuth(
-                email=email,
-                password=password,
-                prompt_authorization_code=True,
-                prompt_code_if_invalid=True,
-                delete_existing_device_auths=True,
+                prompt_device_code=True,
+                open_link_in_browser=True,
                 **device_auth_details
             )
         )
 
-    async def event_device_auth_generate(self, details, email):
-        store_device_auth_details(email, details)
+    async def event_device_auth_generate(self, details):
+        store_device_auth_details(details)
 
     async def event_ready(self):
-        print('----------------')
-        print('Client ready as')
-        print(self.user.display_name)
-        print(self.user.id)
-        print('----------------')
+        print(f'Bot ready as {bot.user.display_name} ({bot.user.id}).')
 
     async def event_friend_request(self, request):
         await request.accept()
@@ -69,6 +60,7 @@ class MyBot(commands.Bot):
     @commands.command()
     async def hello(self, ctx):
         await ctx.send('Hello there!')
+
 
 bot = MyBot()
 bot.run()
