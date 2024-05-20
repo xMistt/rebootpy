@@ -152,35 +152,50 @@ Take a closer look at :meth:`StatsV2.get_kd` and
 :meth:`StatsV2.get_winpercentage`.
 
 
-How can I fix the "Incompatible net_cl" error?
+Why are some cosmetics invisible/dances not playing?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. note::
+Since ~C4S3, cosmetics have been stored in 2 paths, some in the old folder but the majority in a new folder
+called BRCosmetics. Since the path in rebootpy is hard-coded, theres no good way of getting the correct path
+since it would require installing the entire game to wherever your instance of rebootpy is running. However,
+the best way I have found is to use a third party API such as Fortnite-API to get the path.
 
-    Since rebootpy v0.9.0 net_cl is not needed and this error will therefore not be an issue. For legacy and possibly
-    future use, it will remain in the faq.
+Outfits do not have this issue anymore as they no longer require a path at all, so you can just pass the ID
+of any outfit to `set_outfit()` and regardless of its location, it will show correctly (as long as the ID
+ is valid).
+**Guide to find path using Fortnite-API:** 
 
-When fortnite releases a new content update they also update a specific number named netcl needed for the party 
-service to work. When updating this lib I also update the net_cl to match the new one. However, since fortnite 
-seems to update their game every week I sometimes don't keep up and you have to find and initialize the client 
-with the correct one yourself.
+1. Head over to the `Fortnite-API docs <https://dash.fortnite-api.com/endpoints/cosmetics>`_.
+2. Choose an endpoint that you want to use to lookup cosmetics, either via ID or name.
+3. The response will have a key called `path` in `data`, if it contains BRCosmetic, just pass
+the plain ID to the `set_` function as this is the path that the library is already using.
+4. If the cosmetic is in the original path, use `FortniteGame/Content/Athena/Items/<CosmeticPath>/`
+as the path, example usage for a dance would be: `await bot.party.me.set_emote('/Game/Athena/Items/Cosmetics/Dances/EID_Coronet.EID_Coronet')`
 
-**Guide to find netcl:**
-
-1. Navigate to the folder where you find your fortnite logs. Usually something like this: ``C:\Users\%your_user%\AppData\Local\FortniteGame\Saved\Logs``.
-2. Go into the latest log file (Typically named ``FortniteGame``).
-3. Press ctrl + f and do a search for ``netcl``. You should then find a seven digit number.
-
-**This is how you launch the client with the manual netcl:**
+**Here is an example of using Fortnite-API to get the correct path for a dance:**
 
 .. code-block::
 
-    # pass the netcl to with the net_cl keyword when initializing the client.
-    client = rebootpy.Client(
-        auth=rebootpy.Auth, // Here goes an authentication method like rebootpy.AdvancedAuth or rebootpy.EmailAndPasswordAuth
-        net_cl='7605985'
-    )
+    @bot.command()
+    async def emote(ctx, *, search: str):
+        async with aiohttp.ClientSession() as session:
+            async with session.request(
+                method="GET",
+                url="https://fortnite-api.com/v2/cosmetics/br/search/all?name=" \
+                f"{search}t&matchMethod=contains&backendType=AthenaDance"
+            ) as request:
+                if request.status == 404:
+                    await ctx.send('Skin not found!')
 
+                data = await request.json()
+
+        if "brcosmetics" in data['data']['path']:
+            await bot.party.me.set_outfit(asset=data['data']['id'])
+        else:
+            path = f"/Game/Athena/Items/Cosmetics/Dances/{cosmetic.id}.{cosmetic.id}'"
+            await bot.party.me.set_outfit(asset=path)
+
+A full example can be found `here <https://github.com/xMistt/rebootpy/blob/main/examples/fortnite_api_path.py>`_.
 
 
 
