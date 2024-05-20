@@ -161,16 +161,24 @@ since it would require installing the entire game to wherever your instance of r
 the best way I have found is to use a third party API such as Fortnite-API to get the path.
 
 Outfits do not have this issue anymore as they no longer require a path at all, so you can just pass the ID
-of any outfit to `set_outfit()` and regardless of its location, it will show correctly (as long as the ID
- is valid).
+of any outfit to :meth:`ClientPartyMember.set_outfit()` and regardless of its location, it will show correctly (as long as the ID is valid).
 **Guide to find path using Fortnite-API:** 
 
 1. Head over to the `Fortnite-API docs <https://dash.fortnite-api.com/endpoints/cosmetics>`_.
 2. Choose an endpoint that you want to use to lookup cosmetics, either via ID or name.
 3. The response will have a key called `path` in `data`, if it contains BRCosmetic, just pass
 the plain ID to the `set_` function as this is the path that the library is already using.
-4. If the cosmetic is in the original path, use `FortniteGame/Content/Athena/Items/<CosmeticPath>/`
-as the path, example usage for a dance would be: `await bot.party.me.set_emote('/Game/Athena/Items/Cosmetics/Dances/EID_Coronet.EID_Coronet')`
+
+4. If the cosmetic is in the original path, use
+.. code-block::
+
+    FortniteGame/Content/Athena/Items/<CosmeticPath>/
+
+as the path, example usage for a dance would be:
+.. code-block::
+
+    await bot.party.me.set_emote('/Game/Athena/Items/Cosmetics/Dances/EID_Coronet.EID_Coronet')
+
 
 **Here is an example of using Fortnite-API to get the correct path for a dance:**
 
