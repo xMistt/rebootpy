@@ -2422,8 +2422,10 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
             .. note::
 
-                You don't have to include the full path of the asset. The CID
-                is enough.
+                Cosmetics other than outfits require a path, usually the
+                correct path will be set by default, but you really should
+                handle this just in-case. Read more about it
+                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
         key: Optional[:class:`str`]
             The encyption key to use for this backpack.
         variants: Optional[:class:`list`]
@@ -2536,8 +2538,10 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
             .. note::
 
-                You don't have to include the full path of the asset. The ID is
-                enough.
+                Cosmetics other than outfits require a path, usually the
+                correct path will be set by default, but you really should
+                handle this just in-case. Read more about it
+                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
         key: Optional[:class:`str`]
             The encyption key to use for this pet.
         variants: Optional[:class:`list`]
@@ -2604,8 +2608,10 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
             .. note::
 
-                You don't have to include the full path of the asset. The CID
-                is enough.
+                Cosmetics other than outfits require a path, usually the
+                correct path will be set by default, but you really should
+                handle this just in-case. Read more about it
+                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
         key: Optional[:class:`str`]
             The encyption key to use for this pickaxe.
         variants: Optional[:class:`list`]
@@ -2660,8 +2666,10 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
             .. note::
 
-                You don't have to include the full path of the asset. The ID is
-                enough.
+                Cosmetics other than outfits require a path, usually the
+                correct path will be set by default, but you really should
+                handle this just in-case. Read more about it
+                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
         key: Optional[:class:`str`]
             The encyption key to use for this contrail.
         variants: Optional[:class:`list`]
@@ -2796,8 +2804,10 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
             .. note::
 
-                You don't have to include the full path of the asset. The EID
-                is enough.
+                Cosmetics other than outfits require a path, usually the
+                correct path will be set by default, but you really should
+                handle this just in-case. Read more about it
+                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
         run_for: Optional[:class:`float`]
             Seconds the emote should run for before being cancelled. ``None``
             (default) means it will run indefinitely and you can then clear it
@@ -2845,8 +2855,10 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
             .. note::
 
-                You don't have to include the full path of the asset. The ID is
-                enough.
+                Cosmetics other than outfits require a path, usually the
+                correct path will be set by default, but you really should
+                handle this just in-case. Read more about it
+                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
         run_for: Optional[:class:`float`]
             Seconds the emoji should run for before being cancelled. ``None``
             means it will run indefinitely and you can then clear it with

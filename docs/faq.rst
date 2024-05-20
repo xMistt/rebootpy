@@ -170,11 +170,13 @@ of any outfit to :meth:`ClientPartyMember.set_outfit()` and regardless of its lo
 the plain ID to the `set_` function as this is the path that the library is already using.
 
 4. If the cosmetic is in the original path, use
+
 .. code-block::
 
-    FortniteGame/Content/Athena/Items/<CosmeticPath>/
+    /Game/Athena/Items/Cosmetics/<CosmeticPath>/
 
 as the path, example usage for a dance would be:
+
 .. code-block::
 
     await bot.party.me.set_emote('/Game/Athena/Items/Cosmetics/Dances/EID_Coronet.EID_Coronet')
