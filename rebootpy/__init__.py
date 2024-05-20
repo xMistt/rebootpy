@@ -44,7 +44,7 @@ from .user import (ClientUser, User, BlockedUser, ExternalAuth,
 from .stats import StatsV2, StatsCollection
 from .enums import *
 from .errors import *
-from .store import Store, FeaturedStoreItem, DailyStoreItem
+from .store import Store, StoreItem
 from .news import BattleRoyaleNewsPost
 from .playlist import Playlist
 from .avatar import Avatar

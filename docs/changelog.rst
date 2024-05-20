@@ -14,6 +14,7 @@ Changes
 
 - (**Breaking**) Removed :class:`EmailAndPasswordAuth`.
 - (**Breaking**) :class:`AdvancedAuth` no longer accepts `email` & `password` and instead by default uses device code if there are no device auths.
+- (**Breaking**) As featured & daily items are no longer different in the store, `featured_items` & `daily_items` have been combined to :attribute:`Store.items` which uses the :class:`StoreItem` type.
 - Added `prompt_device_code` & `open_link_in_browser` parameters to  :class:`AdvancedAuth`.
 
 
@@ -34,3 +35,4 @@ Bug Fixes
 
 - Updated party & party member meta to reflect changes from C4 & C5 which completely broke them.
 - Fixed broken events which either never dispatched or returned None.
+- Fixed :meth:`Client.fetch_item_shop()`.

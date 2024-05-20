@@ -26,6 +26,7 @@ SOFTWARE.
 
 import re
 import datetime
+import json
 
 from typing import TYPE_CHECKING, Optional, List
 
@@ -35,7 +36,7 @@ if TYPE_CHECKING:
     from .client import Client
 
 
-class StoreItemBase:
+class StoreItem:
     def __init__(self, data: dict) -> None:
         self._dev_name = data['devName']
         self._asset_path = data.get('displayAssetPath')
@@ -52,14 +53,20 @@ class StoreItemBase:
         self._monthly_limit = data['monthlyLimit']
         self._offer_id = data['offerId']
         self._offer_type = data['offerType']
-        self._price = data['prices'][0]['finalPrice']
         self._refundable = data['refundable']
         self._items_grants = data['itemGrants']
+        self._panel = data['sortPriority']
         self._meta_info = data.get('metaInfo', [])
         self._meta = data.get('meta', {})
 
+        self._raw = data
+
     def __str__(self) -> str:
         return self.dev_name
+
+    def __repr__(self) -> str:
+        return ('<StoreItem dev_name={0.dev_name!r} asset={0.asset!r} '
+                'price={0.price!r}>'.format(self))
 
     @property
     def display_names(self) -> List[str]:
@@ -137,7 +144,13 @@ class StoreItemBase:
     @property
     def price(self) -> int:
         """:class:`int`: The price of this item in v-bucks."""
-        return self._price
+        if 'dynamicBundleInfo' in self._raw:
+            return (
+                self._raw['dynamicBundleInfo']['discountedBasePrice'] + 
+                sum(item['regularPrice'] for item in self._raw['dynamicBundleInfo']['bundleItems'])
+            )
+        else:
+            return self._raw['prices'][0]['finalPrice']
 
     @property
     def refundable(self) -> bool:
@@ -188,33 +201,12 @@ class StoreItemBase:
         if unfixed:
             return ' '.join(re.findall(r'[A-Z][^A-Z]*', unfixed))
 
-
-class FeaturedStoreItem(StoreItemBase):
-    """Featured store item."""
-    def __init__(self, data: dict) -> None:
-        super().__init__(data)
-        self._panel = int((data['categories'][0].split(' '))[1])
-
-    def __repr__(self) -> str:
-        return ('<FeaturedStoreItem dev_name={0.dev_name!r} asset={0.asset!r} '
-                'price={0.price!r}>'.format(self))
-
     @property
     def panel(self) -> int:
         """:class:`int`: The panel the item is listed in from left
         to right.
         """
         return self._panel
-
-
-class DailyStoreItem(StoreItemBase):
-    """Daily store item."""
-    def __init__(self, data: dict) -> None:
-        super().__init__(data)
-
-    def __repr__(self) -> str:
-        return ('<DailyStoreItem dev_name={0.dev_name!r} asset={0.asset!r} '
-                'price={0.price!r}>'.format(self))
 
 
 class Store:
@@ -231,54 +223,18 @@ class Store:
         self._refresh_interval_hours = data['refreshIntervalHrs']
         self._expires_at = from_iso(data['expiration'])
 
-        self._featured_items = self._create_featured_items(
-            'BRWeeklyStorefront',
-            data
-        )
-        self._daily_items = self._create_daily_items(
-            'BRDailyStorefront',
-            data
-        )
-        self._special_featured_items = self._create_featured_items(
-            'BRSpecialFeatured',
-            data
-        )
-        self._special_daily_items = self._create_daily_items(
-            'BRSpecialDaily',
-            data,
-        )
+        self._items = self._create_store_items(data)
 
     def __repr__(self) -> str:
         return ('<Store created_at={0.created_at!r} '
                 'expires_at={0.expires_at!r}>'.format(self))
 
     @property
-    def featured_items(self) -> List[FeaturedStoreItem]:
-        """List[:class:`FeaturedStoreItem`]: A list containing data about
-        featured items in the item shop.
+    def items(self) -> List[StoreItem]:
+        """List[:class:`StoreItem`]: A list containing data about
+        all items in the item shop.
         """
-        return self._featured_items
-
-    @property
-    def daily_items(self) -> List[DailyStoreItem]:
-        """List[:class:`DailyStoreItem`]: A list containing data about
-        daily items in the item shop.
-        """
-        return self._daily_items
-
-    @property
-    def special_featured_items(self) -> List[FeaturedStoreItem]:
-        """List[:class:`FeaturedStoreItem`]: A list containing data about
-        special featured items in the item shop.
-        """
-        return self._special_featured_items
-
-    @property
-    def special_daily_items(self) -> List[DailyStoreItem]:
-        """List[:class:`DailyStoreItem`]: A list containing data about
-        special daily items in the item shop.
-        """
-        return self._special_daily_items
+        return self._items
 
     @property
     def daily_purchase_hours(self) -> int:
@@ -311,20 +267,12 @@ class Store:
             if storefront['name'] == key:
                 return storefront
 
-    def _create_featured_items(self, storefront: str,
-                               data: dict) -> List[FeaturedStoreItem]:
-        storefront = self._find_storefront(data, storefront)
-
+    def _create_store_items(self, data: dict) -> List[StoreItem]:
         res = []
-        for item in storefront['catalogEntries']:
-            res.append(FeaturedStoreItem(item))
-        return res
 
-    def _create_daily_items(self, storefront: str,
-                            data: dict) -> List[DailyStoreItem]:
-        storefront = self._find_storefront(data, storefront)
+        for storefronts in ('BRWeeklyStorefront', 'BRDailyStorefront'):
+            storefront = self._find_storefront(data, storefronts)
+            for item in storefront['catalogEntries']:
+                res.append(StoreItem(item))
 
-        res = []
-        for item in storefront['catalogEntries']:
-            res.append(DailyStoreItem(item))
         return res

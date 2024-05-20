@@ -1134,21 +1134,12 @@ Store
 .. autoclass:: Store()
     :members:
 
-FeaturedStoreItem
+StoreItem
 ~~~~~~~~~~~~~~~~~
 
-.. attributetable:: FeaturedStoreItem
+.. attributetable:: StoreItem
 
-.. autoclass:: FeaturedStoreItem()
-    :members:
-    :inherited-members:
-
-DailyStoreItem
-~~~~~~~~~~~~~~
-
-.. attributetable:: DailyStoreItem
-
-.. autoclass:: DailyStoreItem()
+.. autoclass:: Storeitem()
     :members:
     :inherited-members:
 

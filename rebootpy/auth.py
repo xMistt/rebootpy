@@ -593,7 +593,7 @@ class DeviceAuth(Auth):
     async def authenticate(self, priority: int = 0) -> None:
         data = await self.ios_authenticate(priority=priority)
         self._update_ios_data(data)
-
+        
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
@@ -981,12 +981,6 @@ class AdvancedAuth(Auth):
 
 class DeviceCodeAuth(Auth):
     """Authenticate with device code.
-
-    .. note::
-
-        All device auths generated for an account is removed once the accounts
-        password gets reset. If you managed to leak you device_id and secret,
-        simply reset the accounts password and everything should be fine.
 
     Parameters
     ----------

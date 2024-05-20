@@ -2412,13 +2412,29 @@ class BasicClient:
         :class:`Store`
             Object representing the data from the current item shop.
         """
-        data = await self.http.fortnite_get_store_catalog()
-        return Store(self, data)
+        try:
+            data = await self.http.fortnite_get_store_catalog()
+            return Store(self, data)
+        except HTTPException as exc:
+            if exc.message_code != ('errors.com.epicgames.common.'
+                                    'missing_action'):
+                raise
+
+            await self.auth.accept_eula()
+            data = await self.http.fortnite_get_store_catalog()
+            return Store(self, data)
+        
 
     async def fetch_br_news(self) -> List[BattleRoyaleNewsPost]:
         """|coro|
 
         Fetches news for the Battle Royale gamemode.
+
+        .. note::
+
+            News is now specific to the player, most players who play
+            regularly may get 1 or 2 different news posts to an account
+            that has either never played or hasnt played in a while.
 
         Raises
         ------
