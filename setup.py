@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 version = ''
-with open('fortnitepy/__init__.py') as f:
+with open('rebootpy/__init__.py') as f:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE).group(1)
 
 requirements = ['aiohttp>=3.3', 'aioxmpp>=0.10.4']
@@ -28,7 +28,7 @@ setuptools.setup(
     name="rebootpy",
     url="https://github.com/xMistt/rebootpy",
     project_urls={
-        "Documentation": "https://fortnitepy.readthedocs.io/en/latest/",
+        "Documentation": "https://rebootpy.readthedocs.io/en/latest/",
         "Issue tracker": "https://github.com/xMistt/rebootpy/issues",
     },
     version=version,

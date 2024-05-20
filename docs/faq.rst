@@ -125,20 +125,9 @@ Alternatively you can change the presence with :meth:`Client.set_presence`.
 How can I get the CID of a skin?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There is no good easy way to obtain these yourself. However, some great minds
-have created tools to make this easier for others. Here are some of them: 
-- `FunGames' API <https://benbot.stoplight.io/docs/benbot-docs>`_.
+There is no good easy way to obtain these yourself. However, there are some
+APIs made by other people that you can use to find cosmetic IDs, I recommend:
 - `NotOfficer's API <https://fortnite-api.com/>`_.
-
-
-How can I use Two Factor Authentication when logging into the client?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If the user the client attempts to log in as requires two factor authentication, the code will
-be prompted in console on startup. Then just type it into console and if accepted, 
-the login process will continue.
-
-Alternatively, you might pass the code when intitializing :class:`Client` with the keyword ``two_factor_code``.
 
 
 How can I get a users K/D or Win Percentage?
@@ -162,6 +151,7 @@ the best way I have found is to use a third party API such as Fortnite-API to ge
 
 Outfits do not have this issue anymore as they no longer require a path at all, so you can just pass the ID
 of any outfit to :meth:`ClientPartyMember.set_outfit()` and regardless of its location, it will show correctly (as long as the ID is valid).
+
 **Guide to find path using Fortnite-API:** 
 
 1. Head over to the `Fortnite-API docs <https://dash.fortnite-api.com/endpoints/cosmetics>`_.
