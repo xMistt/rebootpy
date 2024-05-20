@@ -2763,7 +2763,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             An error occured while requesting.
         """
         prop = self.meta.set_cosmetic_loadout(
-            rank=crowns
+            rank=rank
         )
 
         if not self.edit_lock.locked():

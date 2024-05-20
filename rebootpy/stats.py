@@ -113,9 +113,9 @@ class StatsV2(_StatsBase):
 
         Usage: ::
 
-            # gets ninjas kd in solo on input touch
-            async def get_ninja_touch_solo_kd():
-                user = await client.fetch_user('Ninja')
+            # gets sypherpks kd in solo on input touch
+            async def get_sypherpk_touch_solo_kd():
+                user = await client.fetch_user('SypherPK')
                 stats = await client.fetch_br_stats(user.id)
 
                 return stats.get_kd(stats.get_stats()['touch']['defaultsolo'])
@@ -147,12 +147,12 @@ class StatsV2(_StatsBase):
 
         Usage: ::
 
-            # gets ninjas winpercentage in solo on input touch
-            async def get_ninja_touch_solo_winpercentage():
-                user = await client.fetch_user('Ninja')
+            # get my winpercentage in zero build squads on kbm touch
+            async def get_6v_zb_squad_winpercentage():
+                user = await client.fetch_user('6v.')
                 stats = await client.fetch_br_stats(user.id)
 
-                return stats.get_winpercentage(stats.get_stats()['touch']['defaultsolo'])
+                return stats.get_winpercentage(stats.get_stats()['keyboardmouse']['nobuildbr_squad'])
 
         Parameters
         ----------

@@ -5,8 +5,7 @@ the first time you run this script.
 NOTE: This example uses AdvancedAuth and stores the details in a file.
 It is important that this file is moved whenever the script itself is moved
 because it relies on the stored details. However, if the file is nowhere to
-be found, it will simply use email and password or prompt you to enter a
-new authorization code to generate a new file.
+be found, it will simply use device code to generate a new file.
 """
 
 import rebootpy

@@ -1,12 +1,5 @@
 """This example showcases how to use rebootpy with the asynchronous
-web framework sanic. If captcha is enforced for the accounts, you will
-only have to enter the authorization code the first time you run this script.
-
-NOTE: This example uses AdvancedAuth and stores the details in a file.
-It is important that this file is moved whenever the script itself is moved
-because it relies on the stored details. However, if the file is nowhere to
-be found, it will simply use email and password or prompt you to enter a
-new authorization code to generate a new file.
+web framework sanic.
 """
 
 import rebootpy
@@ -17,35 +10,20 @@ import sanic
 from rebootpy.ext import commands
 
 
-email = 'email@email.com'
-password = 'password1'
 filename = 'device_auths.json'
 description = 'My awesome fortnite bot / sanic app!'
 
+
 def get_device_auth_details():
-    if os.path.isfile(filename):
-        with open(filename, 'r') as fp:
-            return json.load(fp)
-    return {}
-
-def store_device_auth_details(email, details):
-    existing = get_device_auth_details()
-    existing[email] = details
-
-    with open(filename, 'w') as fp:
-        json.dump(existing, fp)
+    with open(filename, 'r') as fp:
+        return json.load(fp)
 
 
-device_auth_details = get_device_auth_details().get(email, {})
+device_auths = get_device_auth_details()
 bot = commands.Bot(
     command_prefix='!',
-    auth=rebootpy.AdvancedAuth(
-        email=email,
-        password=password,
-        prompt_authorization_code=True,
-        prompt_code_if_invalid=True,
-        delete_existing_device_auths=True,
-        **device_auth_details
+    auth=rebootpy.DeviceAuth(
+        **device_auth
     )
 )
 
@@ -57,10 +35,12 @@ server = None
 async def event_device_auth_generate(details, email):
     store_device_auth_details(email, details)
 
+
 @sanic_app.route('/friends', methods=['GET'])
 async def get_friends_handler(request):
     friends = [friend.id for friend in bot.friends]
     return sanic.response.json(friends)
+
 
 @bot.event
 async def event_ready():
@@ -79,6 +59,7 @@ async def event_ready():
     )
     server = await coro
 
+
 @bot.event
 async def event_before_close():
     global server
@@ -86,12 +67,15 @@ async def event_before_close():
     if server is not None:
         await server.close()
 
+
 @bot.event
 async def event_friend_request(request):
     await request.accept()
 
+
 @bot.command()
 async def hello(ctx):
     await ctx.send('Hello!')
+
 
 bot.run()

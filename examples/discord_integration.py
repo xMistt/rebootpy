@@ -29,21 +29,18 @@ def get_device_auth_details():
 
 
 def store_device_auth_details(email, details):
-    existing = get_device_auth_details()
-    existing[email] = details
-
     with open(filename, 'w') as fp:
-        json.dump(existing, fp)
+        json.dump(details, fp)
 
 
-device_auth_details = get_device_auth_details().get(email, {})
+device_auth_details = get_device_auth_details()
 fortnite_bot = fortnite_commands.Bot(
     command_prefix='!',
     description=description,
     auth=rebootpy.AdvancedAuth(
         prompt_authorization_code=True,
         prompt_code_if_invalid=True,
-        delete_existing_device_auths=True,
+        prompt_device_code=False
         **device_auth_details
     )
 )
@@ -60,17 +57,21 @@ async def event_ready():
     print('Fortnite bot ready')
     await discord_bot.start(discord_bot_token)
 
+
 @fortnite_bot.event
 async def event_device_auth_generate(details, email):
     store_device_auth_details(email, details)
+
 
 @fortnite_bot.event
 async def event_before_close():
     await discord_bot.close()
 
+
 @discord_bot.event
 async def on_ready():
     print('Discord bot ready')
+
 
 @discord_bot.event
 async def on_message(message):
@@ -80,17 +81,21 @@ async def on_message(message):
     print('Received discord message from {0.author.display_name} | Content "{0.content}"'.format(message))
     await discord_bot.process_commands(message)
 
+
 @fortnite_bot.event
 async def event_friend_message(message):
     print('Received fortnite message from {0.author.display_name} | Content "{0.content}"'.format(message))
+
 
 # discord command
 @discord_bot.command()
 async def mydiscordcommand(ctx):
     await ctx.send('Hello there discord!')
 
+
 @fortnite_bot.command()
 async def myfortnitecommand(ctx):
     await ctx.send('Hello there fortnite!')
+
 
 fortnite_bot.run()

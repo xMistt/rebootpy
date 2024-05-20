@@ -1989,7 +1989,7 @@ class BasicClient:
                 ]
 
                 # get the users and create a list of their ids.
-                users = await self.fetch_users(['Ninja', 'DrLupo'])
+                users = await self.fetch_users(['SypherPK', 'CouRageJD'])
                 user_ids = [u.id for u in users] + ['NonValidUserIdForTesting']
 
                 data = await self.fetch_multiple_br_stats(user_ids=user_ids, stats=stats)

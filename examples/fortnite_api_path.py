@@ -1,4 +1,5 @@
-"""This example showcases how to use rebootpy.
+"""This example showcases how to use rebootpy integrating with an api
+in order to correctly get the path for cosmetics other than outfits.
 
 NOTE: This example uses AdvancedAuth and stores the details in a file.
 It is important that this file is moved whenever the script itself is moved
@@ -9,6 +10,7 @@ be found, it will simply use device code to generate a new file.
 import rebootpy
 import json
 import os
+import aiohttp
 
 from rebootpy.ext import commands
 
@@ -54,8 +56,23 @@ async def event_friend_request(request):
 
 
 @bot.command()
-async def hello(ctx):
-    await ctx.send('Hello!')
+async def emote(ctx, *, search: str):
+    async with aiohttp.ClientSession() as session:
+        async with session.request(
+            method="GET",
+            url="https://fortnite-api.com/v2/cosmetics/br/search/all?name=" \
+            f"{search}t&matchMethod=contains&backendType=AthenaDance"
+        ) as request:
+            if request.status == 404:
+                await ctx.send('Skin not found!')
+
+            data = await request.json()
+
+    if "brcosmetics" in data['data']['path']:
+        await bot.party.me.set_outfit(asset=data['data']['id'])
+    else:
+        path = f"/Game/Athena/Items/Cosmetics/Dances/{cosmetic.id}.{cosmetic.id}'"
+        await bot.party.me.set_outfit(asset=path)
 
 
 bot.run()

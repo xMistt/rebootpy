@@ -146,23 +146,6 @@ class DefaultCharactersChapter3(Enum):
     CID_A_285_Athena_Commando_M_Prime_G = 14
 
 
-class V1Gamemode(Enum):
-    SOLO  = 'p2'
-    DUO   = 'p10'
-    SQUAD = 'p9'
-
-
-class V1Platform(Enum):
-    PC   = 'pc'
-    XBOX = 'xb1'
-    PS4  = 'ps4'
-
-
-class V1Window(Enum):
-    ALLTIME = 'alltime'
-    WEEKLY  = 'weekly'
-
-
 class V2Input(Enum):
     KEYBOARDANDMOUSE = 'keyboardmouse'
     GAMEPAD          = 'gamepad'
@@ -172,6 +155,7 @@ class V2Input(Enum):
 class Region(Enum):
     NAEAST     = 'NAE'
     NAWEST     = 'NAW'
+    NACENTRAL  = 'NAC'
     EUROPE     = 'EU'
     BRAZIL     = 'BR'
     OCEANIA    = 'OCE'
@@ -277,6 +261,8 @@ class SeasonEndTimestamp(Enum):
     SEASON_25 = 1692945000 # C4S3
     SEASON_26 = 1698994800 # C4S4
     SEASON_27 = 1701576000 # C4SOG
+    SEASON_28 = 1709794800 # C5S1
+    SEASON_29 = 1716533100 # C5S2
 
 
 class BattlePassStat(Enum):
@@ -287,7 +273,19 @@ class BattlePassStat(Enum):
     SEASON_15 = ('s15_social_bp_level', SeasonEndTimestamp.SEASON_15.value)
     SEASON_16 = ('s16_social_bp_level', SeasonEndTimestamp.SEASON_16.value)
     SEASON_17 = ('s17_social_bp_level', SeasonEndTimestamp.SEASON_17.value)
-    SEASON_18 = ('s18_social_bp_level', None)
+    SEASON_18 = ('s18_social_bp_level', SeasonEndTimestamp.SEASON_18.value)
+    SEASON_19 = ('s19_social_bp_level', SeasonEndTimestamp.SEASON_19.value)
+    SEASON_20 = ('s20_social_bp_level', SeasonEndTimestamp.SEASON_20.value)
+    SEASON_21 = ('s21_social_bp_level', SeasonEndTimestamp.SEASON_21.value)
+    SEASON_22 = ('s22_social_bp_level', SeasonEndTimestamp.SEASON_22.value)
+    SEASON_23 = ('s23_social_bp_level', SeasonEndTimestamp.SEASON_23.value)
+    SEASON_24 = ('s24_social_bp_level', SeasonEndTimestamp.SEASON_24.value)
+    SEASON_25 = ('s25_social_bp_level', SeasonEndTimestamp.SEASON_25.value)
+    SEASON_26 = ('s26_social_bp_level', SeasonEndTimestamp.SEASON_26.value)
+    SEASON_27 = ('s27_social_bp_level', SeasonEndTimestamp.SEASON_27.value)
+    SEASON_28 = ('s28_social_bp_level', SeasonEndTimestamp.SEASON_28.value)
+    SEASON_29 = ('s29_social_bp_level', SeasonEndTimestamp.SEASON_29.value)
+
 
 
 class StatsCollectionType(Enum):

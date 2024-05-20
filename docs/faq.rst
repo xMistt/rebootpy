@@ -22,7 +22,7 @@ The answer to this question depends completely on what information you already
 have, but it usually comes down to :class:`AdvancedAuth` no matter what. It's
 simply the best right now as it combines other authentication methods and handles
 all of the annoying stuff like creating device auths etc. If you are unsure how to
-use :class:`AdvancedAuth`, you can take a look at the `examples folder <https://github.com/Terbau/rebootpy/tree/master/examples>`_
+use :class:`AdvancedAuth`, you can take a look at the `examples folder <https://github.com/xMistt/rebootpy/tree/main/examples>`_
 where it's used in all of the examples.
 
 
@@ -31,7 +31,7 @@ Whats the best way of storing the device auth details of an account?
 
 This depends on the complexity of the bot with multiple accounts in mind. For
 a program running a single bot, the easiest method of storage would be using
-a json file. A method for this is showcased in all `examples <https://github.com/Terbau/rebootpy/tree/master/examples>`_.
+a json file. A method for this is showcased in all `examples <https://github.com/xMistt/rebootpy/tree/main/examples>`_.
 
 For bots with multiple accounts I suggest using a database for the single reason
 that file io is blocking and sometimes the operating system might spit out
@@ -62,7 +62,7 @@ in an understandable way.
 Where can I find usage examples?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can find example code in the `examples folder <https://github.com/Terbau/rebootpy/tree/master/examples>`_
+You can find example code in the `examples folder <https://github.com/xMistt/rebootpy/tree/main/examples>`_
 in the github repository.
 
 
@@ -107,7 +107,7 @@ client.
 .. code-block:: python3
 
     client = rebootpy.Client(
-        auth=rebootpy.Auth, // Here goes an authentication method like rebootpy.AdvancedAuth or rebootpy.EmailAndPasswordAuth
+        auth=rebootpy.Auth, // Here goes an authentication method like rebootpy.AdvancedAuth or rebootpy.DeviceAuth
         status="This is my status"
     )
 
