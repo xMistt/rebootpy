@@ -1139,7 +1139,7 @@ StoreItem
 
 .. attributetable:: StoreItem
 
-.. autoclass:: Storeitem()
+.. autoclass:: StoreItem()
     :members:
     :inherited-members:
 
