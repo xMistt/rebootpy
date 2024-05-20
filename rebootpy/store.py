@@ -37,6 +37,7 @@ if TYPE_CHECKING:
 
 
 class StoreItem:
+    """Featured store item."""
     def __init__(self, data: dict) -> None:
         self._dev_name = data['devName']
         self._asset_path = data.get('displayAssetPath')
