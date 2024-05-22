@@ -28,7 +28,7 @@ The get the bot working you must use one of several :ref:`authentication methods
 #. Log into an epic -games account of your choice `here <https://www.epicgames.com/id/logout?redirectUrl=https%3A//www.epicgames.com/id/login%3FredirectUrl%3Dhttps%253A%252F%252Fwww.epicgames.com%252Fid%252Fapi%252Fredirect%253FclientId%253D3446cd72694c4a4485d81b77adbb2141%2526responseType%253Dcode>`_.  
 #. Copy the hex part from the url that shows up as showcased by the image below.
 
-.. image:: https://raw.githubusercontent.com/xMistt/rebootpy/dev/docs/resources/images/authorization_code.png
+.. image:: https://raw.githubusercontent.com/xMistt/rebootpy/main/docs/resources/images/authorization_code.png
 
 **Note:** An authorization code expires after 5 minutes.
 
@@ -45,7 +45,7 @@ Basic example
 
     class MyClient(rebootpy.Client):
         def __init__(self):
-            device_auth_details = self.get_device_auth_details().get(email, {})
+            device_auth_details = self.get_device_auth_details()
             super().__init__(
                 auth=rebootpy.AdvancedAuth(
                     prompt_device_code=True,
@@ -59,17 +59,15 @@ Basic example
                     return json.load(fp)
             return {}
 
-        def store_device_auth_details(self, email, details):
-            existing = self.get_device_auth_details()
-            existing[email] = details
 
+        def store_device_auth_details(self, details):
             with open(filename, 'w') as fp:
-                json.dump(existing, fp)
+                json.dump(details, fp)
 
-        async def event_device_auth_generate(self, details, email):
-            self.store_device_auth_details(email, details)
+        async def event_device_auth_generate(self, details):
+            self.store_device_auth_details(details)
 
-        async def event_ready(self):
+       async def event_ready(self):
             print(f'Client ready as {self.user.display_name}')
 
         async def event_friend_request(self, request):
@@ -79,5 +77,6 @@ Basic example
             print('Received message from {0.author.display_name} | Content: "{0.content}"'.format(message))
             await message.reply('Thanks for your message!')
 
-    client = MyClient()
-    client.run()
+
+    bot = MyBot()
+    bot.run()
