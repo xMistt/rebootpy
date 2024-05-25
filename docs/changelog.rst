@@ -5,8 +5,16 @@ Changelog
 
 Detailed version changes.
 
+v0.0.2
+------
 
-v1.0.0
+Bug Fixes
+~~~~~~~~~
+
+- Fixed KeyError: 'party.joininfodata.286331153_j'.
+
+
+v0.0.1
 ------
 
 Changes
