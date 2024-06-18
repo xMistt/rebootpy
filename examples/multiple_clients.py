@@ -21,7 +21,7 @@ def get_device_auth_details():
 
 async def event_sub_ready(client):
     instances[client.user.id] = client
-    print(f'Bot ready as {bot.user.display_name} ({bot.user.id}).')
+    print(f'Bot ready as {client.user.display_name} ({client.user.id}).')
 
 async def event_sub_friend_request(request):
     print('{0.client.user.display_name} received a friend request.'.format(request))
@@ -32,13 +32,11 @@ async def event_sub_party_member_join(member):
 
 clients = []
 device_auths = get_device_auth_details()
-for device_auth in device_auths:
-    authentication = rebootpy.DeviceAuth(
-        **device_auth
-    )
-
+for account, device_auth in device_auths.items():
     client = rebootpy.Client(
-        auth=authentication,
+        auth=rebootpy.DeviceAuth(
+            **device_auth
+        ),
         default_party_member_config=rebootpy.DefaultPartyMemberConfig(
             meta=(
                 functools.partial(rebootpy.ClientPartyMember.set_outfit, 'CID_175_Athena_Commando_M_Celestial'), # galaxy skin

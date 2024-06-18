@@ -228,6 +228,7 @@ Enumerations
     .. attribute:: SEASON_27
     .. attribute:: SEASON_28
     .. attribute:: SEASON_29
+    .. attribute:: SEASON_30
 
 .. class:: SeasonEndTimestamp
 
@@ -261,6 +262,8 @@ Enumerations
     .. attribute:: SEASON_25
     .. attribute:: SEASON_26
     .. attribute:: SEASON_27
+    .. attribute:: SEASON_28
+    .. attribute:: SEASON_29
 
 .. class:: StatsCollectionType
 

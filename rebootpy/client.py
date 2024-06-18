@@ -283,7 +283,7 @@ async def start_multiple(clients: List['BasicClient'], *,
     identifiers = []
     for client in clients:
         identifier = client.auth.identifier
-        if identifier in identifiers:
+        if identifier in identifiers and identifier:
             raise ValueError(
                 'Two or more clients with the same auth identifier was passed.'
                 ' Identifier = {}'.format(repr(identifier))

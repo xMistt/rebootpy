@@ -5,13 +5,27 @@ Changelog
 
 Detailed version changes.
 
+v0.0.3
+------
+
+Bug Fixes
+~~~~~~~~~
+
+- Fixed :meth:`rebootpy.run_multiple()` throwing an excepton if :class:`AdvancedAuth` is used.
+- Fixed ``multiple_clients.py`` example.
+
+
 v0.0.2
 ------
 
 Bug Fixes
 ~~~~~~~~~
 
-- Fixed KeyError: 'party.joininfodata.286331153_j'.
+- Fixed ``KeyError: 'party.joininfodata.286331153_j'``.
+
+Added
+~~~~~
+- ``SEASON_30`` added to :class:`SeasonStartTimestamp` & ``SEASON_29`` added to :class:`SeasonEndTimestamp`.
 
 
 v0.0.1
@@ -22,14 +36,14 @@ Changes
 
 - (**Breaking**) Removed :class:`EmailAndPasswordAuth`.
 - (**Breaking**) :class:`AdvancedAuth` no longer accepts `email` & `password` and instead by default uses device code if there are no device auths.
-- (**Breaking**) As featured & daily items are no longer different in the store, `featured_items` & `daily_items` have been combined to :attr:`Store.items` which uses the :class:`StoreItem` type.
-- Added `prompt_device_code` & `open_link_in_browser` parameters to  :class:`AdvancedAuth`.
+- (**Breaking**) As featured & daily items are no longer different in the store, ``featured_items`` & ``daily_items`` have been combined to :attr:`Store.items` which uses the :class:`StoreItem` type.
+- Added ``prompt_device_code`` & ``open_link_in_browser`` parameters to  :class:`AdvancedAuth`.
 
 
 Added
 ~~~~~
 
-- Added functionality for new `cosmeticStats` values in party member meta.
+- Added functionality for new ``cosmeticStats`` values in party member meta.
 
   - Added :meth:`ClientPartyMember.equip_crown()`.
   - Added :meth:`ClientPartyMember.set_victory_crowns()`.  
@@ -44,7 +58,7 @@ Added
 Removed
 ~~~~~~~
 
-- Removed `Client.fetch_user_by_email()` as it had been deprecated by epic.
+- Removed ``Client.fetch_user_by_email()`` as it had been deprecated by epic.
 
 
 Bug Fixes

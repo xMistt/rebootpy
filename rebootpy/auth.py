@@ -784,7 +784,7 @@ class AdvancedAuth(Auth):
 
     @property
     def identifier(self) -> str:
-        return self.exchange_code
+        return self.account_id or self.authorization_code or self.exchange_code
 
     def eula_check_needed(self) -> bool:
         return self._used_auth.eula_check_needed()
