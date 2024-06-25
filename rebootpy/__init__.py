@@ -45,6 +45,7 @@ from .stats import StatsV2, StatsCollection
 from .enums import *
 from .errors import *
 from .store import Store, StoreItem
+from. creative import CreativeIsland, CreativeIslandRating
 from .news import BattleRoyaleNewsPost
 from .playlist import Playlist
 from .avatar import Avatar
