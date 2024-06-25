@@ -8,16 +8,9 @@ API Reference
 Authentication
 --------------
 
-As of v1.4.0, you now have to specify which authentication method you want to 
-use for login. The one used up until this version was :class:`EmailAndPasswordAuth`. However,
-after that authentication method recently has started to require captcha to login in quite a lot
-of cases, this is no longer the preferred method in the long run.
-
-The preferred method in the long run is now :class:`DeviceAuth`. To set up and handle this type
-of auth, you should use :class:`AdvancedAuth`. `This example <https://github.com/Terbau/rebootpy/blob/master/examples/basic_client.py>`_ demonstrates
+The preferred method to login is :class:`DeviceAuth`. To set up and handle this type
+of auth, you should use :class:`AdvancedAuth`. `This example <https://github.com/xMistt/rebootpy/blob/main/examples/basic_bot.py>`_ demonstrates
 how you can set up this auth with file storage for the preferred login which is :class:`DeviceAuth`.
-
-.. autoclass:: EmailAndPasswordAuth
 
 .. autoclass:: ExchangeCodeAuth
 
