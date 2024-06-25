@@ -332,6 +332,10 @@ class AvatarService(Route):
     BASE = 'https://avatar-service-prod.identity.live.on.epicgames.com'
     AUTH = 'FORTNITE_ACCESS_TOKEN'
 
+class LinksPublicService(Route):
+    BASE = 'https://links-public-service-live.ol.epicgames.com'
+    AUTH = 'FORTNITE_ACCESS_TOKEN'
+
 
 def create_aiohttp_closed_event(session) -> asyncio.Event:
     """Work around aiohttp issue that doesn't properly close transports on exit.
@@ -1720,3 +1724,11 @@ class HTTPClient:
         r = PartyService('/party/api/v1/Fortnite/parties/{party_id}',
                          party_id=party_id)
         return await self.patch(r, json=payload, **kwargs)
+
+    ###################################
+    #            Creative             #
+    ###################################
+
+    async def lookup_island_data(self, code: str) -> dict:
+        r = LinksPublicService(f'/links/api/fn/mnemonic/{code}')
+        return await self.get(r)

@@ -5,6 +5,16 @@ Changelog
 
 Detailed version changes.
 
+
+v0.0.4
+------
+
+Added
+~~~~~
+
+- Added :meth:`Client.fetch_creative_island()`.
+
+
 v0.0.3
 ------
 
@@ -23,8 +33,10 @@ Bug Fixes
 
 - Fixed ``KeyError: 'party.joininfodata.286331153_j'``.
 
+
 Added
 ~~~~~
+
 - ``SEASON_30`` added to :class:`SeasonStartTimestamp` & ``SEASON_29`` added to :class:`SeasonEndTimestamp`.
 
 

@@ -1154,6 +1154,23 @@ Playlist
 .. autoclass:: Playlist()
     :members:
 
+CreativeIsland
+~~~~~
+
+.. attributetable:: CreativeIsland
+
+.. autoclass:: CreativeIsland()
+    :members:
+
+CreativeIslandRating
+~~~~~~~~~~~~~~~~~
+
+.. attributetable:: CreativeIslandRating
+
+.. autoclass:: CreativeIslandRating()
+    :members:
+    :inherited-members:
+
 
 Data Classes
 ------------

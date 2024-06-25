@@ -48,6 +48,7 @@ from .party import (DefaultPartyConfig, DefaultPartyMemberConfig, ClientParty,
                     Party)
 from .stats import StatsV2, StatsCollection, _StatsBase
 from .store import Store
+from .creative import CreativeIsland
 from .news import BattleRoyaleNewsPost
 from .playlist import Playlist
 from .presence import Presence
@@ -2456,6 +2457,29 @@ class BasicClient:
         region_data = states[len(states) - 1]['state']['region'].get(
             region.value, {})
         return region_data.get('eventFlagsForcedOn', [])
+
+    async def fetch_creative_island(self, code: str) -> List[str]:
+        """|coro|
+
+        Fetches a creative island or playlist by its code.
+
+        Parameters
+        ----------
+        code: :class:`str`
+            Either the island code or playlist ID.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+
+        Returns
+        -------
+        :class:`CreativeIsland`
+            Object representing the data of the creative island/playlist.
+        """
+        data = await self.http.lookup_island_data(code=code.lower())
+        return CreativeIsland(self, data)
 
     async def join_party(self, party_id: str) -> None:
         raise NotImplementedError(
