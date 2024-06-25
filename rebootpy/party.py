@@ -1175,8 +1175,8 @@ class PartyMeta(MetaBase):
         }
 
         self.schema = {
-            "Default:ActivityName_s": "",
-            "Default:ActivityType_s": "Undefined",
+            "Default:ActivityName_s": "Squad",
+            "Default:ActivityType_s": "BR",
             "Default:AllowJoinInProgress_b": "false",
             "Default:AthenaPrivateMatch_b": "false",
             "Default:AthenaSquadFill_b": "true",
@@ -1300,18 +1300,22 @@ class PartyMeta(MetaBase):
                         "mnemonic": "playlist_defaultsquad",
                         "version": -1
                     },
-                    "worldId": {
+                    "session": {
+                        "iD": "",
+                        "joinInfo": {
+                            "joinability": "CanNotBeJoinedOrWatched",
+                            "sessionKey": ""
+                        }
+                    },
+                    "world": {
                         "iD": "",
                         "ownerId": "INVALID",
-                        "name": ""
+                        "name": "",
+                        "bIsJoinable": False
                     },
-                    "sessionId": "",
-                    "modes": [],
-                    "joinInfo": {
-                        "islandJoinability": "CanNotBeJoinedOrWatched",
-                        "bIsWorldJoinable": False,
-                        "sessionKey": ""
-                    }
+                    "productModes": [],
+                    "privacy": "NoFill",
+                    "regionId": ""
                 }
             }),
             "Default:TileStates_j": json.dumps({
@@ -1328,6 +1332,7 @@ class PartyMeta(MetaBase):
             "urn:epic:cfg:presence-perm_s": "Anyone",
             "VoiceChat:implementation_s": "EOSVoiceChat",
             "Default:CreativeInGameReadyCheckStatus_s": "None"
+            # "Default:PreferredPrivacy_s": "NoFill"
         }
 
         if meta is not None:
@@ -1340,7 +1345,7 @@ class PartyMeta(MetaBase):
         base = self.get_prop('Default:SelectedIsland_j')
         info = base['SelectedIsland']
 
-        return (info['linkId']['mnemonic'], info['sessionId'])
+        return info['linkId']['mnemonic'], info['session']['iD']
 
     @property
     def region(self) -> str:
