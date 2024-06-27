@@ -2503,6 +2503,7 @@ class Client(BasicClient):
     status: :class:`str`
         The status you want the client to send with its presence to friends.
         Defaults to: ``In Lobby - {current_playlist}``.
+
         .. note::
 
             There are 3 variables you can use in status, you can also use

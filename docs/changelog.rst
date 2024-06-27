@@ -13,7 +13,7 @@ Added
 ~~~~~
 
 - Added :meth:`Client.fetch_creative_island()`.
-- Added ``{current_playlist}`` variable to client's status.
+- Added ``{current_playlist}`` variable to clients status.
 
 
 v0.0.3
