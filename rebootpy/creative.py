@@ -95,7 +95,10 @@ class CreativeIsland:
         self._created = from_iso(data['created'])
         self._published = from_iso(data['published'])
         self._description_tags = data['descriptionTags']
-        self._lobby_background_image = data['metadata'].get('lobby_background_image_urls', {'url': None})['url']
+        self._type = data['linkType']
+        self._lobby_background_image = data['metadata'].get(
+            'lobby_background_image_urls', {'url': None}
+        )['url']
         self._creator_sac_slug = data['metadata'].get('support_code')
         self._tagline = data['metadata'].get('tagline')
         self._ratings = data['metadata'].get('ratings', {"boards": {}})
@@ -179,3 +182,9 @@ class CreativeIsland:
         all age ratings for the island.
         """
         return [CreativeIslandRating(board=board, data=data) for board, data in self._ratings['boards'].items()]
+
+    @property
+    def is_creative_island(self) -> bool:
+        """:class:`bool`: Returns ``True`` if the island is a creative map,
+        ``False`` if it is a playlist."""
+        return self._type == 'valkyrie:application'

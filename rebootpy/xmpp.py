@@ -1169,6 +1169,11 @@ class XMPPClient:
         party._update(body)
         self.client.dispatch_event('party_update', party)
 
+        if self.client.auto_update_status and \
+                (_getattr(party, 'playlist_info')[0]
+                 != pre_values['playlist_info'][0]):
+            await self.client.auto_update_status_text()
+
         for key, pre_value in pre_values.items():
             value = _getattr(party, key)
             if pre_value != value:

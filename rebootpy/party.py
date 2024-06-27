@@ -3551,7 +3551,9 @@ class ClientParty(PartyBase, Patchable):
 
         _default_status = {
             'Status': status.format(party_size=self.member_count,
-                                    party_max_size=self.max_size),
+                                    party_max_size=self.max_size,
+                                    current_playlist=self.client.
+                                    current_status_playlist),
             'bIsPlaying': True,
             'bIsJoinable': False,
             'bHasVoiceSupport': False,

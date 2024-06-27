@@ -2502,7 +2502,15 @@ class Client(BasicClient):
         the same as the above connector.
     status: :class:`str`
         The status you want the client to send with its presence to friends.
-        Defaults to: ``Lobby - {party playercount} / {party max playercount}``
+        Defaults to: ``In Lobby - {current_playlist}``.
+        .. note::
+
+            There are 3 variables you can use in status, you can also use
+            these later on if you set status past initalisation.
+            * ``{party_size}`` - Amount of players in the party.
+            * ``{party_max_size}`` - Max size of the party.
+            * ``{current_playlist}`` - Uses the same formatting as the normal
+            client e.g. ``Zero Build - Battle Royale - Squad``.
     away: :class:`AwayStatus`
         The away status the client should use for its presence. Defaults to
         :attr:`AwayStatus.ONLINE`.
@@ -2582,7 +2590,7 @@ class Client(BasicClient):
                  **kwargs: Any) -> None:
         super().__init__(auth=auth, **kwargs)
 
-        self.status = kwargs.get('status', 'Lobby - {party_size} / {party_max_size}')  # noqa
+        self.status = kwargs.get('status', 'In Lobby - {current_playlist}')  # noqa
         self.away = kwargs.get('away', AwayStatus.ONLINE)
         self.platform = kwargs.get('platform', Platform.WINDOWS)
         self.net_cl = kwargs.get('net_cl', '')
@@ -2599,6 +2607,9 @@ class Client(BasicClient):
 
         self.xmpp = XMPPClient(self, ws_connector=kwargs.get('ws_connector'))
         self.party = None
+
+        self.auto_update_status = '{current_playlist}' in self.status
+        self.current_status_playlist = 'Battle Royale - Squad'
 
         self._listeners = {}
         self._events = {}
@@ -3583,3 +3594,24 @@ class Client(BasicClient):
             self.auth.run_refresh(),
             self.wait_for('muc_enter'),
         )
+
+    async def auto_update_status_text(self) -> None:
+        if not self.party:
+            return
+
+        playlist = await self.fetch_creative_island(
+            code=self.party.playlist_info[0]
+        )
+
+        if playlist.is_creative_island:
+            self.current_status_playlist = playlist.name
+        elif 'nobuildbr' in playlist.mnemonic:
+            self.current_status_playlist = 'Zero Build - Battle Royale - ' \
+                                           f'{playlist.name}'
+        elif 'playlist_default' in playlist.mnemonic:
+            self.current_status_playlist = f'Battle Royale - {playlist.name}'
+        elif 'blastberrynobuild' in playlist.mnemonic:
+            self.current_status_playlist = 'Reload - Zero Build - ' \
+                                           f'{playlist.name}'
+        elif 'blastberry' in playlist.mnemonic:
+            self.current_status_playlist = f'Reload - {playlist.name}'
