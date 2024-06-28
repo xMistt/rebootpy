@@ -37,7 +37,7 @@ from rebootpy.ext import commands
 
 bot = commands.Bot(
     command_prefix='!',
-    auth=fortnitepy.AuthorizationCodeAuth()
+    auth=rebootpy.AuthorizationCodeAuth()
 )
 
 @bot.event
