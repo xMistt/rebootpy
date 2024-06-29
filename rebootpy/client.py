@@ -2508,6 +2508,7 @@ class Client(BasicClient):
 
             There are 3 variables you can use in status, you can also use
             these later on if you set status past initalisation.
+
             * ``{party_size}`` - Amount of players in the party.
             * ``{party_max_size}`` - Max size of the party.
             * ``{current_playlist}`` - Uses the same formatting as the normal

@@ -9,7 +9,7 @@ Authentication
 Why are there so many different authentication methods?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-With the introduction of captcha on email and password authentication, there was
+With the deprecation of email and password authentication, there was
 a need of different ways to authenticate. Therefore, rebootpy tries to offer
 as many different authentication methods as possible. You can read more about the
 different possibilities over `here <https://github.com/MixV2/EpicResearch/tree/master/docs/auth/grant_types>`_.
@@ -19,10 +19,11 @@ Which authentication method should I use?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The answer to this question depends completely on what information you already
-have, but it usually comes down to :class:`AdvancedAuth` no matter what. It's
-simply the best right now as it combines other authentication methods and handles
-all of the annoying stuff like creating device auths etc. If you are unsure how to
-use :class:`AdvancedAuth`, you can take a look at the `examples folder <https://github.com/xMistt/rebootpy/tree/main/examples>`_
+have, for example, if you've just made a fresh Epic Games account, I'd use
+AdvancedAuth or my other library `DeviceAuthGenerator <https://github.com/xMistt/DeviceAuthGenerator>`_.
+first in order to generate device auths, and then after that I'd just use the
+DeviceAuth authentication method. If you are unsure how to use :class:`AdvancedAuth`,
+you can take a look at the `examples folder <https://github.com/xMistt/rebootpy/tree/main/examples>`_
 where it's used in all of the examples.
 
 
@@ -114,10 +115,10 @@ client.
 .. warning::
 
     This will override all status messages in the future. The standard
-    status message (``Battle Royale Lobby {party size} / {party max size}``)
-    will also be overridden. If you just want to send a status message once
-    and not override all upcoming status messages, :meth:`Client.send_presence`
-    is the function you are looking for.
+    status message (``In Lobby - {current_playlist}``) will also be overridden.
+    If you just want to send a status message once and not override all
+    upcoming status messages, :meth:`Client.send_presence` is the function
+    you are looking for.
 
 Alternatively you can change the presence with :meth:`Client.set_presence`.
 
