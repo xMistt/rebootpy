@@ -2371,7 +2371,7 @@ class BasicClient:
             await self.auth.accept_eula()
             data = await self.http.fortnite_get_store_catalog()
             return Store(self, data)
-        
+
 
     async def fetch_br_news(self) -> List[BattleRoyaleNewsPost]:
         """|coro|
@@ -2791,6 +2791,10 @@ class Client(BasicClient):
             await self.xmpp.close()
             await self.xmpp.run()
 
+            log.debug('Refreshing websocket session')
+            await self.websocket.close()
+            await self.websocket.run()
+
             await self._reconnect_to_party()
         except AttributeError:
             pass
@@ -2844,6 +2848,11 @@ class Client(BasicClient):
 
         try:
             await self.xmpp.close()
+        except Exception:
+            pass
+
+        try:
+            await self.websocket.close()
         except Exception:
             pass
 

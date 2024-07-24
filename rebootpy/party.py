@@ -2744,29 +2744,6 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
 
-    async def set_rank(self, rank: int = 0) -> None:
-        """|coro|
-
-        Set the current rank of the user.
-
-        Parameters
-        ----------
-        rank: :class:`int`
-            | Rank to change to.
-            | Defaults to 0 to set to unranked.
-
-        Raises
-        ------
-        HTTPException
-            An error occured while requesting.
-        """
-        prop = self.meta.set_cosmetic_loadout(
-            rank=rank
-        )
-
-        if not self.edit_lock.locked():
-            return await self.patch(updated=prop)
-
     async def clear_contrail(self) -> None:
         """|coro|
 
@@ -3542,7 +3519,7 @@ class ClientParty(PartyBase, Patchable):
                                     party_max_size=self.max_size,
                                     current_playlist=self.client.
                                     current_status_playlist),
-            'bIsPlaying': True,
+            'bIsPlaying': False,
             'bIsJoinable': False,
             'bHasVoiceSupport': False,
             'SessionId': '',

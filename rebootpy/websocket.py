@@ -28,11 +28,14 @@ import asyncio
 import aiohttp
 import json
 import functools
+import logging
 
 from .message import FriendMessage, PartyMessage
 
 from aiohttp import hdrs, helpers, client_reqrep, connector
 from aiohttp.http import StreamWriter, HttpVersion10, HttpVersion11
+
+log = logging.getLogger(__name__)
 
 
 class WebsocketRequest(aiohttp.client_reqrep.ClientRequest):
@@ -152,6 +155,9 @@ class WebsocketClient:
 
         data = json.loads(raw_json[:-1]) if len(raw_json) >= 3 else {}
 
+        log.debug(f'Received websocket message with type `{message_type}` '
+                  f'with the headers {headers}` and body \n{data}.')
+
         if message_type == 'CONNECTED' and not self.heartbeat_started:
             self.heartbeat_started = True
 
@@ -160,6 +166,11 @@ class WebsocketClient:
 
             await self.websocket.send_str(f"SUBSCRIBE\nid:0\n"
                                           f"destination:launcher\n\n\x00")
+        elif (message_type == 'MESSAGE' and 'type' in data
+              and data['type'] == 'core.connect.v1.connected'):
+            await self.send_presence(
+                connection_id=data['connectionId']
+            )
         elif (message_type == 'MESSAGE' and
               'type' in data and
               data['type'] == 'social.chat.v1.NEW_WHISPER'):
@@ -225,16 +236,15 @@ class WebsocketClient:
                             f"accept-version:1.0,1.1,1.2\n\n\x00"
             await websocket.send_str(connect_frame)
 
-            # raw_connection_id = await websocket.receive()
-            # await self.parse_message(raw_connection_id.data.decode())
-            #
-            # await self.send_presence(
-            #     connection_id=(raw_connection_id.data.decode())
-            #     .split('"connectionId":"')[1].split('"')[0]
-            # )
             async for msg in websocket:
                 await self.parse_message(msg.data.decode())
 
     async def run(self) -> None:
         await self.set_session()
         self.client.loop.create_task(self.connect_to_websocket())
+
+    async def close(self) -> None:
+        await self.websocket.close()
+        await self.wss_session.close()
+
+        self.heartbeat_started = False

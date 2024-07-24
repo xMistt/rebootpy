@@ -6,6 +6,27 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
+v0.9.0
+------
+
+Added
+~~~~~
+
+- Added websocket logger.
+
+Bug Fixes
+~~~~~
+
+- Fixed some clients not receiving messages.
+- Removed the controller icon next to the bots banner, hiding level.
+- Websocket connection is now closed gracefully on exit.
+
+Removed
+~~~~~~~
+
+- Removed :meth:`ClientPartyMember.set_rank()` as it no longer changes visual rank in the lobby.
+
+
 v0.0.6
 ------
 
