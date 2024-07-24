@@ -1699,28 +1699,6 @@ class XMPPClient:
             except KeyError:
                 pass
 
-    async def send_party_message(self, content: str) -> None:
-        if self.muc_room is None:
-            raise PartyError('Can\'t send message. Reason: No party found')
-
-        msg = aioxmpp.Message(
-            type_=aioxmpp.MessageType.GROUPCHAT
-        )
-        msg.body[None] = content
-        self.muc_room.send_message(msg)
-
-    async def send_friend_message(self, jid: aioxmpp.JID,
-                                  content: str) -> None:
-        if self.stream is None:
-            raise XMPPError('xmpp is not connected')
-
-        msg = aioxmpp.Message(
-            to=jid,
-            type_=aioxmpp.MessageType.CHAT,
-        )
-        msg.body[None] = content
-        await self.stream.send(msg)
-
     def set_presence(self, *,
                      status: Optional[Union[str, dict]] = None,
                      show: Optional[str]) -> None:
