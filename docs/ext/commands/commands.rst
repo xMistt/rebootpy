@@ -1,4 +1,4 @@
-.. currentmodule:: fortnitepy
+.. currentmodule:: rebootpy
 
 .. _ext_commands_commands:
 
@@ -33,7 +33,7 @@ as seen in the example above. The second is using the :func:`~ext.commands.comma
 
 Essentially, these two are equivalent: ::
 
-    from fortnitepy.ext import commands
+    from rebootpy.ext import commands
 
     bot = commands.Bot(command_prefix='$')
 
@@ -323,7 +323,7 @@ The converter provided can either be constructed or not. Essentially these two a
 If a converter fails to convert an argument to its designated target type, the :exc:`.BadArgument` exception must be
 raised.
 
-Fortnitepy Converters
+rebootpy Converters
 +++++++++++++++++++++
 
 Working with :ref:`fortnite_api_models` is a fairly common thing when defining commands, as a result the library makes
@@ -334,7 +334,7 @@ For example, to receive a :class:`PartyMember` you can just pass it as a convert
 .. code-block:: python3
 
     @bot.command()
-    async def joined(ctx, *, member: fortnitepy.PartyMember):
+    async def joined(ctx, *, member: rebootpy.PartyMember):
         await ctx.send('{0} joined on {0.joined_at}'.format(member))
 
 When this command is executed, it attempts to convert the string given into a :class:`PartyMember` and then passes it as a
@@ -353,7 +353,7 @@ Under the hood, these are implemented by the :ref:`ext_commands_adv_converters` 
 converter is given below:
 
 +--------------------------+-------------------------------------------------+
-|     Fortnitepy Class     |                    Converter                    |
+|     rebootpy Class     |                    Converter                    |
 +--------------------------+-------------------------------------------------+
 | :class:`User`            | :class:`~ext.commands.UserConverter`            |
 +--------------------------+-------------------------------------------------+
@@ -397,13 +397,13 @@ a singular type. For example, given the following:
     import typing
 
     @bot.command()
-    async def union(ctx, what: typing.Union[fortnitepy.Friend, fortnitepy.User]):
+    async def union(ctx, what: typing.Union[rebootpy.Friend, rebootpy.User]):
         await ctx.send(what.display_name)
 
 
-The ``what`` parameter would either take a :class:`fortnitepy.Friend` converter or a :class:`fortnitepy.User` converter.
+The ``what`` parameter would either take a :class:`rebootpy.Friend` converter or a :class:`rebootpy.User` converter.
 The way this works is through a left-to-right order. It first attempts to convert the input to a
-:class:`fortnitepy.Friend`, and if it fails it tries to convert it to a :class:`fortnitepy.User`. If all converters fail,
+:class:`rebootpy.Friend`, and if it fails it tries to convert it to a :class:`rebootpy.User`. If all converters fail,
 then a special error is raised, :exc:`~ext.commands.BadUnionArgument`.
 
 Note that any valid converter discussed above can be passed in to the argument list of a :data:`typing.Union`.
@@ -453,7 +453,7 @@ Consider the following example:
 .. code-block:: python3
 
     @bot.command()
-    async def slap(ctx, members: commands.Greedy[fortnitepy.PartyMember], *, reason='no reason'):
+    async def slap(ctx, members: commands.Greedy[rebootpy.PartyMember], *, reason='no reason'):
         slapped = ", ".join(x.name for x in members)
         await ctx.send('{} just got slapped for {}'.format(slapped, reason))
 
@@ -484,7 +484,7 @@ When our commands fail to parse we will, by default, receive a noisy error in ``
 that an error has happened and has been silently ignored.
 
 In order to handle our errors, we must use something called an error handler. There is a global error handler, called
-:func:`event_command_error` which works like any other event in the :ref:`fortnitepy-api-events`. This global error handler is
+:func:`event_command_error` which works like any other event in the :ref:`rebootpy-api-events`. This global error handler is
 called for every error reached.
 
 Most of the time however, we want to handle an error local to the command itself. Luckily, commands come with local error
@@ -493,7 +493,7 @@ handlers that allow us to do just that. First we decorate an error handler funct
 .. code-block:: python3
 
     @bot.command()
-    async def info(ctx, *, member: fortnitepy.PartyMember):
+    async def info(ctx, *, member: rebootpy.PartyMember):
         """Tells you some info about the member."""
         fmt = '{0} joined at {0.joined_at}'
         await ctx.send(fmt.format(member))

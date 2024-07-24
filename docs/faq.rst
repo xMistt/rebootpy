@@ -20,7 +20,7 @@ Which authentication method should I use?
 
 The answer to this question depends completely on what information you already
 have, for example, if you've just made a fresh Epic Games account, I'd use
-AdvancedAuth or my other library `DeviceAuthGenerator <https://github.com/xMistt/DeviceAuthGenerator>`_.
+AdvancedAuth or my other library `DeviceAuthGenerator <https://github.com/xMistt/DeviceAuthGenerator>`_
 first in order to generate device auths, and then after that I'd just use the
 DeviceAuth authentication method. If you are unsure how to use :class:`AdvancedAuth`,
 you can take a look at the `examples folder <https://github.com/xMistt/rebootpy/tree/main/examples>`_

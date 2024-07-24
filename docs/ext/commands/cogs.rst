@@ -1,4 +1,4 @@
-.. currentmodule:: fortnitepy
+.. currentmodule:: rebootpy
 
 .. _ext_commands_cogs:
 
@@ -20,7 +20,7 @@ It should be noted that cogs are typically used alongside with :ref:`ext_command
 Quick Example
 ---------------
 
-This example cog defines a ``Greetings`` category for your commands, with a single :ref:`command <ext_commands_commands>` named ``hello`` as well as a listener to listen to an :ref:`Event <fortnitepy-api-events>`.
+This example cog defines a ``Greetings`` category for your commands, with a single :ref:`command <ext_commands_commands>` named ``hello`` as well as a listener to listen to an :ref:`Event <rebootpy-api-events>`.
 
 .. code-block:: python3
 
@@ -35,7 +35,7 @@ This example cog defines a ``Greetings`` category for your commands, with a sing
             await party.send('Welcome {0.display_name}.'.format(member))
 
         @commands.command()
-        async def hello(self, ctx, *, member: fortnitepy.Member = None):
+        async def hello(self, ctx, *, member: rebootpy.Member = None):
             """Says hello"""
             member = member or ctx.author
             if self._last_member is None or self._last_member.id != member.id:

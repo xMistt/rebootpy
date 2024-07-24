@@ -37,6 +37,7 @@ from .errors import (PartyError, HTTPException, NotFound, Forbidden,
                      MaxFriendshipsExceeded, InviteeMaxFriendshipsExceeded,
                      InviteeMaxFriendshipRequestsExceeded, PartyIsFull)
 from .xmpp import XMPPClient
+from .websocket import WebsocketClient
 from .http import HTTPClient
 from .user import (ClientUser, User, BlockedUser, SacSearchEntryUser,
                    UserSearchEntry)
@@ -489,6 +490,9 @@ class BasicClient:
         self.cache_users = kwargs.get('cache_users', True)
         self.build = kwargs.get('build', '++Fortnite+Release-14.10-CL-14288110')  # noqa
         self.os = kwargs.get('os', 'Windows/10.0.17134.1.768.64bit')
+        self.deployment_id = kwargs.get(
+            'deployment_id', '62a9473a2dca46b29ccf17577fcf42d7'
+        )
 
         self.kill_other_sessions = True
         self.accept_eula = True
@@ -2608,6 +2612,7 @@ class Client(BasicClient):
         self.leave_party_at_shutdown = kwargs.get('leave_party_at_shutdown', True)  # noqa
 
         self.xmpp = XMPPClient(self, ws_connector=kwargs.get('ws_connector'))
+        self.websocket = WebsocketClient(self)
         self.party = None
 
         self.auto_update_status = '{current_playlist}' in self.status
@@ -2809,6 +2814,9 @@ class Client(BasicClient):
 
         await self.xmpp.run()
         log.debug('Connected to XMPP')
+
+        await self.websocket.run()
+        log.debug('Connected to Websocket')
 
         await self.initialize_party(priority=priority)
         log.debug('Party created')

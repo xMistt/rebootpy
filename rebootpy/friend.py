@@ -406,7 +406,7 @@ class Friend(FriendBase):
         content: :class:`str`
             The content of the message.
         """
-        await self.client.xmpp.send_friend_message(self.jid, content)
+        await self.client.http.friend_send_message(self.id, content)
 
     async def join_party(self) -> 'ClientParty':
         """|coro|

@@ -64,6 +64,10 @@ class Auth:
         return 'bearer {0}'.format(self.ios_access_token)
 
     @property
+    def chat_authorization(self) -> str:
+        return 'bearer {0}'.format(self.chat_access_token)
+
+    @property
     def authorization(self) -> str:
         return 'bearer {0}'.format(self.access_token)
 
@@ -134,6 +138,16 @@ class Auth:
         self.ios_app = data['app']
         self.ios_in_app_id = data['in_app_id']
 
+    def _update_chat_data(self, data: dict) -> None:
+        self.chat_access_token = data['access_token']
+        self.chat_expires_in = data['expires_in']
+        self.chat_expires_at = from_iso(data["expires_at"])
+        self.chat_token_type = data['token_type']
+        self.chat_refresh_token = data['refresh_token']
+        self.chat_client_id = data['client_id']
+        self.chat_application_id = data['application_id']
+        self.chat_scope = data['scope']
+
     def _update_data(self, data: dict) -> None:
         self.access_token = data['access_token']
         self.expires_in = data['expires_in']
@@ -158,6 +172,21 @@ class Auth:
 
         return await self.client.http.account_oauth_grant(
             auth='basic {0}'.format(auth_token),
+            data=payload,
+            priority=priority
+        )
+
+    async def grant_chat_refresh_token(self,
+                                       refresh_token: str,
+                                       priority: int = 0) -> dict:
+        payload = {
+            "grant_type": "refresh_token",
+            "refresh_token": refresh_token,
+            "deployment_id": self.client.deployment_id
+        }
+
+        return await self.client.http.account_chat_oauth_grant(
+            auth='basic {0}'.format(self.fortnite_token),
             data=payload,
             priority=priority
         )
@@ -266,6 +295,12 @@ class Auth:
                     priority=reauth_lock.priority
                 )
                 self._update_data(data)
+
+                data = await self.grant_chat_refresh_token(
+                    self.chat_refresh_token,
+                    priority=reauth_lock.priority
+                )
+                self._update_chat_data(data)
             except (HTTPException, AttributeError) as exc:
                 m = 'errors.com.epicgames.account.auth_token.' \
                     'invalid_refresh_token'
@@ -441,6 +476,11 @@ class ExchangeCodeAuth(Auth):
         )
         self._update_data(data)
 
+        data = await self.grant_chat_refresh_token(
+            self.refresh_token,
+        )
+        self._update_chat_data(data)
+
 
 class AuthorizationCodeAuth(ExchangeCodeAuth):
     """Authenticates by exchange code.
@@ -605,6 +645,11 @@ class DeviceAuth(Auth):
         )
         self._update_data(data)
 
+        data = await self.grant_chat_refresh_token(
+            self.refresh_token,
+        )
+        self._update_chat_data(data)
+
     async def reauthenticate(self, priority: int = 0) -> None:
         """Used for reauthenticating if refreshing fails."""
         log.debug('Starting reauthentication.')
@@ -654,6 +699,11 @@ class RefreshTokenAuth(Auth):
             priority=priority
         )
         self._update_data(data)
+
+        data = await self.grant_chat_refresh_token(
+            self.refresh_token,
+        )
+        self._update_chat_data(data)
 
 
 class AdvancedAuth(Auth):
@@ -956,6 +1006,11 @@ class AdvancedAuth(Auth):
         )
         self._update_data(data)
 
+        data = await self.grant_chat_refresh_token(
+            self.refresh_token,
+        )
+        self._update_chat_data(data)
+
     async def reauthenticate(self, priority: int = 0) -> None:
         log.debug('Starting reauthentication.')
 
@@ -976,6 +1031,11 @@ class AdvancedAuth(Auth):
             priority=priority
         )
         self._update_data(data)
+
+        data = await self.grant_chat_refresh_token(
+            self.refresh_token,
+        )
+        self._update_chat_data(data)
         log.debug('Successfully reauthenticated.')
 
 
@@ -1107,6 +1167,11 @@ class DeviceCodeAuth(Auth):
             priority=priority
         )
         self._update_data(data)
+
+        data = await self.grant_chat_refresh_token(
+            self.refresh_token,
+        )
+        self._update_chat_data(data)
 
     async def reauthenticate(self, priority: int = 0) -> None:
         """Used for reauthenticating if refreshing fails."""

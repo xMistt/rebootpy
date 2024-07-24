@@ -6,6 +6,19 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
+v0.0.5
+------
+
+Bug Fixes
+~~~~~
+
+- Fixed :meth:`Friend.send()`.
+- Fixed :meth:`ClientParty.send()`.
+- Fixed :meth:`FriendMessage.reply()`.
+- Fixed :meth:`PartyMessage.reply()`.
+- Fixed :func:`event_party_message()`.
+- Fixed :func:`event_friend_message()`.
+
 
 v0.0.4
 ------

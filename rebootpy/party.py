@@ -3701,7 +3701,7 @@ class ClientParty(PartyBase, Patchable):
         content: :class:`str`
             The content of the message.
         """
-        await self.client.xmpp.send_party_message(content)
+        await self.client.http.party_send_message(content)
 
     async def do_patch(self, updated: Optional[dict] = None,
                        deleted: Optional[list] = None,

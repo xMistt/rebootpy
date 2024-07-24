@@ -332,8 +332,14 @@ class AvatarService(Route):
     BASE = 'https://avatar-service-prod.identity.live.on.epicgames.com'
     AUTH = 'FORTNITE_ACCESS_TOKEN'
 
+
 class LinksPublicService(Route):
     BASE = 'https://links-public-service-live.ol.epicgames.com'
+    AUTH = 'FORTNITE_ACCESS_TOKEN'
+
+
+class ChatService(Route):
+    BASE = 'https://api.epicgames.dev'
     AUTH = 'FORTNITE_ACCESS_TOKEN'
 
 
@@ -492,6 +498,7 @@ class HTTPClient:
                           graphql: Optional[Union[Route, List[Route]]] = None,
                           **kwargs: Any) -> Any:
         url = route.url if not isinstance(route, str) else route
+        print(url)
 
         headers = {**kwargs.get('headers', {}), **self.headers}
         headers['User-Agent'] = self.user_agent
@@ -499,6 +506,8 @@ class HTTPClient:
         auth = auth or route.AUTH
         if auth is not None:
             headers['Authorization'] = self.get_auth(auth)
+
+        print(json.dumps(headers, sort_keys=False, indent=4))
 
         if graphql is not None:
             is_multiple = isinstance(graphql, (list, tuple))
@@ -1105,13 +1114,6 @@ class HTTPClient:
             user_id=user_id
         )
         return await self.get(r, auth=auth, **kwargs)
-
-    async def account_get_by_email(self, email: str) -> dict:
-        r = AccountPublicService(
-            '/account/api/public/account/email/{email}',
-            email=email
-        )
-        return await self.get(r, auth='IOS_ACCESS_TOKEN')
 
     async def account_get_external_auths_by_id(self, user_id: str,
                                                **kwargs: Any) -> list:
@@ -1725,6 +1727,7 @@ class HTTPClient:
                          party_id=party_id)
         return await self.patch(r, json=payload, **kwargs)
 
+
     ###################################
     #            Creative             #
     ###################################
@@ -1732,3 +1735,72 @@ class HTTPClient:
     async def lookup_island_data(self, code: str) -> dict:
         r = LinksPublicService(f'/links/api/fn/mnemonic/{code}')
         return await self.get(r)
+
+    ###################################
+    #          Chat Service           #
+    ###################################
+
+    async def account_chat_oauth_grant(self, **kwargs: Any) -> Any:
+        r = ChatService('/epic/oauth/v2/token')
+        return await self.post(r, **kwargs)
+
+    async def chat_send_presence(self,
+                                 connection_id: str,
+                                 **kwargs: Any
+                                 ) -> Any:
+        payload = {
+            "status": "online",
+            "activity": {
+                "value": ""
+            },
+            "props": {
+                "EOS_Platform": "WIN",
+                "EOS_IntegratedPlatform": "EGS",
+                "EOS_OnlinePlatformType": "100",
+                "EOS_ProductVersion": "++Fortnite+Release-30.30-CL-34891016",
+                "EOS_ProductName": "Fortnite",
+                "EOS_Session": "{\"version\":3}",
+                "EOS_Lobby": "{\"version\":3}"
+            },
+            "conn": {
+                "props": {}
+            }
+        }
+
+        r = ChatService(f'/epic/presence/v1/{self.client.deployment_id}/'
+                        f'{self.client.user.id}/presence/{connection_id}')
+        return await self.patch(r, json=payload, **kwargs)
+
+    async def friend_send_message(self, user_id: str, content: str) -> Any:
+        payload = {
+            "message": {
+                "body": content
+            }
+        }
+
+        r = ChatService(
+            '/epic/chat/v1/public/{deployment_id}'
+            '/whisper/{client_id}/{user_id}',
+            deployment_id=self.client.deployment_id,
+            client_id=self.client.user.id,
+            user_id=user_id
+        )
+        return await self.post(r, json=payload)
+
+    async def party_send_message(self, content: str) -> Any:
+        payload = {
+            "allowedRecipients": [member.id for member in
+                                  self.client.party.members],
+            "message": {
+                "body": content
+            }
+        }
+
+        r = ChatService(
+            '/epic/chat/v1/public/{self.client.deployment_id}'
+            '/conversations/p-{party_id}/messages?fromAccountId={client_id}',
+            deployment_id=self.client.deployment_id,
+            party_id=self.client.party.id,
+            client_id=self.client.user.id,
+        )
+        return await self.post(r, json=payload)
