@@ -12,8 +12,7 @@ v0.0.6
 Bug Fixes
 ~~~~~
 
-- Fixed some clients not receiving the same websocket responses as others,
-causing the websocket connection to be lost.
+- Fixed some clients not receiving the same websocket responses as others, causing the websocket connection to be lost.
 
 
 v0.0.5
