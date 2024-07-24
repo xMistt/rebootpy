@@ -1565,18 +1565,6 @@ class PartyMemberBase(User):
         if disconnected_at is not None:
             return from_iso(disconnected_at)
 
-    def is_just_chatting(self) -> bool:
-        """:class:`bool`: Whether or not the member is Just Chattin' through
-        the mobile app.
-
-        .. warning::
-
-            All attributes below will most likely have default values if this
-            is True.
-        """
-        val = self.connection['meta'].get('urn:epic:conn:type_s') == 'embedded'
-        return val
-
     @property
     def ready(self) -> ReadyState:
         """:class:`ReadyState`: The members ready state."""
