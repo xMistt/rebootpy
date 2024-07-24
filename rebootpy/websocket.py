@@ -121,6 +121,8 @@ class WebsocketClient:
         self.wss_session = None
         self.websocket = None
 
+        self.heartbeat_started = False
+
     async def set_session(self) -> None:
         self.wss_session = aiohttp.ClientSession(
             skip_auto_headers=["Accept", "Accept-Encoding", "User-Agent"],
@@ -133,10 +135,10 @@ class WebsocketClient:
             auth=f'bearer {self.client.auth.chat_access_token}'
         )
 
-    async def send_heartbeat(self) -> None:
-        while True:
+    async def send_heartbeat(self, delay: int) -> None:
+        while not self.websocket.closed:
             await self.websocket.send_str("\n")
-            await asyncio.sleep(45)
+            await asyncio.sleep(delay)
 
     async def parse_message(self, raw: str) -> None:
         raw_headers, raw_json = raw.split('\n\n', 1)
@@ -148,9 +150,19 @@ class WebsocketClient:
             key, value = line.split(':', 1)
             headers[key.strip()] = value.strip()
 
-        data = json.loads(raw_json[:-1])
+        data = json.loads(raw_json[:-1]) if len(raw_json) >= 3 else {}
 
-        if data['type'] == 'social.chat.v1.NEW_WHISPER':
+        if message_type == 'CONNECTED' and not self.heartbeat_started:
+            self.heartbeat_started = True
+
+            delay = int(headers['heart-beat'].split(',')[1]) // 1000
+            self.client.loop.create_task(self.send_heartbeat(delay))
+
+            await self.websocket.send_str(f"SUBSCRIBE\nid:0\n"
+                                          f"destination:launcher\n\n\x00")
+        elif (message_type == 'MESSAGE' and
+              'type' in data and
+              data['type'] == 'social.chat.v1.NEW_WHISPER'):
             author = self.client.get_friend(
                 data['payload']['message']['senderId']
             )
@@ -174,7 +186,9 @@ class WebsocketClient:
                 self.client.dispatch_event('friend_message', m)
             except ValueError:
                 pass
-        elif data['type'] == 'social.chat.v1.NEW_MESSAGE':
+        elif (message_type == 'MESSAGE' and
+              'type' in data and
+              data['type'] == 'social.chat.v1.NEW_MESSAGE'):
             user_id = data['payload']['message']['senderId']
             party = self.client.party
 
@@ -211,17 +225,13 @@ class WebsocketClient:
                             f"accept-version:1.0,1.1,1.2\n\n\x00"
             await websocket.send_str(connect_frame)
 
-            heartbeat_message = await websocket.receive()
-            self.client.loop.create_task(self.send_heartbeat())
-
-            await websocket.send_str(f"SUBSCRIBE\nid:0\n"
-                                     f"destination:launcher\n\n\x00")
-            raw_connection_id = await websocket.receive()
-
-            await self.send_presence(
-                connection_id=(raw_connection_id.data.decode())
-                .split('"connectionId":"')[1].split('"')[0]
-            )
+            # raw_connection_id = await websocket.receive()
+            # await self.parse_message(raw_connection_id.data.decode())
+            #
+            # await self.send_presence(
+            #     connection_id=(raw_connection_id.data.decode())
+            #     .split('"connectionId":"')[1].split('"')[0]
+            # )
             async for msg in websocket:
                 await self.parse_message(msg.data.decode())
 
