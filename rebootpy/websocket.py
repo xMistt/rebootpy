@@ -28,7 +28,6 @@ import asyncio
 import aiohttp
 import json
 import functools
-import log
 
 from .message import FriendMessage, PartyMessage
 
@@ -129,7 +128,6 @@ class WebsocketClient:
         )
 
     async def send_presence(self, connection_id: str) -> None:
-        print(self.client.auth.chat_access_token)
         await self.client.http.chat_send_presence(
             connection_id=connection_id,
             auth=f'bearer {self.client.auth.chat_access_token}'
@@ -152,7 +150,7 @@ class WebsocketClient:
 
         data = json.loads(raw_json[:-1])
 
-        if data['type'] == 'social.chat.v1_NEW_WHISPER':
+        if data['type'] == 'social.chat.v1.NEW_WHISPER':
             author = self.client.get_friend(
                 data['payload']['message']['senderId']
             )
@@ -165,8 +163,6 @@ class WebsocketClient:
                         timeout=2
                     )
                 except asyncio.TimeoutError:
-                    log.debug(
-                        'Friend message discarded because friend not found.')
                     return
 
             try:
@@ -178,7 +174,7 @@ class WebsocketClient:
                 self.client.dispatch_event('friend_message', m)
             except ValueError:
                 pass
-        elif data['type'] == 'social.chat.v1_NEW_MESSAGE':
+        elif data['type'] == 'social.chat.v1.NEW_MESSAGE':
             user_id = data['payload']['message']['senderId']
             party = self.client.party
 
@@ -192,7 +188,6 @@ class WebsocketClient:
                 author=party._members[data['payload']['message']['senderId']],
                 content=data['payload']['message']['body']
             ))
-
 
     async def connect_to_websocket(self) -> None:
         headers = {

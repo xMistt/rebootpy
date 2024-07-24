@@ -498,7 +498,6 @@ class HTTPClient:
                           graphql: Optional[Union[Route, List[Route]]] = None,
                           **kwargs: Any) -> Any:
         url = route.url if not isinstance(route, str) else route
-        print(url)
 
         headers = {**kwargs.get('headers', {}), **self.headers}
         headers['User-Agent'] = self.user_agent
@@ -506,8 +505,6 @@ class HTTPClient:
         auth = auth or route.AUTH
         if auth is not None:
             headers['Authorization'] = self.get_auth(auth)
-
-        print(json.dumps(headers, sort_keys=False, indent=4))
 
         if graphql is not None:
             is_multiple = isinstance(graphql, (list, tuple))
@@ -1797,7 +1794,7 @@ class HTTPClient:
         }
 
         r = ChatService(
-            '/epic/chat/v1/public/{self.client.deployment_id}'
+            '/epic/chat/v1/public/{deployment_id}'
             '/conversations/p-{party_id}/messages?fromAccountId={client_id}',
             deployment_id=self.client.deployment_id,
             party_id=self.client.party.id,
