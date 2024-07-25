@@ -149,7 +149,6 @@ class Auth:
         self.chat_scope = data['scope']
 
     def _update_data(self, data: dict) -> None:
-        print(json.dumps(data, sort_keys=False, indent=4))
         self.access_token = data['access_token']
         self.expires_in = data['expires_in']
         self.expires_at = from_iso(data["expires_at"])
