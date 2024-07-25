@@ -3664,7 +3664,7 @@ class ClientParty(PartyBase, Patchable):
         Parameters
         ----------
         content: :class:`str`
-            The content of the message.
+            The content of the message, up to 256 characters.
         """
         await self.client.http.party_send_message(content)
 

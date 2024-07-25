@@ -90,7 +90,7 @@ class FriendMessage(MessageBase):
         Parameters
         ----------
         content: :class:`str`
-            The content of the message
+            The content of the message, up to 256 characters.
         """
         return await self.author.send(content)
 
@@ -123,6 +123,6 @@ class PartyMessage(MessageBase):
         Parameters
         ----------
         content: :class:`str`
-            The content of the message
+            The content of the message, up to 256 characters.
         """
         return await self.party.send(content)

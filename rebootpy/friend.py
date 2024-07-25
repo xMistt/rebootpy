@@ -404,7 +404,7 @@ class Friend(FriendBase):
         Parameters
         ----------
         content: :class:`str`
-            The content of the message.
+            The content of the message, up to 256 characters.
         """
         await self.client.http.friend_send_message(self.id, content)
 
