@@ -2862,8 +2862,12 @@ class Client(BasicClient):
             priority=priority,
         )
 
-    def recover_events(self) -> asyncio.Task:
-        return asyncio.create_task(self._recover_events())
+    def recover_events(self, *,
+                       refresh_caches: bool = False,
+                       wait_for_close: bool = True) -> asyncio.Task:
+        return asyncio.create_task(self._recover_events(
+            refresh_caches=refresh_caches, wait_for_close=wait_for_close)
+        )
 
     async def _recover_events(self, *,
                               refresh_caches: bool = False,

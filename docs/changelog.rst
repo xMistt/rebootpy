@@ -6,6 +6,16 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
+v0.9.1
+------
+
+Bug Fixes
+~~~~~
+
+- Fixed refresh failing due to response missing certain keys.
+- Fixed caches not being refreshed while recovering events.
+
+
 v0.9.0
 ------
 
