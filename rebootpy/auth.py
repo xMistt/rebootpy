@@ -38,7 +38,7 @@ from typing import TYPE_CHECKING, Optional, Any, List
 
 from .errors import AuthException, HTTPException
 from .typedefs import StrOrMaybeCoro
-from .utils import from_iso
+from .utils import from_iso, to_iso
 
 if TYPE_CHECKING:
     from .client import BasicClient
@@ -149,13 +149,17 @@ class Auth:
         self.chat_scope = data['scope']
 
     def _update_data(self, data: dict) -> None:
+        print(json.dumps(data, sort_keys=False, indent=4))
         self.access_token = data['access_token']
         self.expires_in = data['expires_in']
         self.expires_at = from_iso(data["expires_at"])
         self.token_type = data['token_type']
         self.refresh_token = data['refresh_token']
-        self.refresh_expires = data['refresh_expires']
-        self.refresh_expires_at = data['refresh_expires_at']
+        self.refresh_expires = data.get('refresh_expires', 28800)
+        self.refresh_expires_at = data.get(
+            'refresh_expires_at',
+            datetime.datetime.utcnow() + datetime.timedelta(hours=8)
+        )
         self.account_id = data['account_id']
         self.client_id = data['client_id']
         self.internal_client = data['internal_client']
