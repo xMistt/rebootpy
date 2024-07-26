@@ -91,6 +91,12 @@ class FriendMessage(MessageBase):
         ----------
         content: :class:`str`
             The content of the message, up to 256 characters.
+
+
+        Raises
+        ------
+        ChatError
+            Content is longer than 256 characters.
         """
         return await self.author.send(content)
 
@@ -124,5 +130,11 @@ class PartyMessage(MessageBase):
         ----------
         content: :class:`str`
             The content of the message, up to 256 characters.
+
+        Raises
+        ------
+        ChatError
+            Content is longer than 256 characters or the client is in a party
+            on its own.
         """
         return await self.party.send(content)

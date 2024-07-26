@@ -13,6 +13,7 @@ Added
 ~~~~~
 
 - Added :func:`event_device_code_generated()`
+- Added :exc:`ChatError`
 
 Bug Fixes
 ~~~~~

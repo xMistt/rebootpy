@@ -146,6 +146,13 @@ class InvalidOffer(FortniteException):
     pass
 
 
+class ChatError(FortniteException):
+    """This exception is raised whenever there is an issue with
+    the chat service i.e. message too long, client attempts to
+    send a message into an empty party, etc."""
+    pass
+
+
 class ValidationFailure(FortniteException):
     """Represents a validation failure returned.
 

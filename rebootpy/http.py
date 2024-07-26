@@ -34,7 +34,7 @@ from typing import TYPE_CHECKING, Iterable, List, Optional, Any, Union, Tuple
 from urllib.parse import quote as urllibquote
 
 from .utils import MaybeLock
-from .errors import HTTPException
+from .errors import HTTPException, ChatError
 
 if TYPE_CHECKING:
     from .client import Client
@@ -1769,6 +1769,9 @@ class HTTPClient:
         return await self.patch(r, json=payload, **kwargs)
 
     async def friend_send_message(self, user_id: str, content: str) -> Any:
+        if len(content) >= 256:
+            raise ChatError("Message body exceeds max length of 256")
+
         payload = {
             "message": {
                 "body": content
@@ -1785,6 +1788,12 @@ class HTTPClient:
         return await self.post(r, json=payload)
 
     async def party_send_message(self, content: str) -> Any:
+        if len(content) >= 256:
+            raise ChatError("Message body exceeds max length of 256")
+
+        if self.client.party.member_count == 1:
+            raise ChatError("Client is in a party alone.")
+
         payload = {
             "allowedRecipients": [member.id for member in
                                   self.client.party.members],

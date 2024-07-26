@@ -3666,6 +3666,12 @@ class ClientParty(PartyBase, Patchable):
         ----------
         content: :class:`str`
             The content of the message, up to 256 characters.
+
+        Raises
+        ------
+        ChatError
+            Content is longer than 256 characters or the client is in a party
+            on its own.
         """
         await self.client.http.party_send_message(content)
 

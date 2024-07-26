@@ -405,6 +405,11 @@ class Friend(FriendBase):
         ----------
         content: :class:`str`
             The content of the message, up to 256 characters.
+
+        Raises
+        ------
+        ChatError
+            Content is longer than 256 characters.
         """
         await self.client.http.friend_send_message(self.id, content)
 

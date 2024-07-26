@@ -1264,3 +1264,5 @@ Exceptions
 .. autoexception:: FriendOffline
 
 .. autoexception:: InvalidOffer
+
+.. autoexception:: ChatError
