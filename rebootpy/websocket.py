@@ -220,11 +220,6 @@ class WebsocketClient:
             'Epic-Connect-Protocol': 'stomp',
             "Sec-WebSocket-Protocol": "v10.stomp,v11.stomp,v12.stomp",
             'Epic-Connect-Device-Id': " ",
-            "Pragma": "no-cache",
-            "Connection": "Upgrade",
-            "Cache-Control": "no-cache",
-            "Host": "connect.epicgames.dev",
-            "Origin": "http://connect.epicgames.dev",
         }
         async with self.wss_session.ws_connect(
             "wss://connect.epicgames.dev/stomp",

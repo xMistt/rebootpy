@@ -17,7 +17,7 @@ Added
 Bug Fixes
 ~~~~~
 
-- Fixed an exception being thrown of a party member had an invalid outfit ID.
+- Fixed an exception being thrown if a party member had an invalid outfit ID.
 
 
 v0.9.1
