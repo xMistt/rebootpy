@@ -341,7 +341,7 @@ this decorator if you are in a subclass of :class:`Client`.
 
         If this event isn't referenced, the device code link will be printed to the console.
 
-    :param confirmation: The link to complete the device code login.
+    :param link: The link to complete the device code login.
     :type link: :class:`str`
 
 .. function:: event_auth_refresh()
