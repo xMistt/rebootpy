@@ -98,7 +98,7 @@ class Paginator:
 
     def __init__(self, prefix: str = '',
                  suffix: str = '',
-                 max_size: int = 10000) -> None:
+                 max_size: int = 256) -> None:
         self.prefix = prefix
         self.suffix = suffix
         self.max_size = max_size
@@ -908,38 +908,14 @@ class FortniteHelpCommand(HelpCommand):
         for the command.
         Defaults to ``No Category``.
     height: :class:`int`
-        The maximum number of lines to fit.
-        Defaults to ``15``.
+        The maximum number of lines to fit, not recommended to change.
+        Defaults to ``12``.
     width: :class:`int`
         The maximum number of characters that fit in a line.
         Defaults to ``60``.
     indent: :class:`int`
         How much to indent the commands and other text from a title.
         Defaults to ``4``.
-    title_prefix: :class:`str`
-        The prefix to use for the help title.
-        Defaults to `` +``.
-    title_suffix: :class:`str`
-        The suffix to use for the help title.
-        Defaults to ``+``.
-    title_char: :class:`str`
-        The char to use for the help title.
-        Defaults to ``=``.
-    line_prefix: :class:`str`
-        The prefix to use for all lines.
-        Defaults to ``   ``. (Three spaces)
-    line_suffix: :class:`str`
-        The prefix to use for all lines.
-        Defaults to ````. (Empty)
-    footer_prefix: :class:`str`
-        The prefix to use for the help footer.
-        Defaults to `` +``.
-    footer_suffix: :class:`str`
-        The suffix to use for the help footer.
-        Defaults to ``+``.
-    footer_char: :class:`str`
-        The char to use for the help footer.
-        Defaults to ``=``.
     """
 
     def __init__(self, **options: dict) -> None:
@@ -955,20 +931,9 @@ class FortniteHelpCommand(HelpCommand):
 
         self.no_category = options.pop('no_category_heading', 'No Category')
 
-        self.height = options.pop('height', 15)
+        self.height = options.pop('height', 12)
         self.width = options.pop('width', 60)
         self.indent = options.pop('indent', 4)
-
-        self.title_prefix = options.pop('title_prefix', ' +')
-        self.title_suffix = options.pop('title_suffix', '+')
-        self.title_char = options.pop('title_char', '=')
-
-        self.line_prefix = options.pop('line_prefix', '   ')
-        self.line_suffix = options.pop('line_suffix', '')
-
-        self.footer_prefix = options.pop('footer_prefix', ' +')
-        self.footer_suffix = options.pop('footer_suffix', '+')
-        self.footer_char = options.pop('footer_char', '=')
 
         if self.paginator is None:
             self.paginator = Paginator()
@@ -1008,7 +973,7 @@ class FortniteHelpCommand(HelpCommand):
         :class:`str`
             | The sub command name.
             | Defaults to ``{self.command_prefix} {sub_command.qualified_name}``
-        """  # noqa 
+        """  # noqa
         return self.command_prefix + sub_command.qualified_name
 
     def get_bot_header(self, page_num: int, pages_amount: int) -> str:
@@ -1120,25 +1085,6 @@ class FortniteHelpCommand(HelpCommand):
             group.qualified_name
         )
 
-    def get_group_footer(self, group: Group) -> str:
-        """Gets the text to appear in the footer when
-        :meth:`send_group_help()` is called.
-
-        This method can be overridden for custom text.
-
-        Parameters
-        ----------
-        command: :class:`.Group`
-            The group to get the footer for.
-
-        Returns
-        -------
-        :class:`str`
-            | The footer text.
-            | Defaults to ```` (Empty)
-        """
-        return ''
-
     def get_cog_header(self, cog: Cog,
                        page_num: int,
                        pages_amount: int) -> str:
@@ -1206,27 +1152,6 @@ class FortniteHelpCommand(HelpCommand):
             return text[:max_len-dot_amount] + '.'*dot_amount
         return text
 
-    def construct_title(self, t: str) -> str:
-        _title = ' ' + t + ' ' if t else ''
-        w = self.width - len(self.title_prefix) - len(self.title_suffix)
-        return '{0}{1:{2}^{3}}{4}'.format(
-            self.title_prefix,
-            _title,
-            self.title_char,
-            w,
-            self.title_suffix
-        )
-
-    def construct_footer(self, f: str) -> str:
-        _footer = ' ' + f + ' ' if f else ''
-        w = self.width - len(self.footer_prefix) - len(self.footer_suffix)
-        return '{0}{1:{2}^{3}}{4}'.format(
-            self.footer_prefix,
-            _footer,
-            self.footer_char,
-            w,
-            self.footer_suffix
-        )
 
     def fix_too_long(self, string: str,
                      length: int,
@@ -1246,25 +1171,9 @@ class FortniteHelpCommand(HelpCommand):
         for c, word in enumerate(split, 1):
             spaces = 1 if c != len(split) else 0
             if len(word) + spaces > length:
-                space_left = (length - len(curr))
-                start_length = space_left if space_left > 5 else 0
-                first, too_long = self.fix_too_long(word, length, start_length)
-                if first:
-                    curr += first + '-'
-
-                if curr:
-                    lines.append(curr)
-                    curr = ''
-
-                for cc, new in enumerate(too_long, 1):
-                    if cc != len(too_long):
-                        new += '-'
-                        lines.append(new)
-                    else:
-                        curr += new
-                continue
-
-            if len(curr) + len(word) > length:
+                lines.append(string)
+                break
+            elif len(curr) + len(word) > length:
                 lines.append(curr[:-1])
                 curr = ''
 
@@ -1275,37 +1184,16 @@ class FortniteHelpCommand(HelpCommand):
 
         return lines
 
-    def construct_single_line(self, text: str, extra_indent: int = 0) -> str:
-        prefix = self.line_prefix + ' '*extra_indent
-        suffix = self.line_suffix
-
-        w = self.width - len(prefix) - len(suffix)
-        return '{0}{1:<{2}}{3}'.format(
-            prefix,
-            text,
-            w,
-            suffix
-        )
+    def construct_single_line(self, text: str) -> str:
+        return f'{" "*self.indent}{text}'
 
     def construct_category(self, name: str,
                            brief: str,
-                           extra_indent: int = 0,
                            raw: bool = False) -> List[str]:
-        prefix = self.line_prefix + ' '*extra_indent
-        suffix = self.line_suffix
-
         indent = self.indent
 
-        w = self.width - len(prefix) - len(suffix)
-        name_line = '{0}{1:<{2}}{3}'.format(
-            prefix,
-            self.shorten_text(name, w),
-            w,
-            suffix
-        )
-
-        brief_w = w - indent
-        lines = [name_line]
+        brief_w = 0
+        lines = [f'{name}']
 
         if not raw:
             gen = self.chunkstring(brief, brief_w)
@@ -1313,16 +1201,10 @@ class FortniteHelpCommand(HelpCommand):
             gen = brief.splitlines()
 
         for c, line in enumerate(gen, 2):
-            fmt = '{0}{1}{2:<{3}}{4}'.format(
-                prefix,
-                ' '*indent,
-                line,
-                brief_w,
-                suffix
-            )
+            fmt = f'{" "*indent}{line}'
             if c == self.height - 2:
-                to_cut = 3 + len(suffix)
-                new = fmt[:to_cut] + '...' + suffix
+                to_cut = 3
+                new = fmt[:to_cut] + '...'
                 lines.append(new)
                 break
 
@@ -1438,14 +1320,12 @@ class FortniteHelpCommand(HelpCommand):
 
             footer_fmt = self.get_bot_footer(c, chunks_length) or ''
             page_chunks = [
-                self.construct_title(
-                    self.get_bot_header(c, chunks_length) or ''
-                ),
+                self.get_bot_header(c, chunks_length) or '',
                 *chunk,
-                self.construct_footer(footer_fmt.format(
+                footer_fmt.format(
                     self.command_prefix,
                     self.invoked_with,
-                ))
+                )
             ]
             self.paginator.add_page(
                 '\u200b\n' + '\n'.join(page_chunks)
@@ -1456,8 +1336,8 @@ class FortniteHelpCommand(HelpCommand):
     async def send_command_help(self, command: Command) -> None:
         result = self.construct_command_help(command)
 
-        title = self.construct_title(self.get_command_header(command) or '')
-        footer = self.construct_footer(self.get_command_footer(command) or '')
+        title = self.get_command_header(command) or ''
+        footer = self.get_command_footer(command) or ''
         self.paginator.add_page(
             '\u200b\n' + '\n'.join([title, *result, footer])
         )
@@ -1481,16 +1361,13 @@ class FortniteHelpCommand(HelpCommand):
             brief = command.brief or ''
             lines = self.construct_category(
                 name,
-                brief,
-                extra_indent=self.indent
+                brief
             )
 
             result.extend(lines)
 
-        title = self.construct_title(
-            self.get_group_header(group)
-        )
-        footer = self.construct_footer('')
+        title = self.get_group_header(group)
+        footer = ''
         self.paginator.add_page(
             '\u200b\n' + '\n'.join([title, *result, footer])
         )
@@ -1523,8 +1400,7 @@ class FortniteHelpCommand(HelpCommand):
             brief = command.brief or ''
             lines = self.construct_category(
                 name,
-                brief,
-                extra_indent=self.indent
+                brief
             )
 
             if len(lines) + len(curr) > self.height - 2:
@@ -1538,11 +1414,9 @@ class FortniteHelpCommand(HelpCommand):
 
         chunks_length = len(chunks)
         for c, chunk in enumerate(chunks, 1):
-            title = self.construct_title(
-                self.get_cog_header(cog, c, chunks_length) or ''
-            )
+            title = self.get_cog_header(cog, c, chunks_length) or ''
             fmt = self.get_cog_footer(cog, c, chunks_length) or ''
-            footer = self.construct_footer(fmt)
+            footer = fmt
             page_chunks = [
                 title,
                 *chunk,

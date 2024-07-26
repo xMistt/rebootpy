@@ -19,6 +19,12 @@ Bug Fixes
 ~~~~~
 
 - Fixed an exception being thrown if a party member had an invalid outfit ID.
+- Removed unnecessary characters from the help command so it fits in the character limit.
+
+Removed
+~~~~~~~
+
+- Removed all customisation for the help command as the characters were unnecessary and didn't help towards the character limit (e.g. ``title_prefix``, ``title_char``)
 
 
 v0.9.1
