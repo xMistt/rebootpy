@@ -1580,7 +1580,8 @@ class PartyMemberBase(User):
         """:class:`str`: The CID of the outfit this user currently has
         equipped.
         """
-        return self.meta.outfit.split(':')[1]
+        parts = self.meta.outfit.split(':')
+        return parts[1] if len(parts) > 1 and parts[1] else None
 
     @property
     def backpack(self) -> str:

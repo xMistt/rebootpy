@@ -14,6 +14,11 @@ Added
 
 - Added :func:`event_device_code_generated()`
 
+Bug Fixes
+~~~~~
+
+- Fixed an exception being thrown of a party member had an invalid outfit ID.
+
 
 v0.9.1
 ------
