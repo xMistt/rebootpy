@@ -12,7 +12,7 @@ v0.9.2
 Added
 ~~~~~
 
-- Added :func:`event_event_device_code_generated()`
+- Added :func:`event_device_code_generated()`
 
 
 v0.9.1
