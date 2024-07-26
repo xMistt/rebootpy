@@ -13,9 +13,10 @@ If you want to check out the original commit history, you can view it [here](htt
 
 **Some key features:**
 - Full support for Friends.
-- Support for XMPP events including friend and party messages + many more.
+- Support for XMPP events.
 - Support for Parties.
 - Support for Battle Royale stats.
+- Support for friend & party messages.
 
 # Documentation
 https://rebootpy.readthedocs.io/en/latest/
@@ -62,10 +63,10 @@ How to get a one time authorization code:
 
 ![Authorization Code](https://raw.githubusercontent.com/xMistt/rebootpy/main/docs/resources/images/authorization_code.png)
 
-# Credit
-Thanks to [Kysune](https://github.com/SzymonLisowiec), [iXyles](https://github.com/iXyles), [Vrekt](https://github.com/Vrekt) and [amrsatrio](https://github.com/Amrsatrio) for ideas and/or work that this library is built upon.
+Keep in mind that authorization code isn't the only method of authentication, you can view all of them [here](https://rebootpy.readthedocs.io/en/latest/api.html#authentication), DeviceAuth is recommended once you've generated device auths.
 
-Also thanks to [discord.py](https://github.com/Rapptz/discord.py) for much inspiration code-wise.
+# Credit
+Thanks to [Kysune](https://github.com/SzymonLisowiec), [iXyles](https://github.com/iXyles), [Vrekt](https://github.com/Vrekt), [amrsatrio](https://github.com/Amrsatrio) for ideas and/or work that this library is built upon.
 
 # Need help?
 If you need more help feel free to join this [discord server](https://discord.gg/rnk869s).
