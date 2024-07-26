@@ -333,6 +333,16 @@ this decorator if you are in a subclass of :class:`Client`.
     :param email: Email of the account that just generated new device auth details.
     :type email: :class:`str`
 
+.. function:: event_device_code_generated(link)
+
+    This event is called whenever a device code link is generated during :class:`DeviceCodeAuth` or :class:`AdvancedAuth`.
+
+    .. warning::
+
+        If this event isn't referenced, the device code link will be printed to the console.
+
+    :type link: :class:`str`
+
 .. function:: event_auth_refresh()
 
     This event is called when the clients authentication has been refreshed.

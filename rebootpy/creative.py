@@ -52,7 +52,8 @@ class CreativeIslandRating:
         return self._rating
 
     def __repr__(self) -> str:
-        return f'<CreativeIslandRating board={self.board!r} rating={self.rating!r}>'
+        return f'<CreativeIslandRating board={self.board!r} ' \
+               f'rating={self.rating!r}>'
 
     @property
     def board(self) -> str:

@@ -66,7 +66,7 @@ How to get a one time authorization code:
 Keep in mind that authorization code isn't the only method of authentication, you can view all of them [here](https://rebootpy.readthedocs.io/en/latest/api.html#authentication), DeviceAuth is recommended once you've generated device auths.
 
 # Credit
-Thanks to [Kysune](https://github.com/SzymonLisowiec), [iXyles](https://github.com/iXyles), [Vrekt](https://github.com/Vrekt), [amrsatrio](https://github.com/Amrsatrio) for ideas and/or work that this library is built upon.
+Thanks to [Kysune](https://github.com/SzymonLisowiec), [iXyles](https://github.com/iXyles), [Vrekt](https://github.com/Vrekt) and [amrsatrio](https://github.com/Amrsatrio) for ideas and/or work that this library is built upon.
 
 # Need help?
 If you need more help feel free to join this [discord server](https://discord.gg/rnk869s).

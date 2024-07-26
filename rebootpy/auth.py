@@ -1091,7 +1091,16 @@ class DeviceCodeAuth(Auth):
 
         if self.open_link_in_browser:
             webbrowser.open(device_code['verification_uri_complete'], new=1)
-        print(f"Please login via {device_code['verification_uri_complete']}")
+
+        if self.client._event_has_destination('device_code_generated'):
+            self.client.dispatch_event(
+                'device_code_generated',
+                device_code['verification_uri_complete']
+            )
+        else:
+            print(
+                f"Please login via {device_code['verification_uri_complete']}"
+            )
 
         while True:
             try:
