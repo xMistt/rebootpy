@@ -111,6 +111,9 @@ Enumerations
     .. attribute:: NAWEST
 
         The North America West region.
+    .. attribute:: NACENTRAL
+
+        The North America Central region.
     .. attribute:: EUROPE
 
         The Europe region.
@@ -502,7 +505,7 @@ this decorator if you are in a subclass of :class:`Client`.
 
     .. warning::
 
-        This event is automatically handled by the client which automatically always accepts the user. If you have this event referenced in your code the client won't automatically handle it anymore and you must handle it youself. 
+        This event is automatically handled by the client which automatically always accepts the user. If you have this event referenced in your code the client won't automatically handle it anymore and you must handle it yourself.
 
     .. note::
 

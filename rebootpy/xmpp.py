@@ -39,7 +39,6 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Optional, Union, Awaitable, Any, Tuple
 
 from .errors import XMPPError, PartyError, HTTPException
-from .message import FriendMessage, PartyMessage
 from .party import (Party, PartyJoinRequest, ReceivedPartyInvitation,
                     PartyJoinConfirmation)
 from .presence import Presence
@@ -652,30 +651,6 @@ class XMPPClient:
             'meta': meta
         }
         return inv
-
-    async def process_chat_message(self, message: aioxmpp.Message) -> None:
-        user_id = message.from_.localpart
-        author = self.client.get_friend(user_id)
-        if author is None:
-            try:
-                author = await self.client.wait_for(
-                    'friend_add',
-                    check=lambda f: f.id == user_id,
-                    timeout=2
-                )
-            except asyncio.TimeoutError:
-                log.debug('Friend message discarded because friend not found.')
-                return
-
-        try:
-            m = FriendMessage(
-                client=self.client,
-                author=author,
-                content=message.body.any()
-            )
-            self.client.dispatch_event('friend_message', m)
-        except ValueError:
-            pass
 
     @EventDispatcher.event('com.epicgames.friends.core.apiobjects.Friend')
     async def friend_event(self, ctx: EventContext) -> None:
@@ -1521,21 +1496,8 @@ class XMPPClient:
         self._last_disconnected_at = datetime.datetime.utcnow()
         self.client.dispatch_event('xmpp_session_close')
 
-    def setup_callbacks(self, messages: bool = True) -> None:
+    def setup_callbacks(self) -> None:
         client = self.xmpp_client
-
-        message_dispatcher = self.xmpp_client.summon(
-            aioxmpp.dispatcher.SimpleMessageDispatcher
-        )
-
-        if messages:
-            message_dispatcher.register_callback(
-                aioxmpp.MessageType.CHAT,
-                None,
-                lambda m: asyncio.ensure_future(
-                    self.process_chat_message(m)
-                ),
-            )
 
         client.on_stream_established.connect(self.on_stream_established)
         client.on_stream_suspended.connect(self.on_stream_suspended)
@@ -1621,27 +1583,6 @@ class XMPPClient:
         # let loop run one iteration for events to be dispatched
         await asyncio.sleep(0)
 
-    def muc_on_message(self, message: aioxmpp.Message,
-                       member: aioxmpp.muc.Occupant,
-                       source: aioxmpp.im.dispatcher.MessageSource,
-                       **kwargs: Any) -> None:
-        if member.direct_jid is None:
-            return
-
-        user_id = member.direct_jid.localpart
-        party = self.client.party
-
-        if (user_id == self.client.user.id or member.nick is None
-                or user_id not in party._members):
-            return
-
-        self.client.dispatch_event('party_message', PartyMessage(
-            client=self.client,
-            party=party,
-            author=party._members[member.direct_jid.localpart],
-            content=message.body.any()
-        ))
-
     def muc_on_member_join(self, member: aioxmpp.muc.Occupant) -> None:
         self.client.dispatch_event('muc_member_join', member)
 
@@ -1674,7 +1615,6 @@ class XMPPClient:
             nick
         )
 
-        room.on_message.connect(self.muc_on_message)
         room.on_join.connect(self.muc_on_member_join)
         room.on_enter.connect(self.muc_on_enter)
         room.on_leave.connect(self.muc_on_leave)

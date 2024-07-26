@@ -9,7 +9,7 @@ Asynchronous library for interacting with Fortnite and EpicGames' API and XMPP s
 This library is a fork of [Terbau](https://github.com/Terbau/)'s [fortnitepy](https://github.com/Terbau/fortnitepy) which was abandoned.<br>
 If you want to check out the original commit history, you can view it [here](https://github.com/Terbau/fortnitepy/commits/master/).
 
-**Note:** This library is still under developement so breaking changes might happen at any time.
+**Note:** This library is still under development so breaking changes might happen at any time.
 
 **Some key features:**
 - Full support for Friends.

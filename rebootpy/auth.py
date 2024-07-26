@@ -726,6 +726,8 @@ class AdvancedAuth(Auth):
     :func:`event_device_auth_generate`. It is important to store
     these values somewhere since they can be used for easier logins.
 
+    If you'd like to deal with the device code link yourself instead of it being printed to console, you can use :func:`event_device_code_generated()`.
+
     Parameters
     ----------
 
@@ -1045,6 +1047,8 @@ class AdvancedAuth(Auth):
 class DeviceCodeAuth(Auth):
     """Authenticate with device code.
 
+    If you'd like to deal with the device code link yourself instead of it being printed to console, you can use :func:`event_device_code_generated()`.
+
     Parameters
     ----------
     open_link_in_browser: :class:`bool`
@@ -1062,7 +1066,7 @@ class DeviceCodeAuth(Auth):
     def __init__(self, open_link_in_browser: bool = True,
                  **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.switch_token = kwargs.get('switch_token', 'OThmN2U0MmMyZTNhNGY4NmE3NGViNDNmYmI0MWVkMzk6MGEyNDQ5YTItMDAxYS00NTFlLWFmZWMtM2U4MTI5MDFjNGQ3')
+        self.switch_token = kwargs.get('switch_token', 'OThmN2U0MmMyZTNhNGY4NmE3NGViNDNmYmI0MWVkMzk6MGEyNDQ5YTItMDAxYS00NTFlLWFmZWMtM2U4MTI5MDFjNGQ3') #noqa
         self.open_link_in_browser = open_link_in_browser
 
     @property
