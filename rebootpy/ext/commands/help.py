@@ -146,14 +146,15 @@ class Paginator:
             The line was too big for the current :attr:`max_size`.
         """
         max_page_size = self.max_size - self._prefix_len - self._suffix_len
-        if len(line) > max_page_size:
+        line_length = len(line.replace(' ', '').replace('\n', ''))  # Count non-space and non-newline characters
+        if line_length > max_page_size:
             raise RuntimeError('Line exceeds maximum page size '
                                '{}'.format(max_page_size))
 
-        if self._count + len(line) + 1 > self.max_size - self._suffix_len:
+        if self._count + line_length + 1 > self.max_size - self._suffix_len:
             self.close_page()
 
-        self._count += len(line) + 1
+        self._count += line_length + 1
         self._current_page.append(line)
 
         if empty:
@@ -909,10 +910,10 @@ class FortniteHelpCommand(HelpCommand):
         Defaults to ``No Category``.
     height: :class:`int`
         The maximum number of lines to fit, not recommended to change.
-        Defaults to ``15``.
+        Defaults to ``12``.
     width: :class:`int`
         The maximum number of characters that fit in a line.
-        Defaults to ``68``.
+        Defaults to ``60``.
     indent: :class:`int`
         How much to indent the commands and other text from a title.
         Defaults to ``4``.
@@ -931,8 +932,8 @@ class FortniteHelpCommand(HelpCommand):
 
         self.no_category = options.pop('no_category_heading', 'No Category')
 
-        self.height = options.pop('height', 15)
-        self.width = options.pop('width', 68)
+        self.height = options.pop('height', 12)
+        self.width = options.pop('width', 60)
         self.indent = options.pop('indent', 4)
 
         if self.paginator is None:
