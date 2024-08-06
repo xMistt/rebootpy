@@ -146,14 +146,15 @@ class Paginator:
             The line was too big for the current :attr:`max_size`.
         """
         max_page_size = self.max_size - self._prefix_len - self._suffix_len
-        if len(line) > max_page_size:
+        line_length = len(line.replace(' ', '').replace('\n', ''))  # Count non-space and non-newline characters
+        if line_length > max_page_size:
             raise RuntimeError('Line exceeds maximum page size '
                                '{}'.format(max_page_size))
 
-        if self._count + len(line) + 1 > self.max_size - self._suffix_len:
+        if self._count + line_length + 1 > self.max_size - self._suffix_len:
             self.close_page()
 
-        self._count += len(line) + 1
+        self._count += line_length + 1
         self._current_page.append(line)
 
         if empty:
