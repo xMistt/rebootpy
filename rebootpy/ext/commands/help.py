@@ -910,10 +910,10 @@ class FortniteHelpCommand(HelpCommand):
         Defaults to ``No Category``.
     height: :class:`int`
         The maximum number of lines to fit, not recommended to change.
-        Defaults to ``15``.
+        Defaults to ``12``.
     width: :class:`int`
         The maximum number of characters that fit in a line.
-        Defaults to ``68``.
+        Defaults to ``60``.
     indent: :class:`int`
         How much to indent the commands and other text from a title.
         Defaults to ``4``.
@@ -932,8 +932,8 @@ class FortniteHelpCommand(HelpCommand):
 
         self.no_category = options.pop('no_category_heading', 'No Category')
 
-        self.height = options.pop('height', 15)
-        self.width = options.pop('width', 68)
+        self.height = options.pop('height', 12)
+        self.width = options.pop('width', 60)
         self.indent = options.pop('indent', 4)
 
         if self.paginator is None:
