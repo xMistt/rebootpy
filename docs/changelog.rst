@@ -9,6 +9,11 @@ You can also view the changelog of the original library, fortnitepy, `here <http
 v0.9.2
 ------
 
+Changes
+~~~~~~~
+
+- (**Breaking**) Switched to the Android client as old iOS client is now a buggy (i.e. authorisation code no longer works), meaning all previous device auths will now be invalid.
+
 Added
 ~~~~~
 
