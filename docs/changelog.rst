@@ -6,7 +6,7 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
-v0.9.2
+v0.9.2 (pre-release)
 ------
 
 Changes
@@ -25,6 +25,7 @@ Bug Fixes
 
 - Fixed an exception being thrown if a party member had an invalid outfit ID.
 - Removed unnecessary characters from the help command so it fits in the character limit.
+- Fixed presences sometimes not being able to be parsed if a specific key was missing.
 
 Removed
 ~~~~~~~
