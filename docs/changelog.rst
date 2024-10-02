@@ -13,12 +13,14 @@ Changes
 ~~~~~~~
 
 - (**Breaking**) Switched to the Android client as old iOS client is now a buggy (i.e. authorisation code no longer works), meaning all previous device auths will now be invalid.
+- Updated default status formatting to reflect new changes.
 
 Added
 ~~~~~
 
 - Added :func:`event_device_code_generated()`
 - Added :exc:`ChatError`
+- Added ``SLEEPING`` added to :class:`ReadyState`
 
 Bug Fixes
 ~~~~~

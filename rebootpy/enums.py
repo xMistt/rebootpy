@@ -193,6 +193,7 @@ class ReadyState(Enum):
     READY       = 'Ready'
     NOT_READY   = 'NotReady'
     SITTING_OUT = 'SittingOut'
+    SLEEPING    = 'Away'
 
 
 class AwayStatus(Enum):

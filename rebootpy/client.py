@@ -2596,7 +2596,7 @@ class Client(BasicClient):
                  **kwargs: Any) -> None:
         super().__init__(auth=auth, **kwargs)
 
-        self.status = kwargs.get('status', 'In Lobby - {current_playlist}')  # noqa
+        self.status = kwargs.get('status', '{current_playlist}')  # noqa
         self.away = kwargs.get('away', AwayStatus.ONLINE)
         self.platform = kwargs.get('platform', Platform.WINDOWS)
         self.net_cl = kwargs.get('net_cl', '')

@@ -155,6 +155,7 @@ Enumerations
     .. attribute:: READY
     .. attribute:: NOT_READY
     .. attribute:: SITTING_OUT
+    .. attribute:: SLEEPING
 
 .. class:: UserSearchPlatform
 
