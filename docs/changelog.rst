@@ -20,7 +20,7 @@ Added
 
 - Added :func:`event_device_code_generated()`
 - Added :exc:`ChatError`
-- Added ``SLEEPING`` added to :class:`ReadyState`
+- Added ``SLEEPING`` to :class:`ReadyState`
 
 Bug Fixes
 ~~~~~
