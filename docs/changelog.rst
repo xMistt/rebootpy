@@ -14,6 +14,8 @@ Changes
 
 - (**Breaking**) Switched to the Android client as old iOS client is now a buggy (i.e. authorisation code no longer works), meaning all previous device auths will now be invalid.
 - Updated default status formatting to reflect new changes.
+- Reverted help command changes.
+- Increased message character limit from 256 to 2048.
 
 Added
 ~~~~~

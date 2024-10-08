@@ -1769,8 +1769,8 @@ class HTTPClient:
         return await self.patch(r, json=payload, **kwargs)
 
     async def friend_send_message(self, user_id: str, content: str) -> Any:
-        if len(content) >= 256:
-            raise ChatError("Message body exceeds max length of 256")
+        if len(content) >= 2048:
+            raise ChatError("Message body exceeds max length of 2048")
 
         payload = {
             "message": {
@@ -1788,8 +1788,8 @@ class HTTPClient:
         return await self.post(r, json=payload)
 
     async def party_send_message(self, content: str) -> Any:
-        if len(content) >= 256:
-            raise ChatError("Message body exceeds max length of 256")
+        if len(content) >= 2048:
+            raise ChatError("Message body exceeds max length of 2048")
 
         if self.client.party.member_count == 1:
             raise ChatError("Client is in a party alone.")
