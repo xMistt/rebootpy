@@ -552,8 +552,8 @@ class DeviceAuth(Auth):
     .. note::
 
         All device auths generated for an account is removed once the accounts
-        password gets reset. If you managed to leak you device_id and secret,
-        simply reset the accounts password and everything should be fine.
+        password gets reset. If you managed to leak your device_id and secret,
+        simply reset the accounts password and all variables will change.
 
     Parameters
     ----------
