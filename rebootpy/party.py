@@ -935,7 +935,7 @@ class PartyMemberMeta(MetaBase):
 
     @property
     def spectate_party_member_available(self) -> bool:
-        base = self.get_prop('Default:Default:SpectateInfo_j')
+        base = self.get_prop('Default:SpectateInfo_j')
         return bool(base['SpectateInfo']['gameSessionKey'])
 
     @property
