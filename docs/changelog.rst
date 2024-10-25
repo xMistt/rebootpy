@@ -6,6 +6,14 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
+v0.9.3
+------
+
+Bug Fixes
+~~~~~
+
+- Fixed an issue preventing the use of newer aiohttp versions.
+
 v0.9.2
 ------
 

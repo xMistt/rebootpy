@@ -401,8 +401,8 @@ class HTTPClient:
                  connector: aiohttp.BaseConnector = None,
                  retry_config: Optional[HTTPRetryConfig] = None) -> None:
         self.client = client
-        self.connector = connector
-        self.retry_config = retry_config or HTTPRetryConfig()
+        self.connector = self.client.connector
+        self.retry_config = self.client.retry_config or HTTPRetryConfig()
 
         self._jar = aiohttp.CookieJar()
         self.headers = {}

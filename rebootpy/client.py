@@ -499,12 +499,8 @@ class BasicClient:
         self.event_prefix = 'event_'
 
         self.auth = auth
-        self.http = HTTPClient(
-            self,
-            connector=kwargs.get('http_connector'),
-            retry_config=kwargs.get('http_retry_config')
-        )
-        self.http.add_header('Accept-Language', 'en-EN')
+        self.connector = kwargs.get('http_connector')
+        self.retry_config = kwargs.get('http_retry_config')
 
         self._listeners = {}
         self._events = {}
@@ -538,6 +534,11 @@ class BasicClient:
         self._closed_event = asyncio.Event()
         self._reauth_lock = LockEvent()
         self._reauth_lock.failed = False
+
+        self.http = HTTPClient(
+            self
+        )
+        self.http.add_header('Accept-Language', 'en-EN')
 
         self.auth.initialize(self)
 
@@ -2646,6 +2647,11 @@ class Client(BasicClient):
         self._internal_join_party_lock = LockEvent()
         self._reauth_lock = LockEvent()
         self._reauth_lock.failed = False
+
+        self.http = HTTPClient(
+            self
+        )
+        self.http.add_header('Accept-Language', 'en-EN')
 
         self.auth.initialize(self)
 
