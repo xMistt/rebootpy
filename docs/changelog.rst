@@ -13,6 +13,7 @@ Bug Fixes
 ~~~~~
 
 - Fixed an issue preventing the use of newer aiohttp versions.
+- Fixed an issue with certain headless accounts with missing properties.
 
 v0.9.2
 ------

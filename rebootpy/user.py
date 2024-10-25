@@ -403,6 +403,10 @@ class ClientUser(UserBase):
         The country the user wasregistered in.
     email: :class:`str`
         The email of the user.
+
+        .. warning::
+
+            Can be ``None`` if account is headless.
     failed_login_attempts: :class:`str`
         Failed login attempts
     headless: :class:`bool`
@@ -413,12 +417,28 @@ class ClientUser(UserBase):
         attempt has been registered.
     name: :class:`str`
         First name of the user.
+
+        .. warning::
+
+            Can be ``None`` if account is headless.
     first_name: :class:`str`
         First name of the user. Alias for name.
+
+        .. warning::
+
+            Can be ``None`` if account is headless.
     last_name: :class:`str`
         Last name of the user.
+
+        .. warning::
+
+            Can be ``None`` if account is headless.
     full_name: :class:`str`
         Full name of the user.
+
+        .. warning::
+
+            Can be ``None`` if account is headless.
     number_of_display_name_changes: :class:`int`
         Amount of displayname changes.
     preferred_language: :class:`str`
@@ -463,20 +483,21 @@ class ClientUser(UserBase):
 
     def _update(self, data: dict) -> None:
         super()._update(data)
-        self.name = data['name']
-        self.email = data['email']
+        self.name = data.get('name')
+        self.email = data.get('email')
         self.failed_login_attempts = data['failedLoginAttempts']
         self.last_failed_login = (from_iso(data['lastFailedLogin'])
                                   if 'lastFailedLogin' in data else None)
         self.last_login = (from_iso(data['lastLogin'])
                            if 'lastLogin' in data else None)
 
-        n_changes = data['numberOfDisplayNameChanges']
-        self.number_of_display_name_changes = n_changes
-        self.age_group = data['ageGroup']
+        self.number_of_display_name_changes = data[
+            'numberOfDisplayNameChanges'
+        ]
         self.headless = data['headless']
+        self.age_group = data['ageGroup']
         self.country = data['country']
-        self.last_name = data['lastName']
+        self.last_name = data.get('lastName')
         self.preferred_language = data['preferredLanguage']
         self.can_update_display_name = data['canUpdateDisplayName']
         self.tfa_enabled = data['tfaEnabled']
