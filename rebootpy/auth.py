@@ -551,9 +551,11 @@ class DeviceAuth(Auth):
 
     .. note::
 
-        When an account's password is reset, all device authentications associated with the account are removed. 
-        If your device ID and secret are compromised, resetting your password will invalidate all authentication data, 
-        making it useless to anyone who may have accessed the leaked data.
+        When an account's password is reset, all device authentications
+        associated with the account are removed. If your device ID and secret 
+        are compromised, resetting your password will invalidate all
+        authentication data,  making it useless to anyone who may have
+        accessed the leaked data.
 
     Parameters
     ----------
