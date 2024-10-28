@@ -390,4 +390,6 @@ class CompetitiveRank:
     def unreal_placement(self) -> str:
         """:class:`int`: Their placement in Unreal, will be `None` if they're
         not Unreal."""
+        if self._current_division.value != 17:
+            return None
         return self._unreal_placement

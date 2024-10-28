@@ -1806,6 +1806,27 @@ class BasicClient:
         """|coro|
 
         Gets Ranked stats the specified user.
+        
+        Usage: ::
+
+            # get my c5s3 ranked stats
+            async def get_6v_ranked_stats():
+                print(f'Fetching ranked stats for C5S3')
+
+                user = await bot.fetch_user('6v.')
+                ranks = await bot.fetch_ranked_stats(
+                    user_id=user.id,
+                    season=rebootpy.Seasons.C5S3
+                )
+            
+                for rank in ranks:
+                    print(f'{rank.ranking_type.name} - {rank.current_division.name}')
+                
+            # Example output:
+            # Fetching ranked stats for C5S3
+            # BATTLE_ROYALE - DIAMOND_2
+            # ROCKET_RACING - UNRANKED
+            # ZERO_BUILD - UNREAL
 
         Parameters
         ----------
