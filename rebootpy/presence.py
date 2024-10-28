@@ -298,8 +298,7 @@ class Presence:
         self.playing = data['bIsPlaying']
         self.joinable = data.get('bIsJoinable', False)
         self.has_voice_support = data['bHasVoiceSupport']
-        self.session_id = (data['SessionId'] if
-                           data['SessionId'] != "" else None)
+        self.session_id = data.get('SessionId') or None
 
         raw_properties = data.get('Properties', {})
         self.has_properties = raw_properties != {}
