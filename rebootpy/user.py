@@ -248,6 +248,33 @@ class UserBase:
             end_time=end_time
         )
 
+    async def fetch_ranked_stats(self,
+                                 season: Seasons
+                                 ) -> List[CompetitiveRank]:
+        """|coro|
+
+        Fetches this users ranked stats.
+
+        Parameters
+        ----------
+        season: :class:`Seasons`
+            The season that you want to get ranks from.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+
+        Returns
+        -------
+        List[:class:`CompetitiveRank`]
+            A list of all of the users ranks in the requested season.
+        """  # noqa
+        return await self.client.fetch_ranked_stats(
+            self.id,
+            season=season
+        )
+
     async def fetch_br_stats_collection(self, collection: StatsCollectionType,
                                         start_time: Optional[DatetimeOrTimestamp] = None,  # noqa
                                         end_time: Optional[DatetimeOrTimestamp] = None  # noqa)

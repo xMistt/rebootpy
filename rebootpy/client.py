@@ -44,10 +44,10 @@ from .user import (ClientUser, User, BlockedUser, SacSearchEntryUser,
 from .friend import Friend, IncomingPendingFriend, OutgoingPendingFriend
 from .enums import (Platform, Region, UserSearchPlatform, AwayStatus,
                     SeasonStartTimestamp, SeasonEndTimestamp,
-                    BattlePassStat, StatsCollectionType)
+                    BattlePassStat, StatsCollectionType, Seasons)
 from .party import (DefaultPartyConfig, DefaultPartyMemberConfig, ClientParty,
                     Party)
-from .stats import StatsV2, StatsCollection, _StatsBase
+from .stats import StatsV2, StatsCollection, _StatsBase, CompetitiveRank
 from .store import Store
 from .creative import CreativeIsland
 from .news import BattleRoyaleNewsPost
@@ -1798,6 +1798,39 @@ class BasicClient:
             end_time = end_time.value
 
         return start_time, end_time
+
+    async def fetch_ranked_stats(self,
+                                 user_id: str,
+                                 season: Seasons
+                                 ) -> List[CompetitiveRank]:
+        """|coro|
+
+        Gets Ranked stats the specified user.
+
+        Parameters
+        ----------
+        user_id: :class:`str`
+            The id of the user you want to fetch stats for.
+        season: :class:`Seasons`
+            The season that you want to get ranks from.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+
+        Returns
+        -------
+        List[:class:`CompetitiveRank`]
+            A list of all of the users ranks in the requested season.
+        """  # noqa
+
+        raw_tracks = await self.http.get_ranked_tracks(
+            user_id=user_id
+        )
+
+        return [CompetitiveRank(data=track) for track in raw_tracks
+                if track['trackguid'] in season.value]
 
     async def fetch_br_stats(self, user_id: str, *,
                              start_time: Optional[DatetimeOrTimestamp] = None,

@@ -25,7 +25,8 @@ SOFTWARE.
 import datetime
 
 from .user import User
-from .enums import Platform
+from .enums import Platform, RankingType, Rank
+from .utils import from_iso
 
 replacers = {
     'placetop1': 'wins',
@@ -326,3 +327,67 @@ class StatsCollection(_StatsBase):
             Mapping of the users collection.
         """
         return super().get_stats()
+
+
+class CompetitiveRank:
+    """Represents a specific rank type."""
+    def __init__(self, data: dict) -> None:
+        self._raw = data
+
+        self._ranking_type = RankingType(data['rankingType'])
+        self._last_updated = from_iso(data['lastUpdated'])
+        self._current_division = Rank(data['currentDivision'])
+        self._highest_division = Rank(data['highestDivision'])
+        self._promotion_progress = data['promotionProgress']
+        self._unreal_placement = data['currentPlayerRanking']
+
+        self._raw = data
+
+    def __str__(self) -> str:
+        return (f'{self.current_division.name} '
+                f'{int(self.promotion_progress * 100)}%')
+
+    def __repr__(self) -> str:
+        return f'<CompetitiveRank current_division={self.current_division!r} ' \
+               f'promotion_progress={self.promotion_progress!r}>'
+
+    @property
+    def ranking_type(self) -> str:
+        """:class:`RankingType`: The type of rank."""
+        return self._ranking_type
+
+    @property
+    def last_updated(self) -> str:
+        """:class:`datetime.datetime`: The last time the stats were updated."""
+        return self._last_updated
+
+    @property
+    def current_division(self) -> str:
+        """:class:`Rank`: The curent/final rank of the player in that
+        season."""
+        if (self._current_division.value == 0 and
+                self._highest_division.value == 0 and
+                self._promotion_progress == 0.0):
+            return Rank(None)
+        return self._current_division
+
+    @property
+    def highest_division(self) -> str:
+        """:class:`Rank`: The highest rank of the player in that season."""
+        if (self._current_division.value == 0 and
+                self._highest_division.value == 0 and
+                self._promotion_progress == 0.0):
+            return Rank(None)
+        return self._current_division
+
+    @property
+    def promotion_progress(self) -> str:
+        """:class:`float`: The players progress through their current/final
+        rank."""
+        return self._promotion_progress
+
+    @property
+    def unreal_placement(self) -> str:
+        """:class:`int`: Their placement in Unreal, will be `None` if they're
+        not Unreal."""
+        return self._unreal_placement

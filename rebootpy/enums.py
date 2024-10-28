@@ -289,6 +289,46 @@ class BattlePassStat(Enum):
     SEASON_29 = ('s29_social_bp_level', SeasonEndTimestamp.SEASON_29.value)
 
 
+class Seasons(Enum):
+    C4S2 = ('2776dc', '9d7ebd')
+    C4S3 = ('ggOwuK', 'AjRdrb')
+    C4S4 = ('gXffl', 'yHNFu')
+    C4SOG = ('OiK9k9', 'hEKWqj')
+    C5S1 = ('EYpme7', 'd0zEcd', 'dmd372')
+    C5S2 = ('ch3353', 'a1m0n3', 'rrwpwg')
+    C5S3 = ('N4PK1N', 'L1GHT5', 'rrzuel')
+    C5S4 = ('S4LT3D', 'P0T4T0', 'rr9qlw', 'M4rC4S', 'L4nC3r')
+
+
+class RankingType(Enum):
+    BATTLE_ROYALE = 'ranked-br'
+    ZERO_BUILD = 'ranked-zb'
+    ROCKET_RACING = 'delmar-competitive'
+    RELOAD = 'ranked_blastberry_build'
+    RELOAD_ZB = 'ranked_blastberry_nobuild'
+
+
+class Rank(Enum):
+    UNRANKED = None
+    BRONZE_1 = 0
+    BRONZE_2 = 1
+    BRONZE_3 = 2
+    SILVER_1 = 3
+    SILVER_2 = 4
+    SILVER_3 = 5
+    GOLD_1 = 6
+    GOLD_2 = 7
+    GOLD_3 = 8
+    PLATINUM_1 = 9
+    PLATINUM_2 = 10
+    PLATINUM_3 = 11
+    DIAMOND_1 = 12
+    DIAMOND_2 = 13
+    DIAMOND_3 = 14
+    ELITE = 15
+    CHAMPION = 16
+    UNREAL = 17
+
 
 class StatsCollectionType(Enum):
     FISH = 'collection_fish'

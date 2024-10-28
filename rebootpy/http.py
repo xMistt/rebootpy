@@ -343,6 +343,11 @@ class ChatService(Route):
     AUTH = 'FORTNITE_ACCESS_TOKEN'
 
 
+class HabaneroService(Route):
+    BASE = 'https://fn-service-habanero-live-public.ogs.live.on.epicgames.com'
+    AUTH = 'FORTNITE_ACCESS_TOKEN'
+
+
 def create_aiohttp_closed_event(session) -> asyncio.Event:
     """Work around aiohttp issue that doesn't properly close transports on exit.
 
@@ -1731,6 +1736,14 @@ class HTTPClient:
 
     async def lookup_island_data(self, code: str) -> dict:
         r = LinksPublicService(f'/links/api/fn/mnemonic/{code}')
+        return await self.get(r)
+
+    ###################################
+    #        Habanero Service         #
+    ###################################
+
+    async def get_ranked_tracks(self, user_id: str) -> dict:
+        r = HabaneroService(f'/api/v1/games/fortnite/trackprogress/{user_id}')
         return await self.get(r)
 
     ###################################
