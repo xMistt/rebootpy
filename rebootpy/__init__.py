@@ -41,7 +41,7 @@ from .party import (DefaultPartyConfig, DefaultPartyMemberConfig, PartyMember,
 from .presence import Presence, PresenceGameplayStats, PresenceParty
 from .user import (ClientUser, User, BlockedUser, ExternalAuth,
                    UserSearchEntry, SacSearchEntryUser)
-from .stats import StatsV2, StatsCollection
+from .stats import StatsV2, StatsCollection, CompetitiveRank
 from .enums import *
 from .errors import *
 from .store import Store, StoreItem
