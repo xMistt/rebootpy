@@ -344,7 +344,7 @@ class UserBase:
         return res[self.id]
 
     async def fetch_battlepass_level(self, *,
-                                     season: int,
+                                     season: 'BattlePassStat',
                                      start_time: Optional[DatetimeOrTimestamp] = None,  # noqa
                                      end_time: Optional[DatetimeOrTimestamp] = None  # noqa
                                      ) -> float:

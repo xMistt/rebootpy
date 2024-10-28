@@ -2118,27 +2118,31 @@ class BasicClient:
 
     async def fetch_multiple_battlepass_levels(self,
                                                users: List[str],
-                                               season: int,
+                                               season: BattlePassStat,
                                                *,
-                                               start_time: Optional[DatetimeOrTimestamp] = None,  # noqa
-                                               end_time: Optional[DatetimeOrTimestamp] = None  # noqa
+                                               start_time: Optional[
+                                                   DatetimeOrTimestamp] = None,
+                                               # noqa
+                                               end_time: Optional[
+                                                   DatetimeOrTimestamp] = None
+                                               # noqa
                                                ) -> Dict[str, float]:
         """|coro|
 
-        Fetches multiple users battlepass level.
+        Fetches multiple users' battlepass level.
 
         Parameters
         ----------
         users: List[:class:`str`]
             List of user ids.
-        season: :class:`int`
-            The season number to request the battlepass levels for.
+        season: :class:`BattlePassStat`
+            The season enum to request the battlepass levels for.
 
             .. warning::
 
                 If you are requesting the previous season and the new season has not been
                 added to the library yet (check :class:`SeasonStartTimestamp`), you have to
-                manually include the previous seasons end timestamp in epoch seconds.
+                manually include the previous season's end timestamp in epoch seconds.
         start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonStartTimestamp`]]
             The UTC start time of the window to get the battlepass level from.
             *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
@@ -2156,7 +2160,7 @@ class BasicClient:
         Returns
         -------
         Dict[:class:`str`, Optional[:class:`float`]]
-            Users battlepass level mapped to their account id. Returns ``None``
+            Users' battlepass level mapped to their account id. Returns ``None``
             if no battlepass level was found. If a user has career board set
             to private, he/she will not appear in the result. Therefore you
             should never expect a user to be included.
@@ -2168,27 +2172,27 @@ class BasicClient:
 
             .. note::
 
-                If a users battlepass level is missing in the returned mapping it means
+                If a user's battlepass level is missing in the returned mapping, it means
                 that the user has opted out of public leaderboards and that
-                the client therefore does not have permissions to requests
+                the client therefore does not have permission to request
                 their stats.
         """  # noqa
         start_time, end_time = self._process_stats_times(start_time, end_time)
 
         if end_time is not None:
-            e = getattr(SeasonStartTimestamp, 'SEASON_{}'.format(season), None)
-            if e is not None and end_time < e.value:
+            season_start = getattr(SeasonStartTimestamp, season.name, None)
+            if season_start is not None and end_time < season_start.value:
                 raise ValueError(
-                    'end_time can\'t be lower than the seasons start timestamp'
+                    'end_time can\'t be lower than the season\'s start timestamp'
                 )
 
-        e = getattr(BattlePassStat, 'SEASON_{}'.format(season), None)
-        if e is not None:
-            info = e.value
+        if isinstance(season, BattlePassStat):
+            info = season.value
             stats = info[0] if isinstance(info[0], tuple) else (info[0],)
             end_time = end_time if end_time is not None else info[1]
         else:
-            stats = ('s{0}_social_bp_level'.format(season),)
+            raise ValueError(
+                "Invalid season. Must be a member of BattlePassStat.")
 
         data = await self._multiple_stats_chunk_requester(
             users,
@@ -2205,27 +2209,30 @@ class BasicClient:
 
         return {e['accountId']: get_stat(e['stats']) for e in data}
 
-    async def fetch_battlepass_level(self, user_id: str, *,
-                                     season: int,
-                                     start_time: Optional[DatetimeOrTimestamp] = None,  # noqa
-                                     end_time: Optional[DatetimeOrTimestamp] = None  # noqa
+    async def fetch_battlepass_level(self,
+                                     user_id: str, *,
+                                     season: BattlePassStat,
+                                     start_time: Optional[
+                                         DatetimeOrTimestamp] = None,  # noqa
+                                     end_time: Optional[
+                                         DatetimeOrTimestamp] = None  # noqa
                                      ) -> float:
         """|coro|
 
-        Fetches a users battlepass level.
+        Fetches a user's battlepass level.
 
         Parameters
         ----------
         user_id: :class:`str`
             The user id to fetch the battlepass level for.
-        season: :class:`int`
-            The season number to request the battlepass level for.
+        season: :class:`BattlePassStat`
+            The season enum to request the battlepass level for.
 
             .. warning::
 
                 If you are requesting the previous season and the new season has not been
                 added to the library yet (check :class:`SeasonStartTimestamp`), you have to
-                manually include the previous seasons end timestamp in epoch seconds.
+                manually include the previous season's end timestamp in epoch seconds.
         start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonStartTimestamp`]]
             The UTC start time of the window to get the battlepass level from.
             *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
@@ -2238,14 +2245,14 @@ class BasicClient:
         Raises
         ------
         Forbidden
-            User has private career board.
+            User has a private career board.
         HTTPException
             An error occurred while requesting.
 
         Returns
         -------
         Optional[:class:`float`]
-            The users battlepass level. ``None`` is returned if the user has
+            The user's battlepass level. ``None`` is returned if the user has
             not played any real matches this season.
 
             .. note::
@@ -2260,7 +2267,7 @@ class BasicClient:
             end_time=end_time
         )
         if user_id not in data:
-            raise Forbidden('User has private career board.')
+            raise Forbidden('User has a private career board.')
 
         return data[user_id]
 

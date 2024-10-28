@@ -13,6 +13,7 @@ Changes
 ~~~~~~~
 
 - (**Breaking**) The :class:`SeasonStartTimestamp`, :class:`SeasonEndTimestamp` & :class:`BattlePassStat` enums have had their values renamed from the ``SEASON_?`` format to ``C?S?`` as it got confusing after Chapter 2. (e.g. ``SEASON_29`` is now ``C5S2``)
+- (**Breaking**) :meth:`Client.fetch_battlepass_level()` & :meth:`Client.fetch_multiple_battlepass_levels()` now take :class:`BattlePassStat` in their ``season`` parameter instead of :class:`int`.
 
 Added
 ~~~~~
