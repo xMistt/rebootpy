@@ -1805,7 +1805,7 @@ class BasicClient:
                                  ) -> List[CompetitiveRank]:
         """|coro|
 
-        Gets Ranked stats the specified user.
+        Gets Ranked stats of the specified user.
         
         Usage: ::
 
