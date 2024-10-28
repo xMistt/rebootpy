@@ -147,6 +147,12 @@ Enumerations
     .. attribute:: SWITCH
     .. attribute:: IOS
     .. attribute:: ANDROID
+    .. attribute:: UNKNOWN
+
+        Used when an un-official client (e.g. one using a library similar to
+        this) passes an invalid client to their presence such as ``EPIC``,
+        if you get this and it's coming from a legitimate Fortnite client,
+        please make an issue.
 
 .. class:: ReadyState
 
