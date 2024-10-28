@@ -12,7 +12,7 @@ v0.9.3 (pre-release)
 Added
 ~~~~~
 
-- Added :meth:`Client.fetch_ranked_stats()` & :meth:`User.fetch_ranked_stats()` (all classes that inherit from :class:`User` like :class:`Friend`, :class:`PartyMember`, etc will all have this method - search 'fetch_ranked_stats' to see all).
+- Added :meth:`Client.fetch_ranked_stats()` & :meth:`User.fetch_ranked_stats()` (all classes that inherit from :class:`User` like :class:`Friend`, :class:`PartyMember`, etc will all have this method - search ``fetch_ranked_stats`` to see all).
 - Added :exc:`ChatError`
 - Added ``SLEEPING`` to :class:`ReadyState`
 
