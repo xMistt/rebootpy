@@ -268,6 +268,53 @@ Enumerations
 
     .. attribute:: FISH
 
+.. class:: Seasons
+
+    An enumeration for the available ranked seasons.
+
+    .. attribute:: C4S2
+    .. attribute:: C4S3
+    .. attribute:: C4S4
+    .. attribute:: C4SOG
+    .. attribute:: C5S1
+    .. attribute:: C5S2
+    .. attribute:: C5S3
+    .. attribute:: C5S4
+
+.. class:: RankingType
+
+    An enumeration for the available ranking types.
+
+    .. attribute:: BATTLE_ROYALE
+    .. attribute:: ZERO_BUILD
+    .. attribute:: ROCKET_RACING
+    .. attribute:: RELOAD
+    .. attribute:: RELOAD_ZB
+
+.. class:: Rank
+
+    An enumeration for the available ranks.
+
+    .. attribute:: UNRANKED
+    .. attribute:: BRONZE_1
+    .. attribute:: BRONZE_2
+    .. attribute:: BRONZE_3
+    .. attribute:: SILVER_1
+    .. attribute:: SILVER_2
+    .. attribute:: SILVER_3
+    .. attribute:: GOLD_1
+    .. attribute:: GOLD_2
+    .. attribute:: GOLD_3
+    .. attribute:: PLATINUM_1
+    .. attribute:: PLATINUM_2
+    .. attribute:: PLATINUM_3
+    .. attribute:: DIAMOND_1
+    .. attribute:: DIAMOND_2
+    .. attribute:: DIAMOND_3
+    .. attribute:: ELITE
+    .. attribute:: CHAMPION
+    .. attribute:: UNREAL
+
 .. _rebootpy-api-events:
 
 Event Reference
@@ -1176,6 +1223,15 @@ CreativeIslandRating
 .. attributetable:: CreativeIslandRating
 
 .. autoclass:: CreativeIslandRating()
+    :members:
+    :inherited-members:
+
+CompetitiveRank
+~~~~~~~~~~~~~~~~~
+
+.. attributetable:: CompetitiveRank
+
+.. autoclass:: CompetitiveRank()
     :members:
     :inherited-members:
 
