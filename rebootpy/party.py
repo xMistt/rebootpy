@@ -1345,7 +1345,8 @@ class PartyMeta(MetaBase):
         base = self.get_prop('Default:SelectedIsland_j')
         info = base['SelectedIsland']
 
-        return info['linkId']['mnemonic'], info['session']['iD']
+        return (info['linkId']['mnemonic'],
+                info.get('session', {}).get('iD', ''))
 
     @property
     def region(self) -> str:
