@@ -27,7 +27,7 @@ Bug Fixes
 
 - Fixed an issue preventing the use of newer aiohttp versions.
 - Fixed an issue with certain headless accounts with missing properties.
-- Invalid platforms (thanks to messed up presences) won't raise errors and will instead return ``Platform.UNKNOWN``.
+- Invalid platforms (thanks to messed up non-official clients) won't raise errors and will instead return ``Platform.UNKNOWN``.
 
 v0.9.2
 ------
