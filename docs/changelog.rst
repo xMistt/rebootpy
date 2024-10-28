@@ -9,6 +9,11 @@ You can also view the changelog of the original library, fortnitepy, `here <http
 v0.9.3 (pre-release)
 ------
 
+Changes
+~~~~~~~
+
+- (**Breaking**) The :class:`SeasonStartTimestamp`, :class:`SeasonEndTimestamp` & :class:`BattlePassStat` enums have had their values renamed from the ``SEASON_?`` format to ``C?S?`` as it got confusing after Chapter 2. (e.g. ``SEASON_29`` is now ``C5S2``)
+
 Added
 ~~~~~
 
