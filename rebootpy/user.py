@@ -26,14 +26,15 @@ import logging
 
 from aioxmpp import JID
 from typing import TYPE_CHECKING, Any, List, Optional
-from .enums import UserSearchPlatform, UserSearchMatchType, StatsCollectionType
+from .enums import (UserSearchPlatform, UserSearchMatchType,
+                    StatsCollectionType, Seasons)
 from .typedefs import DatetimeOrTimestamp
 from .errors import Forbidden
 from .utils import from_iso
 
 if TYPE_CHECKING:
     from .client import BasicClient
-    from .stats import StatsV2, StatsCollection
+    from .stats import StatsV2, StatsCollection, CompetitiveRank
 
 log = logging.getLogger(__name__)
 
@@ -250,7 +251,7 @@ class UserBase:
 
     async def fetch_ranked_stats(self,
                                  season: Seasons
-                                 ) -> List[CompetitiveRank]:
+                                 ) -> List['CompetitiveRank']:
         """|coro|
 
         Fetches this users ranked stats.
