@@ -262,6 +262,30 @@ Enumerations
     .. attribute:: C5S2
     .. attribute:: C5S3
 
+.. class:: BattlePassStat
+
+    An enumeration of battle pass level seasons.
+
+    .. attribute:: C2S1
+    .. attribute:: C2S2
+    .. attribute:: C2S3
+    .. attribute:: C2S4
+    .. attribute:: C2S5
+    .. attribute:: C2S6
+    .. attribute:: C2S7
+    .. attribute:: C2S8
+    .. attribute:: C3S1
+    .. attribute:: C3S2
+    .. attribute:: C3S3
+    .. attribute:: C3S4
+    .. attribute:: C4S1
+    .. attribute:: C4S2
+    .. attribute:: C4S3
+    .. attribute:: C4S4
+    .. attribute:: C4SOG
+    .. attribute:: C5S1
+    .. attribute:: C5S2
+
 .. class:: StatsCollectionType
 
     An enumeration for stats collection types.
