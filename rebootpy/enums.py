@@ -175,6 +175,11 @@ class Platform(Enum):
     SWITCH        = 'SWT'
     IOS           = 'IOS'
     ANDROID       = 'AND'
+    UNKNOWN       = 'UNKNOWN'
+
+    @classmethod
+    def _missing_(cls, value) -> 'Platform':
+        return cls.UNKNOWN
 
 
 class UserSearchPlatform(Enum):
