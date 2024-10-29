@@ -325,10 +325,30 @@ class WebsocketTransport:
         finally:
             self.logger.debug('Websocket reader stopped.')
 
+
+  
     async def send(self, data: bytes) -> None:
         self.logger.debug('SEND: {0}'.format(data))
-        await self.connection.send_bytes(data)
+        try:
+          await self.connection.send_bytes(data)
+        except aiohttp.client_exceptions.ClientConnectionResetError:
+          self.logger.error("WebSocket connection reset, attempting to reconnect...")
+          await self._reconnect()
 
+  
+    async def _reconnect(self):
+        if self.connection:
+            await self.connection.close()
+            self.logger.debug("Closed existing connection before reconnecting.")
+    
+        try:
+            self.logger.debug("Attempting reconnection...")
+            self.connection = await aiohttp.ClientSession().ws_connect('YOUR_WEBSOCKET_URL')
+            self.logger.debug("Reconnected successfully.")
+        except Exception as e:
+            self.logger.error(f"Reconnection failed: {e}")
+
+  
     def write(self, data: bytes) -> None:
         self._buffer += data
 
