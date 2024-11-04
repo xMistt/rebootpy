@@ -232,6 +232,7 @@ Enumerations
     .. attribute:: C5S2
     .. attribute:: C5S3
     .. attribute:: C5S4
+    .. attribute:: C5SOG
 
 .. class:: SeasonEndTimestamp
 
@@ -267,6 +268,8 @@ Enumerations
     .. attribute:: C5S1
     .. attribute:: C5S2
     .. attribute:: C5S3
+    .. attribute:: C5S4
+    .. attribute:: C5SOG
 
 .. class:: BattlePassStat
 
@@ -291,6 +294,10 @@ Enumerations
     .. attribute:: C4SOG
     .. attribute:: C5S1
     .. attribute:: C5S2
+    .. attribute:: C5S2
+    .. attribute:: C5S3
+    .. attribute:: C5S4
+    .. attribute:: C5SOG
 
 .. class:: StatsCollectionType
 
