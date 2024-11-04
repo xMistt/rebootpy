@@ -22,7 +22,7 @@ Added
 - Added :exc:`ChatError`
 - Added ``SLEEPING`` to :class:`ReadyState`
 - Added new enum values for the new season.
-    - ``SeasonStartTimestamp.C5SOG`` - please note, that this timestamp includes the last 6 hours of C5S4 in order to include all stats from the first day of the season, it's the same 
+    - ``SeasonStartTimestamp.C5SOG`` - please note, that this timestamp includes the last 6 hours of C5S4 in order to include all stats from the first day of the season, it's the same timestamp that both `FortniteTracker <https://fortnitetracker.com/>`_ and `fortnite.gg <https://fortnite.gg/>`_ use for this season.
     - ``SeasonEndTimestamp.C5S4``
     - ``SeasonEndTimestamp.C5SOG``
     - ``BattlePassStat.C5SOG``
