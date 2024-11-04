@@ -1290,8 +1290,17 @@ class PartyMeta(MetaBase):
             "Default:PrivacySettings_j": json.dumps({
                 'PrivacySettings': privacy_settings,
             }),
-            "Default:RawSquadAssignments_j": json.dumps({
-                "RawSquadAssignments": []
+            "Default:SquadInformation_j": json.dumps({
+                "SquadInformation": {
+                    "rawSquadAssignments": [],
+                    "squadData": [
+                        {
+                            "jamTempo": 0,
+                            "jamKey": 0,
+                            "jamMode": 0
+                        }
+                    ]
+                }
             }),
             "Default:RegionId_s": "EU",
             "Default:SelectedIsland_j": json.dumps({
@@ -1380,12 +1389,23 @@ class PartyMeta(MetaBase):
 
     @property
     def squad_assignments(self) -> List[dict]:
-        raw = self.get_prop('Default:RawSquadAssignments_j')
-        return raw['RawSquadAssignments']
+        raw = self.get_prop('Default:SquadInformation_j')
+        return raw['SquadInformation']['rawSquadAssignments']
 
     def set_squad_assignments(self, data: List[dict]) -> Dict[str, Any]:
-        final = {'RawSquadAssignments': data}
-        key = 'Default:RawSquadAssignments_j'
+        final = {
+            "SquadInformation": {
+                "rawSquadAssignments": data,
+                "squadData": [
+                    {
+                        "jamTempo": 0,
+                        "jamKey": 0,
+                        "jamMode": 0
+                    }
+                ]
+            }
+        }
+        key = 'Default:SquadInformation_j'
         return {key: self.set_prop(key, final)}
     
     def set_playlist(self, playlist: str) -> Dict[str, Any]:
@@ -3253,7 +3273,7 @@ class PartyBase:
         _update_squad_assignments = False
 
         if 'party_state_updated' in data:
-            key = 'Default:RawSquadAssignments_j'
+            key = 'Default:SquadInformation_j'
             _assignments = data['party_state_updated'].get(key)
             if _assignments:
                 if _assignments != self.meta.schema.get(key, ''):

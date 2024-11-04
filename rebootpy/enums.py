@@ -239,6 +239,7 @@ class SeasonStartTimestamp(Enum):
     C5S2   = 1709951400
     C5S3   = 1716508800
     C5S4   = 1723802400
+    C5SOG  = 1730505600
 
 
 class SeasonEndTimestamp(Enum):
@@ -272,6 +273,8 @@ class SeasonEndTimestamp(Enum):
     C5S1  = 1709794800
     C5S2  = 1716533100
     C5S3  = 1723777200
+    C5S4  = 1730505599
+    C5SOG = 1733036340
 
 
 class BattlePassStat(Enum):
@@ -294,6 +297,9 @@ class BattlePassStat(Enum):
     C4SOG = ('s27_social_bp_level', SeasonEndTimestamp.C4SOG.value)
     C5S1  = ('s28_social_bp_level', SeasonEndTimestamp.C5S1.value)
     C5S2  = ('s29_social_bp_level', SeasonEndTimestamp.C5S2.value)
+    C5S3  = ('s30_social_bp_level', SeasonEndTimestamp.C5S3.value)
+    C5S4  = ('s31_social_bp_level', SeasonEndTimestamp.C5S4.value)
+    C5SOG = ('s32_social_bp_level', SeasonEndTimestamp.C5SOG.value)
 
 
 class Seasons(Enum):

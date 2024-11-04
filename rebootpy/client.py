@@ -478,6 +478,10 @@ class BasicClient:
         Whether or not the library should cache :class:`User` objects. Disable
         this if you are running a program with lots of users as this could
         potentially take a big hit on the memory usage. Defaults to ``True``.
+    kill_other_sessions: :class:`bool`
+        Whether or not the library should kill all other existing session/
+        tokens, you only need this if you're running a rebootpy client
+        alongside an actual Fortnite session. Defaults to ``True``.
 
     Attributes
     ----------
@@ -494,7 +498,7 @@ class BasicClient:
             'deployment_id', '62a9473a2dca46b29ccf17577fcf42d7'
         )
 
-        self.kill_other_sessions = True
+        self.kill_other_sessions = kwargs.get('kill_other_sessions', True)
         self.accept_eula = True
         self.event_prefix = 'event_'
 
@@ -2623,6 +2627,10 @@ class Client(BasicClient):
         Whether or not the library should cache :class:`User` objects. Disable
         this if you are running a program with lots of users as this could
         potentially take a big hit on the memory usage. Defaults to ``True``.
+    kill_other_sessions: :class:`bool`
+        Whether or not the library should kill all other existing session/
+        tokens, you only need this if you're running a rebootpy client
+        alongside an actual Fortnite session. Defaults to ``True``.
     fetch_user_data_in_events: :class:`bool`
         Whether or not user data should be fetched in event processing. Disabling
         this might be useful for larger applications that deals with

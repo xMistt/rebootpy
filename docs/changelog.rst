@@ -6,7 +6,7 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
-v0.9.3 (pre-release)
+v0.9.3
 ------
 
 Changes
@@ -21,6 +21,12 @@ Added
 - Added :meth:`Client.fetch_ranked_stats()` & :meth:`User.fetch_ranked_stats()` (all classes that inherit from :class:`User` like :class:`Friend`, :class:`PartyMember`, etc will all have this method - search ``fetch_ranked_stats`` to see all).
 - Added :exc:`ChatError`
 - Added ``SLEEPING`` to :class:`ReadyState`
+- Added new enum values for the new season.
+    - ``SeasonStartTimestamp.C5SOG`` - please note, that this timestamp includes the last 6 hours of C5S4 in order to include all stats from the first day of the season, it's the same 
+    - ``SeasonEndTimestamp.C5S4``
+    - ``SeasonEndTimestamp.C5SOG``
+    - ``BattlePassStat.C5SOG``
+- Added ``kill_other_sessions`` parameter to :class:`BasicClient` & :class:`Client`, if you were manually setting the value of the attribute yourself, this'll still work.
 
 Bug Fixes
 ~~~~~
@@ -28,6 +34,7 @@ Bug Fixes
 - Fixed an issue preventing the use of newer aiohttp versions.
 - Fixed an issue with certain headless accounts with missing properties.
 - Invalid platforms (thanks to messed up non-official clients) won't raise errors and will instead return ``Platform.UNKNOWN``.
+- Updated party meta to reflect the new season changes.
 
 v0.9.2
 ------
