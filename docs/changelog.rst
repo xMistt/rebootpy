@@ -17,7 +17,7 @@ Changes
 Added
 ~~~~~
 
-- Added `Seasons.C5SOG`
+- Added ``Seasons.C5SOG``
 
 v0.9.3
 ------
