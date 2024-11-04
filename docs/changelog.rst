@@ -6,6 +6,19 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
+v0.9.4 (pre-release)
+------
+
+Changes
+~~~~~~~
+
+- :meth:`Client.fetch_ranked_stats()` / :meth:`User.fetch_ranked_stats()` now accepts passing no season which will then automatically fetch the current seasons tracks.
+
+Added
+~~~~~
+
+- Added `Seasons.C5SOG`
+
 v0.9.3
 ------
 

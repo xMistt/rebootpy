@@ -311,6 +311,7 @@ class Seasons(Enum):
     C5S2  = ('ch3353', 'a1m0n3', 'rrwpwg')
     C5S3  = ('N4PK1N', 'L1GHT5', 'rrzuel')
     C5S4  = ('S4LT3D', 'P0T4T0', 'rr9qlw', 'M4rC4S', 'L4nC3r')
+    C5SOG = ('P3PP3R', 'D13tDw', 'rr9qlw', 'W4FFL3', 'Fr3SkA')
 
 
 class RankingType(Enum):

@@ -29,11 +29,12 @@ import json
 import re
 import time
 import functools
+import datetime
 
 from typing import TYPE_CHECKING, Iterable, List, Optional, Any, Union, Tuple
 from urllib.parse import quote as urllibquote
 
-from .utils import MaybeLock
+from .utils import MaybeLock, to_iso
 from .errors import HTTPException, ChatError
 
 if TYPE_CHECKING:
@@ -1742,8 +1743,12 @@ class HTTPClient:
     #        Habanero Service         #
     ###################################
 
-    async def get_ranked_tracks(self, user_id: str) -> dict:
+    async def get_ranked_tracks(self, user_id: str) -> list:
         r = HabaneroService(f'/api/v1/games/fortnite/trackprogress/{user_id}')
+        return await self.get(r)
+
+    async def get_active_tracks(self, time: datetime.datetime = datetime.datetime.now()) -> list:
+        r = HabaneroService(f'/api/v1/games/fortnite/tracks/activeBy/{to_iso(time)}')
         return await self.get(r)
 
     ###################################
