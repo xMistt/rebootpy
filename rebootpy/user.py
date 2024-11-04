@@ -250,7 +250,7 @@ class UserBase:
         )
 
     async def fetch_ranked_stats(self,
-                                 season: Seasons = None
+                                 season: Optional[Seasons] = None
                                  ) -> List['CompetitiveRank']:
         """|coro|
 
@@ -279,7 +279,7 @@ class UserBase:
 
         Parameters
         ----------
-        season: :class:`Seasons`
+        season: Optional[:class:`Seasons`]
             The season that you want to get ranks from, if not provided it'll get the
             current seasons ranked tracks automatically.
             *Defaults to None*

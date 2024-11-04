@@ -1805,7 +1805,7 @@ class BasicClient:
 
     async def fetch_ranked_stats(self,
                                  user_id: str,
-                                 season: Seasons = None
+                                 season: Optional[Seasons] = None
                                  ) -> List[CompetitiveRank]:
         """|coro|
 
@@ -1836,7 +1836,7 @@ class BasicClient:
         ----------
         user_id: :class:`str`
             The id of the user you want to fetch stats for.
-        season: :class:`Seasons`
+        season: Optional[:class:`Seasons`]
             The season that you want to get ranks from, if not provided it'll get the
             current seasons ranked tracks automatically.
             *Defaults to None*
