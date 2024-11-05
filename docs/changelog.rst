@@ -19,6 +19,11 @@ Added
 
 - Added ``Seasons.C5SOG``
 
+Bug Fixes
+~~~~~
+
+- Fixed an issue parsing squad assignments if the client wasn't leader.
+
 v0.9.3
 ------
 

@@ -3320,7 +3320,9 @@ class PartyBase:
 
         if _update_squad_assignments:
             if self.leader.id != self.client.user.id:
-                _assignments = json.loads(_assignments)['RawSquadAssignments']
+                _assignments = json.loads(
+                    _assignments
+                )['SquadInformation']['rawSquadAssignments']
                 self._update_squad_assignments(_assignments)
 
     def _update_roles(self, new_leader: PartyMemberBase) -> None:
