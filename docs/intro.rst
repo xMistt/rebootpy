@@ -25,8 +25,8 @@ To get a bot running, you must use one of several :ref:`authentication methods <
 
 **How to get an authorization code:**
 
-#. Log into an Epic Games account of your choice `here <https://www.epicgames.com/id/logout?redirectUrl=https%3A//www.epicgames.com/id/login%3FredirectUrl%3Dhttps%253A%252F%252Fwww.epicgames.com%252Fid%252Fapi%252Fredirect%253FclientId%253D3446cd72694c4a4485d81b77adbb2141%2526responseType%253Dcode>`_.
-#. Copy the hex part from the url that shows up as showcased by the image below.
+#. Log into an Epic Games account of your choice `here <https://www.epicgames.com/id/logout?redirectUrl=https%3A//www.epicgames.com/id/login%3FredirectUrl%3Dhttps%253A%252F%252Fwww.epicgames.com%252Fid%252Fapi%252Fredirect%253FclientId%253D3f69e56c7649492c8cc29f1af08a8a12%2526responseType%253Dcode>`_.
+#. Copy the value of the `authorizationCode` field from the response as shown in the image below:
 
 .. image:: https://raw.githubusercontent.com/xMistt/rebootpy/main/docs/resources/images/authorization_code.png
 

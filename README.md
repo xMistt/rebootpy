@@ -58,8 +58,8 @@ bot.run()
 
 # Authorization
 How to get a one time authorization code:
-1. Log into the epic games account of your choice [here](https://www.epicgames.com/id/login?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Fapi%2Fredirect%3FclientId%3D3446cd72694c4a4485d81b77adbb2141%26responseType%3Dcode).
-2. Copy the hex part from the url that shows up as showcased by the image below:
+1. Log into the epic games account of your choice [here](https://www.epicgames.com/id/login?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Fapi%2Fredirect%3FclientId%3D3f69e56c7649492c8cc29f1af08a8a12%26responseType%3Dcode).
+2. Copy the value of the `authorizationCode` field from the response as shown in the image below:
 
 ![Authorization Code](https://raw.githubusercontent.com/xMistt/rebootpy/main/docs/resources/images/authorization_code.png)
 

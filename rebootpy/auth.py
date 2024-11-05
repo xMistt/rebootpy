@@ -490,7 +490,7 @@ class AuthorizationCodeAuth(ExchangeCodeAuth):
 
     You can get the code from `here
     <https://www.epicgames.com/id/api/redirect?
-    clientId=3446cd72694c4a4485d81b77adbb2141&responseType=code>`_ by logging
+    clientId=3f69e56c7649492c8cc29f1af08a8a12&responseType=code>`_ by logging
     in and copying the code from the redirectUrl's query parameters. If you
     are already logged in and want to change accounts, simply log out at
     https://www.epicgames.com, log in to the new account and then enter the
