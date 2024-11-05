@@ -40,7 +40,7 @@ setuptools.setup(
     install_requires=requirements,
     extras_require=extras_require,
     packages=['rebootpy', 'rebootpy.ext.commands'],
-    python_requires='>=3.5.3',
+    python_requires='>=3.7.0',
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Intended Audience :: Developers',
