@@ -376,14 +376,14 @@ class UserBase:
 
         Parameters
         ----------
-        season: :class:`int`
-            The season number to request the battlepass level for.
-            
+        season: :class:`BattlePassStat`
+            The season enum to request the battlepass level for.
+
             .. warning::
 
                 If you are requesting the previous season and the new season has not been
                 added to the library yet (check :class:`SeasonStartTimestamp`), you have to
-                manually include the previous seasons end timestamp in epoch seconds.
+                manually include the previous season's end timestamp in epoch seconds.
         start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonStartTimestamp`]]
             The UTC start time of the window to get the battlepass level from.
             *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
