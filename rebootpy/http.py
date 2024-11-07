@@ -1268,6 +1268,11 @@ class HTTPClient:
         r = FortnitePublicService('/fortnite/api/calendar/v1/timeline')
         return await self.get(r)
 
+    async def fortnite_get_br_inventory(self, user_id: str) -> dict:
+        r = FortnitePublicService('/fortnite/api/game/v2/'
+                                  f'br-inventory/account/{user_id}')
+        return await self.get(r)
+
     ###################################
     #        Fortnite Content         #
     ###################################

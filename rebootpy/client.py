@@ -1863,6 +1863,30 @@ class BasicClient:
         return [CompetitiveRank(data=track) for track in raw_tracks
                 if track['trackguid'] in tracks]
 
+    async def fetch_gold_bars(self, user_id: str) -> int:
+        """|coro|
+
+        Fetches the amount of gold bars a user has.
+
+        Parameters
+        ----------
+        user_id: :class:`str`
+            The id of the user you want to fetch gold bars for.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+
+        Returns
+        -------
+        int
+            The amount of gold bars.
+        """  # noqa
+
+        data = await self.http.fortnite_get_br_inventory(user_id=user_id)
+        return data['stash']['globalcash']
+
     async def fetch_br_stats(self, user_id: str, *,
                              start_time: Optional[DatetimeOrTimestamp] = None,
                              end_time: Optional[DatetimeOrTimestamp] = None

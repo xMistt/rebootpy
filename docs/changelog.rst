@@ -18,6 +18,7 @@ Added
 ~~~~~
 
 - Added ``Seasons.C5SOG``
+- Added :meth:`Client.fetch_gold_bars()` & :meth:`User.fetch_gold_bars()`
 
 Bug Fixes
 ~~~~~

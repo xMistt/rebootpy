@@ -299,6 +299,26 @@ class UserBase:
             season=season
         )
 
+    async def fetch_gold_bars(self) -> int:
+        """|coro|
+
+        Fetches this users gold bars.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+
+        Returns
+        -------
+        int
+            The amount of gold bars.
+        """  # noqa
+
+        return await self.client.fetch_gold_bars(
+            user_id=self.id
+        )
+
     async def fetch_br_stats_collection(self, collection: StatsCollectionType,
                                         start_time: Optional[DatetimeOrTimestamp] = None,  # noqa
                                         end_time: Optional[DatetimeOrTimestamp] = None  # noqa)
