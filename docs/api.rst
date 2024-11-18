@@ -217,6 +217,8 @@ Enumerations
     - **battlepass_level** (:class:`str` or :class:`tuple`): The StatsV2 value for this season's battle pass level. ``None`` for seasons before Chapter 2.
     - **ranked_tracks** (:class:`tuple`): The ranked tracks for this season. ``None`` for seasons before Chapter 4, Season 2.
 
+    You don't need to use ``.value`` to access these; you can access them directly, e.g. ``Season.C5SOG.start_timestamp``.
+
     Enums
     ----------
 
