@@ -351,7 +351,7 @@ class Season(Enum):
         ranked_tracks=('P3PP3R', 'D13tDw', 'rr9qlw', 'W4FFL3', 'Fr3SkA')
     )
 
-    def __new__(cls, value):
+    def __new__(cls, value: FortniteSeason) -> 'Season':
         obj = object.__new__(cls)
         obj._value_ = value
         obj.start_timestamp = value.start_timestamp
