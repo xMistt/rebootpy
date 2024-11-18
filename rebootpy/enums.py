@@ -32,6 +32,19 @@ from typing import Optional, Any
 from enum import Enum as OriginalEnum
 
 
+class FortniteSeason:
+    def __init__(self,
+                 start_timestamp: int,
+                 end_timestamp: int,
+                 battlepass_level: str = None,
+                 ranked_tracks: tuple = None
+                 ) -> None:
+        self.start_timestamp = start_timestamp
+        self.end_timestamp = end_timestamp
+        self.battlepass_level = battlepass_level
+        self.ranked_tracks = ranked_tracks
+
+
 class Enum(OriginalEnum):
     @classmethod
     def get_random_member(cls) -> Optional[Any]:
@@ -205,19 +218,6 @@ class AwayStatus(Enum):
     ONLINE        = None
     AWAY          = 'away'
     EXTENDED_AWAY = 'xa'
-
-
-class FortniteSeason:
-    def __init__(self,
-                 start_timestamp: int,
-                 end_timestamp: int,
-                 battlepass_level: str = None,
-                 ranked_tracks: tuple = None
-                 ) -> None:
-        self.start_timestamp = start_timestamp
-        self.end_timestamp = end_timestamp
-        self.battlepass_level = battlepass_level
-        self.ranked_tracks = ranked_tracks
 
 
 class Season(Enum):
