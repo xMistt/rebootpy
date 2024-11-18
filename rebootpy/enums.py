@@ -392,4 +392,5 @@ class Rank(Enum):
 
 
 class StatsCollectionType(Enum):
-    FISH = 'collection_fish'
+    FISH      = 'collection_fish'
+    CHARACTER = 'collection_character'
