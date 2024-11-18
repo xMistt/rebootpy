@@ -220,8 +220,6 @@ Enumerations
     Enums
     ----------
 
-    The following are the individual season enums:
-
     .. attribute:: C1S1
     .. attribute:: C1S2
     .. attribute:: C1S3
