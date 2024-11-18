@@ -13,6 +13,24 @@ Changes
 ~~~~~~~
 
 - :meth:`Client.fetch_ranked_stats()` / :meth:`User.fetch_ranked_stats()` now accepts passing no season which will then automatically fetch the current seasons tracks.
+- (**Breaking**) Removed ``SeasonStartTimestamp``, ``SeasonEndTimestamp``, ``BattlePassStat`` and ``Seasons`` to merge them into a new universal enum :class:`Season`. Affected functions (please re-read the documentation if you use these as they have been updated):
+    - :meth:`Client.fetch_battlepass_level()`
+    - :meth:`Client.fetch_multiple_br_stats`
+    - :meth:`Client.fetch_multiple_br_stats_collections`
+    - :meth:`Client.fetch_multiple_battlepass_levels`
+    - :meth:`Client.fetch_battlepass_level`
+    - :meth:`Client.fetch_ranked_stats`
+    - :meth:`User.fetch_br_stats`
+    - :meth:`User.fetch_br_stats_collection`
+    - :meth:`User.fetch_battlepass_level`
+    - :meth:`User.fetch_ranked_stats`
+
+    If you were using the old enums, here is how you can replace them:
+
+    - ``SeasonStartTimestamp.C5SOG.value`` -> ``Season.C5SOG.start_timestamp``
+    - ``SeasonEndTimestamp.C5SOG.value`` -> ``Season.C5SOG.end_timestamp``
+    - ``BattlePassStat.C5SOG.value[0]`` -> ``Season.C5SOG.battlepass_level``
+    - ``Seasons.C5SOG`` -> ``Season.C5SOG.ranked_tracks``
 
 Added
 ~~~~~
@@ -24,6 +42,7 @@ Bug Fixes
 ~~~~~
 
 - Fixed an issue parsing squad assignments if the client wasn't leader.
+- Fixed :meth:`Client.fetch_multiple_br_stats_collections` and :meth:`User.fetch_br_stats_collection` incorrectly saying the user was private.
 
 v0.9.3
 ------

@@ -27,7 +27,7 @@ import logging
 from aioxmpp import JID
 from typing import TYPE_CHECKING, Any, List, Optional
 from .enums import (UserSearchPlatform, UserSearchMatchType,
-                    StatsCollectionType, Seasons)
+                    StatsCollectionType, Season)
 from .typedefs import DatetimeOrTimestamp
 from .errors import Forbidden
 from .utils import from_iso
@@ -215,24 +215,26 @@ class UserBase:
                              ) -> 'StatsV2':
         """|coro|
 
-        Fetches this users stats.
+        Fetches the user's stats.
 
         Parameters
         ----------
-        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonStartTimestamp`]]
+        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]]
             The UTC start time of the time period to get stats from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
-            *Defaults to None*
-        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonEndTimestamp`]]
+            *Must be seconds since epoch, :class:`datetime.datetime`, or the `start_timestamp`
+            value of a :class:`Season` (e.g., ``Season.C5SOG.start_timestamp``).*
+            *Defaults to None.*
+        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]]
             The UTC end time of the time period to get stats from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
-            *Defaults to None*
+            *Must be seconds since epoch, :class:`datetime.datetime`, or the `end_timestamp`
+            value of a :class:`Season` (e.g., ``Season.C5SOG.end_timestamp``).*
+            *Defaults to None.*
 
         Raises
         ------
         Forbidden
             The user has chosen to be hidden from public stats by disabling
-            the fortnite setting below.
+            the Fortnite setting below.
             ``Settings`` -> ``Account and Privacy`` -> ``Show on career
             leaderboard``
         HTTPException
@@ -250,38 +252,37 @@ class UserBase:
         )
 
     async def fetch_ranked_stats(self,
-                                 season: Optional[Seasons] = None
+                                 season: Optional[Season] = None
                                  ) -> List['CompetitiveRank']:
         """|coro|
 
-        Fetches this users ranked stats.
-        
+        Fetches this user's ranked stats.
+
         Usage: ::
 
-            # get my c5s3 ranked stats
+            # get my C5S3 ranked stats
             async def get_6v_ranked_stats():
                 print(f'Fetching ranked stats for C5S3')
 
                 user = await bot.fetch_user('6v.')
                 ranks = await user.fetch_ranked_stats(
-                    season=rebootpy.Seasons.C5S3
+                    season=rebootpy.Season.C5S3
                 )
-            
+
                 for rank in ranks:
                     print(f'{rank.ranking_type.name} - {rank.current_division.name}')
-                
+
             # Example output:
             # Fetching ranked stats for C5S3
             # BATTLE_ROYALE - DIAMOND_2
             # ROCKET_RACING - UNRANKED
             # ZERO_BUILD - UNREAL
 
-
         Parameters
         ----------
-        season: Optional[:class:`Seasons`]
-            The season that you want to get ranks from, if not provided it'll get the
-            current seasons ranked tracks automatically.
+        season: Optional[:class:`Season`]
+            The season that you want to get ranks from. If not provided, it will
+            get the current season's ranked tracks automatically.
             *Defaults to None*
 
         Raises
@@ -292,7 +293,7 @@ class UserBase:
         Returns
         -------
         List[:class:`CompetitiveRank`]
-            A list of all of the users ranks in the requested season.
+            A list of all of the user's ranks in the requested season.
         """  # noqa
         return await self.client.fetch_ranked_stats(
             self.id,
@@ -320,29 +321,37 @@ class UserBase:
         )
 
     async def fetch_br_stats_collection(self, collection: StatsCollectionType,
-                                        start_time: Optional[DatetimeOrTimestamp] = None,  # noqa
-                                        end_time: Optional[DatetimeOrTimestamp] = None  # noqa)
+                                        start_time: Optional[
+                                            DatetimeOrTimestamp] = None,
+                                        # noqa
+                                        end_time: Optional[
+                                            DatetimeOrTimestamp] = None  # noqa
                                         ) -> 'StatsCollection':
         """|coro|
 
-        Fetches a stats collections for this user.
+        Fetches a stats collection for this user.
 
         Parameters
         ----------
-        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonStartTimestamp`]]
+        collection: :class:`StatsCollectionType`
+            The collection to receive. Collections are predefined stats that
+            attempt to request specific information.
+        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]]
             The UTC start time of the time period to get stats from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
-            *Defaults to None*
-        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonEndTimestamp`]]
+            *Must be seconds since epoch, :class:`datetime.datetime`, or the `start_timestamp`
+            value of a :class:`Season` (e.g., ``Season.C5SOG.start_timestamp``).*
+            *Defaults to None.*
+        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]]
             The UTC end time of the time period to get stats from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
-            *Defaults to None*
+            *Must be seconds since epoch, :class:`datetime.datetime`, or the `end_timestamp`
+            value of a :class:`Season` (e.g., ``Season.C5SOG.end_timestamp``).*
+            *Defaults to None.*
 
         Raises
         ------
         Forbidden
             The user has chosen to be hidden from public stats by disabling
-            the fortnite setting below.
+            the Fortnite setting below.
             ``Settings`` -> ``Account and Privacy`` -> ``Show on career
             leaderboard``
         HTTPException
@@ -366,13 +375,15 @@ class UserBase:
         return res[self.id]
 
     async def fetch_battlepass_level(self, *,
-                                     season: 'BattlePassStat',
-                                     start_time: Optional[DatetimeOrTimestamp] = None,  # noqa
-                                     end_time: Optional[DatetimeOrTimestamp] = None  # noqa
+                                     season: 'Season',
+                                     start_time: Optional[
+                                         DatetimeOrTimestamp] = None,  # noqa
+                                     end_time: Optional[
+                                         DatetimeOrTimestamp] = None  # noqa
                                      ) -> float:
         """|coro|
 
-        Fetches this users battlepass level.
+        Fetches the user's battlepass level.
 
         Parameters
         ----------
@@ -382,16 +393,18 @@ class UserBase:
             .. warning::
 
                 If you are requesting the previous season and the new season has not been
-                added to the library yet (check :class:`SeasonStartTimestamp`), you have to
+                added to the library yet (check :class:`Season`), you have to
                 manually include the previous season's end timestamp in epoch seconds.
-        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonStartTimestamp`]]
+        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]]
             The UTC start time of the window to get the battlepass level from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
-            *Defaults to None*
-        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonEndTimestamp`]]
+            *Must be seconds since epoch, :class:`datetime.datetime`, or the `start_timestamp`
+            value of a :class:`Season` (e.g., ``Season.C5SOG.start_timestamp``).*
+            *Defaults to None.*
+        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]]
             The UTC end time of the window to get the battlepass level from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
-            *Defaults to None*
+            *Must be seconds since epoch, :class:`datetime.datetime`, or the `end_timestamp`
+            value of a :class:`Season` (e.g., ``Season.C5SOG.end_timestamp``).*
+            *Defaults to None.*
 
         Raises
         ------
@@ -401,14 +414,15 @@ class UserBase:
         Returns
         -------
         Optional[:class:`float`]
-            The users battlepass level. ``None`` is returned if the user has
+            The user's battlepass level. ``None`` is returned if the user has
             not played any real matches this season.
 
             .. note::
 
                 The decimals are the percent progress to the next level.
                 E.g. ``208.63`` -> ``Level 208 and 63% on the way to 209.``
-        """  # noqa
+
+        """
         return await self.client.fetch_battlepass_level(
             self.id,
             season=season,

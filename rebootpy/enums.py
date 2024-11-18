@@ -207,111 +207,159 @@ class AwayStatus(Enum):
     EXTENDED_AWAY = 'xa'
 
 
-class SeasonStartTimestamp(Enum):
-    C1S1   = 1508889601
-    C1S2   = 1513209601
-    C1S3   = 1519257601
-    C1S4   = 1525132801
-    C1S5   = 1531353601
-    C1S6   = 1538006401
-    C1S7   = 1544054401
-    C1S8   = 1551312001
-    C1S9   = 1557360001
-    C1SX   = 1564617601
-    C2S1   = 1571097601
-    C2S2   = 1582156801
-    C2S3   = 1592352001
-    C2S4   = 1598486401
-    C2S5   = 1606867201
-    C2S6   = 1615852801
-    C2S7   = 1623110401
-    C2S8   = 1631491201
-    C3S1   = 1638716400
-    C3S2   = 1647763140
-    C3S3   = 1654430400
-    C3S4   = 1663503780
-    C4S1   = 1670157000
-    C4S2   = 1678453200
-    C4S3   = 1686313800
-    C4S4   = 1692966600
-    C4SOG  = 1699016400
-    C5S1   = 1701577740
-    C5S2   = 1709951400
-    C5S3   = 1716508800
-    C5S4   = 1723802400
-    C5SOG  = 1730505600
+class FortniteSeason:
+    def __init__(self,
+                 start_timestamp: int,
+                 end_timestamp: int,
+                 battlepass_level: str = None,
+                 ranked_tracks: tuple = None
+                 ) -> None:
+        self.start_timestamp = start_timestamp
+        self.end_timestamp = end_timestamp
+        self.battlepass_level = battlepass_level
+        self.ranked_tracks = ranked_tracks
 
 
-class SeasonEndTimestamp(Enum):
-    C1S1  = 1513123200
-    C1S2  = 1519171200
-    C1S3  = 1525046400
-    C1S4  = 1531353600
-    C1S5  = 1538006400
-    C1S6  = 1544054400
-    C1S7  = 1551312000
-    C1S8  = 1557360000
-    C1S9  = 1564617600
-    C1SX  = 1570924800
-    C2S1  = 1582156800
-    C2S2  = 1592352000
-    C2S3  = 1598486400
-    C2S4  = 1606867200
-    C2S5  = 1615852800
-    C2S6  = 1623110400
-    C2S7  = 1631491200
-    C2S8  = 1638651540
-    C3S1  = 1647759540
-    C3S2  = 1654372800
-    C3S3  = 1663479000
-    C3S4  = 1670140800
-    C4S1  = 1678429800
-    C4S2  = 1686288600
-    C4S3  = 1692945000
-    C4S4  = 1698994800
-    C4SOG = 1701576000
-    C5S1  = 1709794800
-    C5S2  = 1716533100
-    C5S3  = 1723777200
-    C5S4  = 1730505599
-    C5SOG = 1733036340
+class Season(Enum):
+    # Chapter 1 Seasons
+    C1S1 = FortniteSeason(start_timestamp=1508889601, end_timestamp=1513123200)
+    C1S2 = FortniteSeason(start_timestamp=1513209601, end_timestamp=1519171200)
+    C1S3 = FortniteSeason(start_timestamp=1519257601, end_timestamp=1525046400)
+    C1S4 = FortniteSeason(start_timestamp=1525132801, end_timestamp=1531353600)
+    C1S5 = FortniteSeason(start_timestamp=1531353601, end_timestamp=1538006400)
+    C1S6 = FortniteSeason(start_timestamp=1538006401, end_timestamp=1544054400)
+    C1S7 = FortniteSeason(start_timestamp=1544054401, end_timestamp=1551312000)
+    C1S8 = FortniteSeason(start_timestamp=1551312001, end_timestamp=1557360000)
+    C1S9 = FortniteSeason(start_timestamp=1557360001, end_timestamp=1564617600)
+    C1SX = FortniteSeason(start_timestamp=1564617601, end_timestamp=1570924800)
+    C2S1 = FortniteSeason(
+        start_timestamp=1571097601,
+        end_timestamp=1582156800,
+        battlepass_level='s11_social_bp_level'
+    )
+    C2S2 = FortniteSeason(
+        start_timestamp=1582156801,
+        end_timestamp=1592352000,
+        battlepass_level='s11_social_bp_level'
+    )
+    C2S3 = FortniteSeason(
+        start_timestamp=1592352001,
+        end_timestamp=1598486400,
+        battlepass_level=('s13_social_bp_level', 's11_social_bp_level')
+    )
+    C2S4 = FortniteSeason(
+        start_timestamp=1598486401,
+        end_timestamp=1606867200,
+        battlepass_level='s14_social_bp_level'
+    )
+    C2S5 = FortniteSeason(
+        start_timestamp=1606867201,
+        end_timestamp=1615852800,
+        battlepass_level='s15_social_bp_level'
+    )
+    C2S6 = FortniteSeason(
+        start_timestamp=1615852801,
+        end_timestamp=1623110400,
+        battlepass_level='s16_social_bp_level'
+    )
+    C2S7 = FortniteSeason(
+        start_timestamp=1623110401,
+        end_timestamp=1631491200,
+        battlepass_level='s17_social_bp_level'
+    )
+    C2S8 = FortniteSeason(
+        start_timestamp=1631491201,
+        end_timestamp=1638651540,
+        battlepass_level='s18_social_bp_level'
+    )
+    C3S1 = FortniteSeason(
+        start_timestamp=1638716400,
+        end_timestamp=1647759540,
+        battlepass_level='s19_social_bp_level'
+    )
+    C3S2 = FortniteSeason(
+        start_timestamp=1647763140,
+        end_timestamp=1654372800,
+        battlepass_level='s20_social_bp_level'
+    )
+    C3S3 = FortniteSeason(
+        start_timestamp=1654430400,
+        end_timestamp=1663479000,
+        battlepass_level='s21_social_bp_level'
+    )
+    C3S4 = FortniteSeason(
+        start_timestamp=1663503780,
+        end_timestamp=1670140800,
+        battlepass_level='s22_social_bp_level'
+    )
+    C4S1 = FortniteSeason(
+        start_timestamp=1670157000,
+        end_timestamp=1678429800,
+        battlepass_level='s23_social_bp_level'
+    )
+    C4S2 = FortniteSeason(
+        start_timestamp=1678453200,
+        end_timestamp=1686288600,
+        battlepass_level='s24_social_bp_level',
+        ranked_tracks=('2776dc', '9d7ebd')
+    )
+    C4S3 = FortniteSeason(
+        start_timestamp=1686313800,
+        end_timestamp=1692945000,
+        battlepass_level='s25_social_bp_level',
+        ranked_tracks=('ggOwuK', 'AjRdrb')
+    )
+    C4S4 = FortniteSeason(
+        start_timestamp=1692966600,
+        end_timestamp=1698994800,
+        battlepass_level='s26_social_bp_level',
+        ranked_tracks=('gXffl', 'yHNFu')
+    )
+    C4SOG = FortniteSeason(
+        start_timestamp=1699016400,
+        end_timestamp=1701576000,
+        battlepass_level='s27_social_bp_level',
+        ranked_tracks=('OiK9k9', 'hEKWqj')
+    )
+    C5S1 = FortniteSeason(
+        start_timestamp=1701577740,
+        end_timestamp=1709794800,
+        battlepass_level='s28_social_bp_level',
+        ranked_tracks=('EYpme7', 'd0zEcd', 'dmd372')
+    )
+    C5S2 = FortniteSeason(
+        start_timestamp=1709951400,
+        end_timestamp=1716533100,
+        battlepass_level='s29_social_bp_level',
+        ranked_tracks=('ch3353', 'a1m0n3', 'rrwpwg')
+    )
+    C5S3 = FortniteSeason(
+        start_timestamp=1716508800,
+        end_timestamp=1723777200,
+        battlepass_level='s30_social_bp_level',
+        ranked_tracks=('N4PK1N', 'L1GHT5', 'rrzuel')
+    )
+    C5S4 = FortniteSeason(
+        start_timestamp=1723802400,
+        end_timestamp=1730505599,
+        battlepass_level='s31_social_bp_level',
+        ranked_tracks=('S4LT3D', 'P0T4T0', 'rr9qlw', 'M4rC4S', 'L4nC3r')
+    )
+    C5SOG = FortniteSeason(
+        start_timestamp=1730505600,
+        end_timestamp=1733036340,
+        battlepass_level='s32_social_bp_level',
+        ranked_tracks=('P3PP3R', 'D13tDw', 'rr9qlw', 'W4FFL3', 'Fr3SkA')
+    )
 
-
-class BattlePassStat(Enum):
-    C2S1  = ('s11_social_bp_level', SeasonEndTimestamp.C2S1.value)
-    C2S2  = ('s11_social_bp_level', SeasonEndTimestamp.C2S2.value)
-    C2S3  = (('s13_social_bp_level', 's11_social_bp_level'), SeasonEndTimestamp.C2S3.value)
-    C2S4  = ('s14_social_bp_level', SeasonEndTimestamp.C2S4.value)
-    C2S5  = ('s15_social_bp_level', SeasonEndTimestamp.C2S5.value)
-    C2S6  = ('s16_social_bp_level', SeasonEndTimestamp.C2S6.value)
-    C2S7  = ('s17_social_bp_level', SeasonEndTimestamp.C2S7.value)
-    C2S8  = ('s18_social_bp_level', SeasonEndTimestamp.C2S8.value)
-    C3S1  = ('s19_social_bp_level', SeasonEndTimestamp.C3S1.value)
-    C3S2  = ('s20_social_bp_level', SeasonEndTimestamp.C3S2.value)
-    C3S3  = ('s21_social_bp_level', SeasonEndTimestamp.C3S3.value)
-    C3S4  = ('s22_social_bp_level', SeasonEndTimestamp.C3S4.value)
-    C4S1  = ('s23_social_bp_level', SeasonEndTimestamp.C4S1.value)
-    C4S2  = ('s24_social_bp_level', SeasonEndTimestamp.C4S2.value)
-    C4S3  = ('s25_social_bp_level', SeasonEndTimestamp.C4S3.value)
-    C4S4  = ('s26_social_bp_level', SeasonEndTimestamp.C4S4.value)
-    C4SOG = ('s27_social_bp_level', SeasonEndTimestamp.C4SOG.value)
-    C5S1  = ('s28_social_bp_level', SeasonEndTimestamp.C5S1.value)
-    C5S2  = ('s29_social_bp_level', SeasonEndTimestamp.C5S2.value)
-    C5S3  = ('s30_social_bp_level', SeasonEndTimestamp.C5S3.value)
-    C5S4  = ('s31_social_bp_level', SeasonEndTimestamp.C5S4.value)
-    C5SOG = ('s32_social_bp_level', SeasonEndTimestamp.C5SOG.value)
-
-
-class Seasons(Enum):
-    C4S2  = ('2776dc', '9d7ebd')
-    C4S3  = ('ggOwuK', 'AjRdrb')
-    C4S4  = ('gXffl', 'yHNFu')
-    C4SOG = ('OiK9k9', 'hEKWqj')
-    C5S1  = ('EYpme7', 'd0zEcd', 'dmd372')
-    C5S2  = ('ch3353', 'a1m0n3', 'rrwpwg')
-    C5S3  = ('N4PK1N', 'L1GHT5', 'rrzuel')
-    C5S4  = ('S4LT3D', 'P0T4T0', 'rr9qlw', 'M4rC4S', 'L4nC3r')
-    C5SOG = ('P3PP3R', 'D13tDw', 'rr9qlw', 'W4FFL3', 'Fr3SkA')
+    def __new__(cls, value):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.start_timestamp = value.start_timestamp
+        obj.end_timestamp = value.end_timestamp
+        obj.battlepass_level = value.battlepass_level
+        obj.ranked_tracks = value.ranked_tracks
+        return obj
 
 
 class RankingType(Enum):

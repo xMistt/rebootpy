@@ -43,8 +43,7 @@ from .user import (ClientUser, User, BlockedUser, SacSearchEntryUser,
                    UserSearchEntry)
 from .friend import Friend, IncomingPendingFriend, OutgoingPendingFriend
 from .enums import (Platform, Region, UserSearchPlatform, AwayStatus,
-                    SeasonStartTimestamp, SeasonEndTimestamp,
-                    BattlePassStat, StatsCollectionType, Seasons)
+                    StatsCollectionType, Season)
 from .party import (DefaultPartyConfig, DefaultPartyMemberConfig, ClientParty,
                     Party)
 from .stats import StatsV2, StatsCollection, _StatsBase, CompetitiveRank
@@ -1793,39 +1792,39 @@ class BasicClient:
         epoch = datetime.datetime.utcfromtimestamp(0)
         if isinstance(start_time, datetime.datetime):
             start_time = int((start_time - epoch).total_seconds())
-        elif isinstance(start_time, SeasonStartTimestamp):
-            start_time = start_time.value
+        elif isinstance(start_time, Season):
+            start_time = start_time.start_timestamp
 
         if isinstance(end_time, datetime.datetime):
             end_time = int((end_time - epoch).total_seconds())
-        elif isinstance(end_time, SeasonEndTimestamp):
-            end_time = end_time.value
+        elif isinstance(end_time, Season):
+            end_time = end_time.end_timestamp
 
         return start_time, end_time
 
     async def fetch_ranked_stats(self,
                                  user_id: str,
-                                 season: Optional[Seasons] = None
+                                 season: Optional[Season] = None
                                  ) -> List[CompetitiveRank]:
         """|coro|
 
         Gets Ranked stats of the specified user.
-        
+
         Usage: ::
 
-            # get my c5s3 ranked stats
+            # get my C5S3 ranked stats
             async def get_6v_ranked_stats():
                 print(f'Fetching ranked stats for C5S3')
 
                 user = await bot.fetch_user('6v.')
                 ranks = await bot.fetch_ranked_stats(
                     user_id=user.id,
-                    season=rebootpy.Seasons.C5S3
+                    season=rebootpy.Season.C5S3
                 )
-            
+
                 for rank in ranks:
                     print(f'{rank.ranking_type.name} - {rank.current_division.name}')
-                
+
             # Example output:
             # Fetching ranked stats for C5S3
             # BATTLE_ROYALE - DIAMOND_2
@@ -1836,9 +1835,9 @@ class BasicClient:
         ----------
         user_id: :class:`str`
             The id of the user you want to fetch stats for.
-        season: Optional[:class:`Seasons`]
-            The season that you want to get ranks from, if not provided it'll get the
-            current seasons ranked tracks automatically.
+        season: Optional[:class:`Season`]
+            The season that you want to get ranks from. If not provided, it will
+            get the current season's ranked tracks automatically.
             *Defaults to None*
 
         Raises
@@ -1849,10 +1848,10 @@ class BasicClient:
         Returns
         -------
         List[:class:`CompetitiveRank`]
-            A list of all of the users ranks in the requested season.
+            A list of all of the user's ranks in the requested season.
         """  # noqa
 
-        tracks = season.value if season else tuple(
+        tracks = season.ranked_tracks if season else tuple(
             track['trackguid'] for track in await self.http.get_active_tracks()
         )
 
@@ -1893,20 +1892,22 @@ class BasicClient:
                              ) -> StatsV2:
         """|coro|
 
-        Gets Battle Royale stats the specified user.
+        Gets Battle Royale stats for the specified user.
 
         Parameters
         ----------
         user_id: :class:`str`
             The id of the user you want to fetch stats for.
-        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonStartTimestamp`]]
+        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]]
             The UTC start time of the time period to get stats from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
-            *Defaults to None*
-        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonEndTimestamp`]]
+            *Must be seconds since epoch, :class:`datetime.datetime`, or the ``start_timestamp``
+            value of a :class:`Season` (e.g., ``Season.C5SOG.start_timestamp``).*
+            *Defaults to None.*
+        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]]
             The UTC end time of the time period to get stats from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
-            *Defaults to None*
+            *Must be seconds since epoch, :class:`datetime.datetime`, or the ``end_timestamp``
+            value of a :class:`Season` (e.g., ``Season.C5SOG.end_timestamp``).*
+            *Defaults to None.*
 
         Raises
         ------
@@ -1946,8 +1947,15 @@ class BasicClient:
                                               start_time: Optional[DatetimeOrTimestamp] = None,  # noqa
                                               end_time: Optional[DatetimeOrTimestamp] = None  # noqa
                                               ) -> List[dict]:
+        if not collection and not stats:
+            raise ValueError(
+                "Collection must be specified when stats is empty."
+            )
+
         chunks = [user_ids[i:i+51] for i in range(0, len(user_ids), 51)]
-        stats_chunks = [stats[i:i+20] for i in range(0, len(stats), 20)]
+        stats_chunks = [
+            stats[i:i+20] for i in range(0, len(stats), 20)
+        ] if stats else [[]]
 
         tasks = []
         for chunk in chunks:
@@ -2002,8 +2010,10 @@ class BasicClient:
     async def fetch_multiple_br_stats(self, user_ids: List[str],
                                       stats: List[str],
                                       *,
-                                      start_time: Optional[DatetimeOrTimestamp] = None,  # noqa
-                                      end_time: Optional[DatetimeOrTimestamp] = None  # noqa
+                                      start_time: Optional[
+                                          DatetimeOrTimestamp] = None,  # noqa
+                                      end_time: Optional[
+                                          DatetimeOrTimestamp] = None  # noqa
                                       ) -> Dict[str, Optional[StatsV2]]:
         """|coro|
 
@@ -2025,21 +2035,19 @@ class BasicClient:
                     rebootpy.StatsV2.create_stat('matchesplayed', rebootpy.V2Input.KEYBOARDANDMOUSE, 'defaultsolo')
                 ]
 
-                # get the users and create a list of their ids.
                 users = await self.fetch_users(['SypherPK', 'CouRageJD'])
-                user_ids = [u.id for u in users] + ['NonValidUserIdForTesting']
+                user_ids = [u.id for u in users]
 
                 data = await self.fetch_multiple_br_stats(user_ids=user_ids, stats=stats)
                 for id, res in data.items():
                     if res is not None:
                         print('ID: {0} | Stats: {1}'.format(id, res.get_stats()))
                     else:
-                        print('ID: {0} not found.'.format(id))
+                        print('ID: {0} not found.')
 
             # Example output:
             # ID: 463ca9d604524ce38071f512baa9cd70 | Stats: {'keyboardmouse': {'defaultsolo': {'wins': 759, 'kills': 28093, 'matchesplayed': 6438}}}
             # ID: 3900c5958e4b4553907b2b32e86e03f8 | Stats: {'keyboardmouse': {'defaultsolo': {'wins': 1763, 'kills': 41375, 'matchesplayed': 7944}}}
-            # ID: 4735ce9132924caf8a5b17789b40f79c | Stats: {'keyboardmouse': {'defaultsolo': {'wins': 1888, 'kills': 40784, 'matchesplayed': 5775}}}
             # ID: NonValidUserIdForTesting not found.
 
         Parameters
@@ -2058,14 +2066,16 @@ class BasicClient:
                     rebootpy.StatsV2.create_stat('matchesplayed', rebootpy.V2Input.KEYBOARDANDMOUSE, 'defaultsolo')
                 ]
 
-        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonStartTimestamp`]]
+        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]]
             The UTC start time of the time period to get stats from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
-            *Defaults to None*
-        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonEndTimestamp`]]
+            *Must be seconds since epoch, :class:`datetime.datetime`, or the `start_timestamp`
+            value of a :class:`Season` (e.g., ``Season.C5SOG.start_timestamp``).*
+            *Defaults to None.*
+        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]]
             The UTC end time of the time period to get stats from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
-            *Defaults to None*
+            *Must be seconds since epoch, :class:`datetime.datetime`, or the `end_timestamp`
+            value of a :class:`Season` (e.g., ``Season.C5SOG.end_timestamp``).*
+            *Defaults to None.*
 
         Raises
         ------
@@ -2083,7 +2093,7 @@ class BasicClient:
 
                 If a users stats is missing in the returned mapping it means
                 that the user has opted out of public leaderboards and that
-                the client therefore does not have permissions to requests
+                the client therefore does not have permissions to request
                 their stats.
         """  # noqa
         res = await self._fetch_multiple_br_stats(
@@ -2096,11 +2106,18 @@ class BasicClient:
         return res
 
     async def fetch_multiple_br_stats_collections(self, user_ids: List[str],
-                                                  collection: Optional[StatsCollectionType] = None,  # noqa
+                                                  collection: Optional[
+                                                      StatsCollectionType] = None,
+                                                  # noqa
                                                   *,
-                                                  start_time: Optional[DatetimeOrTimestamp] = None,  # noqa
-                                                  end_time: Optional[DatetimeOrTimestamp] = None  # noqa
-                                                  ) -> Dict[str, Optional[StatsCollection]]:  # noqa
+                                                  start_time: Optional[
+                                                      DatetimeOrTimestamp] = None,
+                                                  # noqa
+                                                  end_time: Optional[
+                                                      DatetimeOrTimestamp] = None
+                                                  # noqa
+                                                  ) -> Dict[
+        str, Optional[StatsCollection]]:  # noqa
         """|coro|
 
         Gets Battle Royale stats collections for multiple users at the same time.
@@ -2111,15 +2128,17 @@ class BasicClient:
             A list of ids you are requesting the stats for.
         collection: :class:`StatsCollectionType`
             The collection to receive. Collections are predefined
-            stats that it attempts to request. 
-        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonStartTimestamp`]]
+            stats that it attempts to request.
+        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]]
             The UTC start time of the time period to get stats from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
-            *Defaults to None*
-        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonEndTimestamp`]]
+            *Must be seconds since epoch, :class:`datetime.datetime`, or the `start_timestamp`
+            value of a :class:`Season` (e.g., ``Season.C5SOG.start_timestamp``).*
+            *Defaults to None.*
+        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]]
             The UTC end time of the time period to get stats from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
-            *Defaults to None*
+            *Must be seconds since epoch, :class:`datetime.datetime`, or the `end_timestamp`
+            value of a :class:`Season` (e.g., ``Season.C5SOG.end_timestamp``).*
+            *Defaults to None.*
 
         Raises
         ------
@@ -2129,22 +2148,22 @@ class BasicClient:
         Returns
         -------
         Dict[:class:`str`, Optional[:class:`StatsCollection`]]
-            A mapping where :class:`StatsCollection` is bound to its owners id. If a
+            A mapping where :class:`StatsCollection` is bound to its owner's id. If a
             userid was not found then the value bound to that userid will be
             ``None``.
 
             .. note::
 
-                If a users stats is missing in the returned mapping it means
+                If a user's stats are missing in the returned mapping, it means
                 that the user has opted out of public leaderboards and that
-                the client therefore does not have permissions to requests
+                the client therefore does not have permissions to request
                 their stats.
         """  # noqa
         res = await self._fetch_multiple_br_stats(
             cls=StatsCollection,
             user_ids=user_ids,
             stats=[],
-            collection=collection.value,
+            collection=collection.value if collection else None,
             start_time=start_time,
             end_time=end_time,
         )
@@ -2152,7 +2171,7 @@ class BasicClient:
 
     async def fetch_multiple_battlepass_levels(self,
                                                users: List[str],
-                                               season: BattlePassStat,
+                                               season: Season,
                                                *,
                                                start_time: Optional[
                                                    DatetimeOrTimestamp] = None,
@@ -2169,25 +2188,24 @@ class BasicClient:
         ----------
         users: List[:class:`str`]
             List of user ids.
-        season: :class:`BattlePassStat`
+        season: :class:`Season`
             The season enum to request the battlepass levels for.
 
-            .. warning::
-
-                If you are requesting the previous season and the new season has not been
-                added to the library yet (check :class:`SeasonStartTimestamp`), you have to
-                manually include the previous season's end timestamp in epoch seconds.
-        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonStartTimestamp`]]
+        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]]
             The UTC start time of the window to get the battlepass level from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
-            *Defaults to None*
-        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonEndTimestamp`]]
+            Must be seconds since epoch or a :class:`datetime.datetime` instance.
+            Defaults to None.
+
+        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]]
             The UTC end time of the window to get the battlepass level from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
-            *Defaults to None*
+            Must be seconds since epoch or a :class:`datetime.datetime` instance.
+            Defaults to None.
 
         Raises
         ------
+        ValueError
+            If `end_time` is earlier than the season's start timestamp.
+
         HTTPException
             An error occurred while requesting.
 
@@ -2196,7 +2214,7 @@ class BasicClient:
         Dict[:class:`str`, Optional[:class:`float`]]
             Users' battlepass level mapped to their account id. Returns ``None``
             if no battlepass level was found. If a user has career board set
-            to private, he/she will not appear in the result. Therefore you
+            to private, they will not appear in the result. Therefore you
             should never expect a user to be included.
 
             .. note::
@@ -2213,20 +2231,15 @@ class BasicClient:
         """  # noqa
         start_time, end_time = self._process_stats_times(start_time, end_time)
 
-        if end_time is not None:
-            season_start = getattr(SeasonStartTimestamp, season.name, None)
-            if season_start is not None and end_time < season_start.value:
-                raise ValueError(
-                    'end_time can\'t be lower than the season\'s start timestamp'
-                )
-
-        if isinstance(season, BattlePassStat):
-            info = season.value
-            stats = info[0] if isinstance(info[0], tuple) else (info[0],)
-            end_time = end_time if end_time is not None else info[1]
-        else:
+        if end_time is not None and end_time < season.start_timestamp:
             raise ValueError(
-                "Invalid season. Must be a member of BattlePassStat.")
+                'end_time can\'t be lower than the season\'s start timestamp'
+            )
+
+        stats = season.battlepass_level if isinstance(season.battlepass_level,
+                                                      tuple) else (
+        season.battlepass_level,)
+        end_time = end_time if end_time is not None else season.end_timestamp
 
         data = await self._multiple_stats_chunk_requester(
             users,
@@ -2245,11 +2258,13 @@ class BasicClient:
 
     async def fetch_battlepass_level(self,
                                      user_id: str, *,
-                                     season: BattlePassStat,
+                                     season: Season,
                                      start_time: Optional[
-                                         DatetimeOrTimestamp] = None,  # noqa
+                                         DatetimeOrTimestamp] = None,
+                                     # noqa
                                      end_time: Optional[
-                                         DatetimeOrTimestamp] = None  # noqa
+                                         DatetimeOrTimestamp] = None
+                                     # noqa
                                      ) -> float:
         """|coro|
 
@@ -2259,7 +2274,7 @@ class BasicClient:
         ----------
         user_id: :class:`str`
             The user id to fetch the battlepass level for.
-        season: :class:`BattlePassStat`
+        season: :class:`Season`
             The season enum to request the battlepass level for.
 
             .. warning::
@@ -2267,13 +2282,15 @@ class BasicClient:
                 If you are requesting the previous season and the new season has not been
                 added to the library yet (check :class:`SeasonStartTimestamp`), you have to
                 manually include the previous season's end timestamp in epoch seconds.
-        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonStartTimestamp`]]
+        start_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]
             The UTC start time of the window to get the battlepass level from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
+            *Must be seconds since epoch, :class:`datetime.datetime` or the ``start_timestamp``
+            value of a :class:`Season` e.g. `Season.C5SOG.start_timestamp`*
             *Defaults to None*
-        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`, :class:`SeasonEndTimestamp`]]
+        end_time: Optional[Union[:class:`int`, :class:`datetime.datetime`]
             The UTC end time of the window to get the battlepass level from.
-            *Must be seconds since epoch, :class:`datetime.datetime` or a constant from SeasonEndTimestamp*
+            *Must be seconds since epoch, :class:`datetime.datetime` or the ``start_timestamp``
+            value of a :class:`Season` e.g. `Season.C5SOG.start_timestamp`*
             *Defaults to None*
 
         Raises
