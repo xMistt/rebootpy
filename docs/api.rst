@@ -210,61 +210,50 @@ Enumerations
     Attributes
     ----------
 
-    .. attribute:: start_timestamp
-        :type: int
+    These attributes are shared across all seasons:
 
-        The start timestamp of the season in seconds since the epoch.
-
-    .. attribute:: end_timestamp
-        :type: int
-
-        The end timestamp of the season in seconds since the epoch.
-
-    .. attribute:: battlepass_level
-        :type: str or tuple
-
-        The StatsV2 value for this seasons battle pass level, ``None`` for seasons before Chapter 2.
-
-    .. attribute:: ranked_tracks
-        :type: tuple
-
-        The seasons ranked tracks, ``None`` for seasons before Chapter 4 Season 2.
+    - **start_timestamp** (:class:`int`): The start timestamp of the season in seconds since the epoch.
+    - **end_timestamp** (:class:`int`): The end timestamp of the season in seconds since the epoch.
+    - **battlepass_level** (:class:`str` or :class:`tuple`): The StatsV2 value for this season's battle pass level. ``None`` for seasons before Chapter 2.
+    - **ranked_tracks** (:class:`tuple`): The ranked tracks for this season. ``None`` for seasons before Chapter 4, Season 2.
 
     Enums
-    ----------
+    ------------
 
-    .. attribute:: C1S1
-    .. attribute:: C1S2
-    .. attribute:: C1S3
-    .. attribute:: C1S4
-    .. attribute:: C1S5
-    .. attribute:: C1S6
-    .. attribute:: C1S7
-    .. attribute:: C1S8
-    .. attribute:: C1S9
-    .. attribute:: C1SX
-    .. attribute:: C2S1
-    .. attribute:: C2S2
-    .. attribute:: C2S3
-    .. attribute:: C2S4
-    .. attribute:: C2S5
-    .. attribute:: C2S6
-    .. attribute:: C2S7
-    .. attribute:: C2S8
-    .. attribute:: C3S1
-    .. attribute:: C3S2
-    .. attribute:: C3S3
-    .. attribute:: C3S4
-    .. attribute:: C4S1
-    .. attribute:: C4S2
-    .. attribute:: C4S3
-    .. attribute:: C4S4
-    .. attribute:: C4SOG
-    .. attribute:: C5S1
-    .. attribute:: C5S2
-    .. attribute:: C5S3
-    .. attribute:: C5S4
-    .. attribute:: C5SOG
+    The following are the individual season enums:
+
+    - ``C1S1``
+    - ``C1S2``
+    - ``C1S3``
+    - ``C1S4``
+    - ``C1S5``
+    - ``C1S6``
+    - ``C1S7``
+    - ``C1S8``
+    - ``C1S9``
+    - ``C1SX``
+    - ``C2S1``
+    - ``C2S2``
+    - ``C2S3``
+    - ``C2S4``
+    - ``C2S5``
+    - ``C2S6``
+    - ``C2S7``
+    - ``C2S8``
+    - ``C3S1``
+    - ``C3S2``
+    - ``C3S3``
+    - ``C3S4``
+    - ``C4S1``
+    - ``C4S2``
+    - ``C4S3``
+    - ``C4S4``
+    - ``C4SOG``
+    - ``C5S1``
+    - ``C5S2``
+    - ``C5S3``
+    - ``C5S4``
+    - ``C5SOG``
 
 .. class:: RankingType
 
