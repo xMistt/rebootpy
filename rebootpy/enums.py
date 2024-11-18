@@ -221,7 +221,6 @@ class FortniteSeason:
 
 
 class Season(Enum):
-    # Chapter 1 Seasons
     C1S1 = FortniteSeason(start_timestamp=1508889601, end_timestamp=1513123200)
     C1S2 = FortniteSeason(start_timestamp=1513209601, end_timestamp=1519171200)
     C1S3 = FortniteSeason(start_timestamp=1519257601, end_timestamp=1525046400)

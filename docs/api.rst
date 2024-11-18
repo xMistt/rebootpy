@@ -197,118 +197,65 @@ Enumerations
 
         User is AFK. This can only be applied by the game and it is set after a specific time of no activity.
 
-.. class:: SeasonStartTimestamp
-
-    An enumeration of season start dates.
-
-    .. attribute:: C1S1
-    .. attribute:: C1S2
-    .. attribute:: C1S3
-    .. attribute:: C1S4
-    .. attribute:: C1S5
-    .. attribute:: C1S6
-    .. attribute:: C1S7
-    .. attribute:: C1S8
-    .. attribute:: C1S9
-    .. attribute:: C1SX
-    .. attribute:: C2S1
-    .. attribute:: C2S2
-    .. attribute:: C2S3
-    .. attribute:: C2S4
-    .. attribute:: C2S5
-    .. attribute:: C2S6
-    .. attribute:: C2S7
-    .. attribute:: C2S8
-    .. attribute:: C3S1
-    .. attribute:: C3S2
-    .. attribute:: C3S3
-    .. attribute:: C3S4
-    .. attribute:: C4S1
-    .. attribute:: C4S2
-    .. attribute:: C4S3
-    .. attribute:: C4S4
-    .. attribute:: C4SOG
-    .. attribute:: C5S1
-    .. attribute:: C5S2
-    .. attribute:: C5S3
-    .. attribute:: C5S4
-    .. attribute:: C5SOG
-
-.. class:: SeasonEndTimestamp
-
-    An enumeration of season end dates.
-
-    .. attribute:: C1S1
-    .. attribute:: C1S2
-    .. attribute:: C1S3
-    .. attribute:: C1S4
-    .. attribute:: C1S5
-    .. attribute:: C1S6
-    .. attribute:: C1S7
-    .. attribute:: C1S8
-    .. attribute:: C1S9
-    .. attribute:: C1SX
-    .. attribute:: C2S1
-    .. attribute:: C2S2
-    .. attribute:: C2S3
-    .. attribute:: C2S4
-    .. attribute:: C2S5
-    .. attribute:: C2S6
-    .. attribute:: C2S7
-    .. attribute:: C2S8
-    .. attribute:: C3S1
-    .. attribute:: C3S2
-    .. attribute:: C3S3
-    .. attribute:: C3S4
-    .. attribute:: C4S1
-    .. attribute:: C4S2
-    .. attribute:: C4S3
-    .. attribute:: C4S4
-    .. attribute:: C4SOG
-    .. attribute:: C5S1
-    .. attribute:: C5S2
-    .. attribute:: C5S3
-    .. attribute:: C5S4
-    .. attribute:: C5SOG
-
-.. class:: BattlePassStat
-
-    An enumeration of battle pass level seasons.
-
-    .. attribute:: C2S1
-    .. attribute:: C2S2
-    .. attribute:: C2S3
-    .. attribute:: C2S4
-    .. attribute:: C2S5
-    .. attribute:: C2S6
-    .. attribute:: C2S7
-    .. attribute:: C2S8
-    .. attribute:: C3S1
-    .. attribute:: C3S2
-    .. attribute:: C3S3
-    .. attribute:: C3S4
-    .. attribute:: C4S1
-    .. attribute:: C4S2
-    .. attribute:: C4S3
-    .. attribute:: C4S4
-    .. attribute:: C4SOG
-    .. attribute:: C5S1
-    .. attribute:: C5S2
-    .. attribute:: C5S2
-    .. attribute:: C5S3
-    .. attribute:: C5S4
-    .. attribute:: C5SOG
-
 .. class:: StatsCollectionType
 
     An enumeration for stats collection types.
 
     .. attribute:: FISH
 
-.. class:: Seasons
+.. class:: Season
 
-    An enumeration for the available ranked seasons.
+    An enumeration for a Fortnite season.
 
+    Attributes
+    ----------
+
+    .. attribute:: start_timestamp
+        :type: int
+
+        The start timestamp of the season in seconds since the epoch.
+
+    .. attribute:: end_timestamp
+        :type: int
+
+        The end timestamp of the season in seconds since the epoch.
+
+    .. attribute:: battlepass_level
+        :type: str or tuple
+
+        The StatsV2 value for this seasons battle pass level, ``None`` for seasons before Chapter 2.
+
+    .. attribute:: ranked_tracks
+        :type: tuple
+
+        The seasons ranked tracks, ``None`` for seasons before Chapter 4 Season 2.
+
+    Enums
+    ----------
+
+    .. attribute:: C1S1
+    .. attribute:: C1S2
+    .. attribute:: C1S3
+    .. attribute:: C1S4
+    .. attribute:: C1S5
+    .. attribute:: C1S6
+    .. attribute:: C1S7
+    .. attribute:: C1S8
+    .. attribute:: C1S9
+    .. attribute:: C1SX
+    .. attribute:: C2S1
+    .. attribute:: C2S2
+    .. attribute:: C2S3
+    .. attribute:: C2S4
+    .. attribute:: C2S5
+    .. attribute:: C2S6
+    .. attribute:: C2S7
+    .. attribute:: C2S8
+    .. attribute:: C3S1
+    .. attribute:: C3S2
+    .. attribute:: C3S3
+    .. attribute:: C3S4
+    .. attribute:: C4S1
     .. attribute:: C4S2
     .. attribute:: C4S3
     .. attribute:: C4S4
@@ -317,6 +264,7 @@ Enumerations
     .. attribute:: C5S2
     .. attribute:: C5S3
     .. attribute:: C5S4
+    .. attribute:: C5SOG
 
 .. class:: RankingType
 
