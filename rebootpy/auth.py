@@ -652,6 +652,7 @@ class DeviceAuth(Auth):
 
         data = await self.grant_chat_refresh_token(
             self.refresh_token,
+            priority=priority
         )
         self._update_chat_data(data)
 
@@ -707,6 +708,7 @@ class RefreshTokenAuth(Auth):
 
         data = await self.grant_chat_refresh_token(
             self.refresh_token,
+            priority=priority
         )
         self._update_chat_data(data)
 
@@ -1041,6 +1043,7 @@ class AdvancedAuth(Auth):
 
         data = await self.grant_chat_refresh_token(
             self.refresh_token,
+            priority=priority
         )
         self._update_chat_data(data)
         log.debug('Successfully reauthenticated.')
@@ -1188,6 +1191,7 @@ class DeviceCodeAuth(Auth):
 
         data = await self.grant_chat_refresh_token(
             self.refresh_token,
+            priority=priority
         )
         self._update_chat_data(data)
 

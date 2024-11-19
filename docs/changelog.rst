@@ -44,6 +44,7 @@ Bug Fixes
 
 - Fixed an issue parsing squad assignments if the client wasn't leader.
 - Fixed :meth:`Client.fetch_multiple_br_stats_collections` and :meth:`User.fetch_br_stats_collection` incorrectly saying the user was private.
+- Fixed an issue where :meth:`Client.restart` would be stuck forever.
 
 v0.9.3
 ------
