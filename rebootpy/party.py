@@ -904,9 +904,9 @@ class PartyMemberMeta(MetaBase):
         base = self.get_prop('Default:AthenaBannerInfo_j')
         banner_info = base['AthenaBannerInfo']
 
-        return (banner_info['bannerIconId'],
-                banner_info['bannerColorId'],
-                banner_info['seasonLevel'])
+        return (banner_info.get('bannerIconId'),
+                banner_info.get('bannerColorId'),
+                banner_info.get('seasonLevel'))
 
     @property
     def battlepass_info(self) -> Tuple[bool, int, int, int]:
