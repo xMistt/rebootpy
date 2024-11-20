@@ -110,6 +110,8 @@ Bug Fixes
 v0.9.0
 ------
 
+Major version shift as the library comes closer to the 1.0 release.
+
 Added
 ~~~~~
 
