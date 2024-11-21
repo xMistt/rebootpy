@@ -218,6 +218,26 @@ class Context:
         return self.message.author
 
     @property
+    def friend(self) -> Friend:
+        """Optional[:class:`rebootpy.Friend`]:
+        The :class:`rebootpy.Friend` object for this friend, ``None`` if the
+        client is not friends with the author.
+        """
+        return self.message.author if isinstance(
+            self.message.author, Friend
+        ) else self.bot.get_friend(self.message.author.id)
+
+    @property
+    def member(self) -> PartyMember:
+        """Optional[:class:`rebootpy.PartyMember`]:
+        The :class:`rebootpy.PartyMember` object for this friend, ``None`` if
+        the client is not in the same party as the author.
+        """
+        return self.message.author if isinstance(
+            self.message.author, PartyMember
+        ) else self.bot.party.get_member(self.message.author.id)
+
+    @property
     def me(self) -> Union[ClientPartyMember, ClientUser]:
         """Union[:class:`rebootpy.ClientPartyMember`, :class:`rebootpy.ClientUser`]:
         Similar to :attr:`rebootpy.ClientPartyMember` except that it returns
