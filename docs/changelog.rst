@@ -37,6 +37,7 @@ Added
 
 - Added :meth:`Client.fetch_gold_bars()` & :meth:`User.fetch_gold_bars()`
 - Added ``StatsCollectionType.CHARACTER``
+- Added :attr:``ext.commands.Context.member`` & :attr:``ext.commands.Context.author``.
 
 Bug Fixes
 ~~~~~
