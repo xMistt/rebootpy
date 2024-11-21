@@ -774,7 +774,7 @@ class PartyMemberMeta(MetaBase):
                 "PlatformData": {
                     "platform": {
                         "platformDescription": {
-                            "name": "",
+                            "name": "WIN",
                             "platformType": "DESKTOP",
                             "onlineSubsystem": "None",
                             "sessionType": "",
