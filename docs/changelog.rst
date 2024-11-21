@@ -37,7 +37,7 @@ Added
 
 - Added :meth:`Client.fetch_gold_bars()` & :meth:`User.fetch_gold_bars()`
 - Added ``StatsCollectionType.CHARACTER``
-- Added :attr:``ext.commands.Context.member`` & :attr:``ext.commands.Context.author``.
+- [:ref:`Ext Commands <rebootpy_ext_commands>`] Added :attr:`ext.commands.Context.member` & :attr:`ext.commands.Context.friend`
 
 Bug Fixes
 ~~~~~
@@ -198,7 +198,7 @@ Changes
 - (**Breaking**) Removed :class:`EmailAndPasswordAuth`.
 - (**Breaking**) :class:`AdvancedAuth` no longer accepts `email` & `password` and instead by default uses device code if there are no device auths.
 - (**Breaking**) As featured & daily items are no longer different in the store, ``featured_items`` & ``daily_items`` have been combined to :attr:`Store.items` which uses the :class:`StoreItem` type.
-- Added ``prompt_device_code`` & ``open_link_in_browser`` parameters to  :class:`AdvancedAuth`.
+- Added ``prompt_device_code`` & ``open_link_in_browser`` parameters to :class:`AdvancedAuth`.
 
 
 Added
