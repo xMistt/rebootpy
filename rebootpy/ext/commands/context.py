@@ -212,13 +212,13 @@ class Context:
 
     @property
     def author(self) -> Union[Friend, PartyMember]:
-        """Optional[:class:`rebootpy.Friend`, :class:`rebootpy.PartyMember`]:
+        """Union[:class:`rebootpy.Friend`, :class:`rebootpy.PartyMember`]:
         The author of the message.
         """  # noqa
         return self.message.author
 
     @property
-    def friend(self) -> Friend:
+    def friend(self) -> Optional['Friend']:
         """Optional[:class:`rebootpy.Friend`]:
         The :class:`rebootpy.Friend` object for this friend, ``None`` if the
         client is not friends with the author.
@@ -228,7 +228,7 @@ class Context:
         ) else self.bot.get_friend(self.message.author.id)
 
     @property
-    def member(self) -> PartyMember:
+    def member(self) -> Optional['PartyMember']:
         """Optional[:class:`rebootpy.PartyMember`]:
         The :class:`rebootpy.PartyMember` object for this friend, ``None`` if
         the client is not in the same party as the author.
