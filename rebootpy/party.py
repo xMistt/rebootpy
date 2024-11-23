@@ -621,7 +621,9 @@ class PartyMemberMeta(MetaBase):
                     "pickaxeEKey": "",
                     "contrailDef": "/Game/Athena/Items/Cosmetics/Contrails/DefaultContrail.DefaultContrail",
                     "contrailEKey": "",
-                    "scratchpad":[],
+                    "shoesDef": "None",
+                    "shoesEKey": "",
+                    "scratchpad": [],
                     "cosmeticStats": [
                         {
                             "statName": "HabaneroProgression",
@@ -841,6 +843,11 @@ class PartyMemberMeta(MetaBase):
     def contrail(self) -> str:
         base = self.get_prop('Default:AthenaCosmeticLoadout_j')
         return base['AthenaCosmeticLoadout'].get('contrailDef', 'None')
+
+    @property
+    def kicks(self) -> str:
+        base = self.get_prop('Default:AthenaCosmeticLoadout_j')
+        return base['AthenaCosmeticLoadout'].get('shoesDef', 'None')
 
     @property
     def variants(self) -> List[Dict[str, str]]:
@@ -1094,12 +1101,13 @@ class PartyMemberMeta(MetaBase):
                              pickaxe_ekey: Optional[str] = None,
                              contrail: Optional[str] = None,
                              contrail_ekey: Optional[str] = None,
+                             shoes: Optional[str] = None,
+                             shoes_ekey: Optional[str] = None,
                              scratchpad: Optional[list] = None,
                              has_crown: Optional[bool] = None,
                              victory_crowns: Optional[int] = None,
                              rank: Optional[int] = None
                              ) -> Dict[str, Any]:
-
 
         prop = self.get_prop('Default:AthenaCosmeticLoadout_j')
         data = prop['AthenaCosmeticLoadout']
@@ -1120,6 +1128,10 @@ class PartyMemberMeta(MetaBase):
             data['contrailDef'] = self.maybesub(contrail)
         if contrail_ekey is not None:
             data['contrailEKey'] = contrail_ekey
+        if shoes is not None:
+            data['shoesDef'] = self.maybesub(shoes)
+        if shoes_ekey is not None:
+            data['shoesEKey'] = shoes_ekey
         if scratchpad is not None:
             data['scratchpad'] = scratchpad
         if has_crown is not None:
@@ -1641,10 +1653,21 @@ class PartyMemberBase(User):
 
     @property
     def contrail(self) -> str:
-        """:class:`str`: The contrail id of the pickaxe this member currently
+        """:class:`str`: The contrail id of the contrail this member currently
         has equipped.
         """
         asset = self.meta.contrail
+        result = re.search(r".*\.([^\'\"]*)", asset.strip("'"))
+
+        if result is not None and result[1] != 'None':
+            return result.group(1)
+
+    @property
+    def kicks(self) -> str:
+        """:class:`str`: The kicks id of the kicks this member currently
+        has equipped.
+        """
+        asset = self.meta.kicks
         result = re.search(r".*\.([^\'\"]*)", asset.strip("'"))
 
         if result is not None and result[1] != 'None':
@@ -2719,6 +2742,49 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
         if not self.edit_lock.locked():
             return await self.patch(updated={**prop, **prop2})
+
+    async def set_kicks(self,
+                        asset: Optional[str] = None, *,
+                        key: Optional[str] = None,
+                        ) -> None:
+        """|coro|
+
+        Sets the kicks (shoes) of the client.
+
+        Parameters
+        ----------
+        asset: Optional[:class:`str`]
+            | The ID of the kicks.
+            | Defaults to the last set of kicks.
+
+            .. note::
+
+                Cosmetics other than outfits require a path, usually the
+                correct path will be set by default, but you really should
+                handle this just in case. Read more about it
+                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
+        key: Optional[:class:`str`]
+            The encryption key to use for these kicks.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        if asset is not None:
+            if asset != '' and '.' not in asset:
+                asset = f'/CosmeticShoes/Assets/Items/Cosmetics/{asset}.{asset}'
+        else:
+            prop = self.meta.get_prop('Default:AthenaCosmeticLoadout_j')
+            asset = prop['AthenaCosmeticLoadout']['shoesDef']
+
+        prop = self.meta.set_cosmetic_loadout(
+            shoes=asset,
+            shoes_ekey=key,
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
 
     async def equip_crown(self, hold_crown: int = True) -> None:
         """|coro|

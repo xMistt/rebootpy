@@ -38,6 +38,7 @@ Added
 - Added :meth:`Client.fetch_gold_bars()` & :meth:`User.fetch_gold_bars()`
 - Added ``StatsCollectionType.CHARACTER``
 - [:ref:`Ext Commands <rebootpy_ext_commands>`] Added :attr:`ext.commands.Context.member` & :attr:`ext.commands.Context.friend`
+- Added :meth:`ClientPartyMember.set_kicks()` & :attr:`PartyMember.kicks`
 
 Bug Fixes
 ~~~~~
