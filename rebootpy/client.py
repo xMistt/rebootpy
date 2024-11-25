@@ -1808,7 +1808,8 @@ class BasicClient:
                                  ) -> List[CompetitiveRank]:
         """|coro|
 
-        Gets Ranked stats of the specified user.
+        Gets ranked stats of the specified user, currently this works for all
+        users even if they have their stats set to private.
 
         Usage: ::
 

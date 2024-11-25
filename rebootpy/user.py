@@ -256,7 +256,8 @@ class UserBase:
                                  ) -> List['CompetitiveRank']:
         """|coro|
 
-        Fetches this user's ranked stats.
+        Fetches this user's ranked stats, currently this works for all users
+        even if they have their stats set to private.
 
         Usage: ::
 

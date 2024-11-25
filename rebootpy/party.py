@@ -1754,7 +1754,7 @@ class PartyMemberBase(User):
                                 pass
 
     @property
-    def has_crown(self) -> List[Tuple[int, int]]:
+    def has_crown(self) -> bool:
         """:class:`int`: If this member currently has a crown or not.
         """
         return bool(self.meta.has_crown)
@@ -1768,6 +1768,14 @@ class PartyMemberBase(User):
     @property
     def rank(self) -> List[Tuple[int, int]]:
         """:class:`int`: The current rank of this member.
+
+        .. warning::
+
+            This is pretty inaccurate now as there are multiple ranked modes,
+            so you'd need to check what the current set playlist is to even
+            figure out what mode this rank is for. I'd recommend just using
+            :meth:`PartyMember.fetch_ranked_stats() instead which works for
+            any users even if they have their stats set to private.`
         """
         return self.meta.rank
 
