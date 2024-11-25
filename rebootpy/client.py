@@ -3489,8 +3489,6 @@ class Client(BasicClient):
                         if e.message_code != m:
                             raise
 
-                    await self.xmpp.leave_muc()
-
             config = {**cf, **data['config']}
             party = self.construct_party(data)
             await party._update_members(
@@ -3499,9 +3497,6 @@ class Client(BasicClient):
             )
             self.party = party
 
-            tasks = [
-                self.loop.create_task(party.join_chat()),
-            ]
             await party.meta.meta_ready_event.wait()
 
             updated, deleted, cfg1 = party.meta.set_privacy(config['privacy'])
@@ -3516,7 +3511,7 @@ class Client(BasicClient):
                 if k.startswith('Default:')
             }
 
-            tasks.append(party.patch(
+            await party.patch(
                 updated={
                     **default_schema,
                     **updated,
@@ -3527,8 +3522,7 @@ class Client(BasicClient):
                 deleted=[*deleted, *edit_deleted],
                 priority=priority,
                 config={**cfg1, **cfg2},
-            ))
-            await asyncio.gather(*tasks)
+            )
 
             return party
 
@@ -3576,7 +3570,6 @@ class Client(BasicClient):
             party_data = await self.http.party_lookup(party.id)
             party = self.construct_party(party_data)
             self.party = party
-            asyncio.ensure_future(party.join_chat())
             await party._update_members(party_data['members'])
 
         try:
@@ -3736,10 +3729,7 @@ class Client(BasicClient):
         """
         self.platform = platform
 
-        await asyncio.gather(
-            self.auth.run_refresh(),
-            self.wait_for('muc_enter'),
-        )
+        await self.auth.run_refresh()
 
     async def auto_update_status_text(self) -> None:
         if not self.party:

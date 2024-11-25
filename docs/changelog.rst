@@ -47,6 +47,11 @@ Bug Fixes
 - Fixed :meth:`Client.fetch_multiple_br_stats_collections` and :meth:`User.fetch_br_stats_collection` incorrectly saying the user was private.
 - Fixed an issue where :meth:`Client.restart` would be stuck forever.
 
+Removed
+~~~~~~~
+
+- Removed all muc (xmpp party chat) related things so if you were relying on any internal events e.g. ``muc_enter``, they have now been removed. This includes ``PartyMember.chatban()`` which has been broken since the party chat changes anyway.
+
 v0.9.3
 ------
 
