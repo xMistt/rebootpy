@@ -2762,6 +2762,18 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
 
+    async def clear_kicks(self) -> None:
+        """|coro|
+
+        Clears the currently set kicks.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        await self.set_kicks(asset="")
+
     async def equip_crown(self, hold_crown: int = True) -> None:
         """|coro|
 
