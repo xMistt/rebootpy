@@ -3018,28 +3018,26 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
         Sets the battlepass info of the client.
 
-        .. note::
+        .. warning::
 
-            This is simply just for showing off. It just shows visually so
-            boostxp, level and stuff will not work, just show.
+            None of this is shown visually in-game anymore, including level
+            (you will need to use the ``season_level`` parameter in
+            :meth:`ClientPartyMember.set_banner()` to show visual level) but
+            will be kept in the library since it is still set by the real
+            game client.
 
         Parameters
         ----------
         has_purchased: Optional[:class:`bool`]
-            Shows visually that you have purchased the battlepass.
+            Whether or not you have purchased the battle pass.
             *Defaults to False*
         level: Optional[:class:`int`]
-            Sets the battle pass level.
+            Sets the battle pass level (not the shown level).
             *Defaults to 1*
-            .. warning::
-
-                The battle pass level isn't shown anywhere in-game, if you want
-                to change the visual level of the client, you must use the
-                ``season_level`` parameter in :meth:`ClientPartyMember.set_banner()`.
         self_boost_xp: Optional[:class:`int`]
-            Sets the self boost xp and shows it visually.
+            Sets the self boost xp (doesn't actually have an effect).
         friend_boost_xp: Optional[:class:`int`]
-            Set the friend boost xp and shows it visually.
+            Set the friend boost xp (doesn't actually have an effect).
 
         Raises
         ------
