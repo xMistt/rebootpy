@@ -188,4 +188,4 @@ class CreativeIsland:
     def is_creative_island(self) -> bool:
         """:class:`bool`: Returns ``True`` if the island is a creative map,
         ``False`` if it is a playlist."""
-        return self._type == 'valkyrie:application'
+        return self._type in ('valkyrie:application', 'Creative:Island')
