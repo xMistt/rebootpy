@@ -3714,8 +3714,9 @@ class Client(BasicClient):
     async def set_platform(self, platform: Platform) -> None:
         """|coro|
 
-        Sets and updates the clients platform. This method is slow (~2-3s) as
-        changing platform requires a full authentication refresh.
+        Sets and updates the clients platform. You may need to click off
+        the lobby (i.e. go to your locker and back) to see platform changes
+        in the same party.
 
         Parameters
         ----------
@@ -3729,7 +3730,11 @@ class Client(BasicClient):
         """
         self.platform = platform
 
-        await self.auth.run_refresh()
+        await self.xmpp.close()
+        await self.xmpp.run()
+
+        await asyncio.sleep(2)
+        await self._reconnect_to_party()
 
     async def auto_update_status_text(self) -> None:
         if not self.party:

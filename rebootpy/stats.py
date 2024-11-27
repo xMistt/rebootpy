@@ -25,7 +25,7 @@ SOFTWARE.
 import datetime
 
 from .user import User
-from .enums import Platform, RankingType, Rank
+from .enums import V2Input, RankingType, Rank
 from .utils import from_iso
 
 replacers = {
@@ -99,14 +99,14 @@ class StatsV2(_StatsBase):
                 'end_time={0.end_time!r}>'.format(self))
 
     @staticmethod
-    def create_stat(stat: str, platform: Platform, playlist: str) -> str:
+    def create_stat(stat: str, input: V2Input, playlist: str) -> str:
         if stat in replacers.values():
             for k, v in replacers.items():
                 if v == stat:
                     stat = k
 
         return 'br_{0}_{1}_m0_playlist_{2}'.format(stat,
-                                                   platform.value,
+                                                   input.value,
                                                    playlist)
 
     def get_kd(self, data: dict) -> float:
