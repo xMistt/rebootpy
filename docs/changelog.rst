@@ -39,6 +39,7 @@ Added
 - Added ``StatsCollectionType.CHARACTER``
 - [:ref:`Ext Commands <rebootpy_ext_commands>`] Added :attr:`ext.commands.Context.member` & :attr:`ext.commands.Context.friend`
 - Added :meth:`ClientPartyMember.set_kicks()`, :meth:`ClientPartyMember.clear_kicks()` & :attr:`PartyMember.kicks`
+- Added :func:`event_party_playlist_request()` and :class:`PlaylistRequest` which is used whenever a party member attempts to change the current playlist.
 
 Bug Fixes
 ~~~~~

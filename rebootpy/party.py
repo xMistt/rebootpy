@@ -33,7 +33,7 @@ from typing import (TYPE_CHECKING, Iterable, Optional, Any, List, Dict, Union,
                     Tuple, Awaitable, Type)
 from collections import OrderedDict
 
-from .enums import Enum
+from .enums import Enum, Region
 from .errors import PartyError, Forbidden, HTTPException, NotFound
 from .user import User
 from .friend import Friend
@@ -593,6 +593,30 @@ class PartyMemberMeta(MetaBase):
                         "bIsWorldJoinable": False,
                         "sessionKey": ""
                     }
+                }
+            }),
+            "Default:SuggestedIsland_j": json.dumps({
+                "SuggestedIsland": {
+                    "linkId": {
+                        "mnemonic": "",
+                        "version": -1
+                    },
+                    "session": {
+                        "iD": "",
+                        "joinInfo": {
+                            "joinability": "CanNotBeJoinedOrWatched",
+                            "sessionKey": ""
+                        }
+                    },
+                    "world": {
+                        "iD": "",
+                        "ownerId": "INVALID",
+                        "name": "",
+                        "bIsJoinable": False
+                    },
+                    "productModes": [],
+                    "privacy": "Undefined",
+                    "regionId": "EU"
                 }
             }),
             "Default:ArbitraryCustomDataStore_j": json.dumps({
@@ -1170,6 +1194,15 @@ class PartyMemberMeta(MetaBase):
         key = 'Default:PackedState_j'
         return {key: self.set_prop(key, data)}
 
+    def set_requested_playlist(self, playlist_id: str) -> Dict[str, Any]:
+        key = 'Default:SuggestedIsland_j'
+        data = (self.get_prop('Default:SuggestedIsland_j'))['SuggestedIsland']
+
+        data['linkId']['mnemonic'] = playlist_id
+
+        final = {'SuggestedIsland': data}
+        return {key: self.set_prop(key, final)}
+
 
 class PartyMeta(MetaBase):
     def __init__(self, party: 'PartyBase',
@@ -1420,16 +1453,18 @@ class PartyMeta(MetaBase):
         key = 'Default:SquadInformation_j'
         return {key: self.set_prop(key, final)}
     
-    def set_playlist(self, playlist: str) -> Dict[str, Any]:
+    def set_playlist(self, playlist: str, version: int) -> Dict[str, Any]:
         data = (self.get_prop('Default:SelectedIsland_j'))
 
-        if playlist is not None:
+        if playlist:
             data['SelectedIsland']['linkId']['mnemonic'] = playlist
+        if version:
+            data['SelectedIsland']['linkId']['version'] = version
 
         key = 'Default:SelectedIsland_j'
         return {key: self.set_prop(key, data)}
 
-    def set_region(self, region: Region)  -> Dict[str, Any]:
+    def set_region(self, region: Region) -> Dict[str, Any]:
         key = 'Default:RegionId_s'
         return {key: self.set_prop(key, region.value)}
 
@@ -3057,7 +3092,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
     async def set_position(self, position: int) -> None:
         """|coro|
 
-        The the clients party position.
+        Sets the clients party position.
 
         Parameters
         ----------
@@ -3182,6 +3217,40 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
+
+    async def request_playlist(self, playlist_id: str) -> None:
+        """|coro|
+
+        Request a playlist to update the party to, a real client should
+        always grant this request.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        prop = self.meta.set_requested_playlist(
+            playlist_id=playlist_id
+        )
+
+        if not self.edit_lock.locked():
+            await self.patch(updated=prop)
+
+        try:
+            await self.client.wait_for(
+                event='party_playlist_change',
+                check=lambda party, before, after: after[0] == playlist_id,
+                timeout=5
+            )
+        except asyncio.TimeoutError:
+            pass
+        finally:
+            prop = self.meta.set_requested_playlist(
+                playlist_id=''
+            )
+
+            if not self.edit_lock.locked():
+                return await self.patch(updated=prop)
 
 
 class PartyBase:
@@ -4094,7 +4163,7 @@ class ClientParty(PartyBase, Patchable):
                 config=config,
             )
     
-    async def set_playlist(self, playlist: str) -> None:
+    async def set_playlist(self, playlist: str, version: int = -1) -> None:
         """|coro|
 
         Sets the current playlist of the party.
@@ -4115,6 +4184,9 @@ class ClientParty(PartyBase, Patchable):
         ----------
         playlist: :class:`str`
             The playlist id or island code.
+        version: :class:`int`
+            The version of the playlist/island, defaults to ``-1`` which is
+            latest.
 
         Raises
         ------
@@ -4124,9 +4196,9 @@ class ClientParty(PartyBase, Patchable):
         if self.me is not None and not self.me.leader:
             raise Forbidden('You have to be leader for this action to work.')
 
-
         prop = self.meta.set_playlist(
-            playlist=playlist
+            playlist=playlist,
+            version=version
         )
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
@@ -4574,3 +4646,71 @@ class PartyJoinRequest:
             An error occurred while requesting.
         """
         return await self.party.invite(self.friend.id)
+
+
+class PlaylistRequest:
+    """Represents a playlist request. These are sent whenever a party member
+    who isn't the leader attempts to change the playlist.
+
+    .. info::
+
+        If you want to decline a PlaylistRequest, simply don't call the
+        accept method, and it will be ignored.
+
+    Attributes
+    ----------
+    client: :class:`Client`
+        The client.
+    party: :class:`ClientParty`
+        The party that the user is trying to change the playlist in.
+    member: :class:`PartyMember`
+        The party member who requested to change the playlist.
+    playlist: :class:`str`
+        The playlist id/island code that the user is suggesting.
+    version: :class:`int`
+        The version of the playlist/island that the user is requesting, is
+        usually -1 which means the latest version.
+    region: :class:`Region`
+        The region that the player is trying to set the party to.
+    """
+
+    __slots__ = ('client', 'party', 'member', 'playlist', 'version', 'region')
+
+    def __init__(self,
+                 client: 'Client',
+                 party: ClientParty,
+                 member: PartyMember,
+                 raw_suggestion: dict
+                 ) -> None:
+        self.client = client
+        self.party = party
+        self.member = member
+        self.playlist = raw_suggestion['linkId']['mnemonic']
+        self.version = raw_suggestion['linkId']['version']
+        self.region = Region(raw_suggestion['regionId'])
+
+    async def accept(self, update_region: bool = False) -> None:
+        """|coro|
+
+        Accepts the playlist request.
+
+        Parameters
+        ----------
+        update_region: :class:`bool`
+            Whether or not you want to update the region alongside the
+            playlist, defaults to ``False``.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        if update_region:
+            await self.party.set_region(
+                region=self.region
+            )
+
+        return await self.party.set_playlist(
+            playlist=self.playlist,
+            version=self.version
+        )

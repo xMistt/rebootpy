@@ -852,6 +852,17 @@ this decorator if you are in a subclass of :class:`Client`.
     :param after: The new coordinates.
     :type after: Tuple[:class:`float`, class:`float`]
 
+.. function:: event_party_playlist_request(request)
+
+    This event is called when a party member requests to change the current playlist, this is only called if you're the leader of the party as only the leader can accept a request.
+
+    .. warning::
+
+        This event is automatically handled by the client which automatically always accepts the playlist request. If you have this event referenced in your code the client won't automatically handle it anymore and you must handle it yourself.
+
+    :param request: Request object with information about the request with the ability to accept it.
+    :type member: :class:`PlaylistRequest`
+
 
 Stats Reference
 ---------------
@@ -1206,6 +1217,15 @@ CompetitiveRank
 .. attributetable:: CompetitiveRank
 
 .. autoclass:: CompetitiveRank()
+    :members:
+    :inherited-members:
+
+PlaylistRequest
+~~~~~~~~~~~~~~~~~
+
+.. attributetable:: PlaylistRequest
+
+.. autoclass:: PlaylistRequest()
     :members:
     :inherited-members:
 

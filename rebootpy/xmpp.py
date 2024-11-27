@@ -39,7 +39,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Optional, Union, Awaitable, Any, Tuple
 from .errors import HTTPException
 from .party import (Party, PartyJoinRequest, ReceivedPartyInvitation,
-                    PartyJoinConfirmation)
+                    PartyJoinConfirmation, PlaylistRequest)
 from .presence import Presence
 from .enums import AwayStatus
 from .utils import to_iso, from_iso
@@ -1128,11 +1128,6 @@ class XMPPClient:
         party._update(body)
         self.client.dispatch_event('party_update', party)
 
-        if self.client.auto_update_status and \
-                (_getattr(party, 'playlist_info')[0]
-                 != pre_values['playlist_info'][0]):
-            await self.client.auto_update_status_text()
-
         for key, pre_value in pre_values.items():
             value = _getattr(party, key)
             if pre_value != value:
@@ -1142,6 +1137,11 @@ class XMPPClient:
                     pre_value,
                     value
                 )
+
+        if self.client.auto_update_status and \
+                (_getattr(party, 'playlist_info')[0]
+                 != pre_values['playlist_info'][0]):
+            await self.client.auto_update_status_text()
 
     @EventDispatcher.event('com.epicgames.social.party.notification.v0.MEMBER_STATE_UPDATED')  # noqa
     async def event_party_member_state_updated(self,
@@ -1248,6 +1248,28 @@ class XMPPClient:
                         )
                     except KeyError:
                         pass
+
+        if (body.get('member_state_updated').get('Default:SuggestedIsland_j')
+                and party.me.leader):
+            island_raw = json.loads(
+                body['member_state_updated']['Default:SuggestedIsland_j']
+            )
+
+            if island_raw['SuggestedIsland']['linkId']['mnemonic']:
+                request = PlaylistRequest(
+                    client=self.client,
+                    party=party,
+                    member=member,
+                    raw_suggestion=island_raw['SuggestedIsland']
+                )
+
+                if not self.client._event_has_destination(
+                    'party_playlist_request'
+                ):
+                    await request.accept()
+                else:
+                    self.client.dispatch_event('party_playlist_request',
+                                               request)
 
         self.client.dispatch_event('party_member_update', member)
 
