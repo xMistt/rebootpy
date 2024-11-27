@@ -31,6 +31,7 @@ Changes
     - ``SeasonEndTimestamp.C5SOG.value`` -> ``Season.C5SOG.end_timestamp``
     - ``BattlePassStat.C5SOG.value[0]`` -> ``Season.C5SOG.battlepass_level``
     - ``Seasons.C5SOG`` -> ``Season.C5SOG.ranked_tracks``
+- :meth:`Client.set_platform()` won't restart the client anymore and will stay in the same party.
 
 Added
 ~~~~~
