@@ -3,7 +3,7 @@
 """
     sphinx.ext.viewcode
     ~~~~~~~~~~~~~~~~~~~
-    Incorporate links to module code in Python object descriptions.
+    Add links to module code in Python object descriptions.
     :copyright: Copyright 2007-2020 by the Sphinx team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 """
@@ -36,14 +36,14 @@ def get_github_line_link(app, filepath, line1, line2):
     except KeyError:
         return None
 
-    return ('https://github.com/{user}/{repo}/blob/{version}/{filepath}#L{line1}-L{line2}'.format(
+    return 'https://github.com/{user}/{repo}/blob/{version}/{filepath}#L{line1}-L{line2}'.format(
         user=data['github_user'],
         repo=data['github_repo'],
         version=data['github_version'],
         filepath=filepath,
         line1=line1,
         line2=line2
-    ))
+    )
 
 
 def _resolve(app, modname, attribute):
@@ -60,14 +60,14 @@ def _resolve(app, modname, attribute):
 
         return getattr(value, '__module__', None), getattr(value, '__qualname__', None)
     except AttributeError:
-        # sphinx.ext.viewcode can't trace class instance attribute
-        # Only log AttributeError in verbose mode.
+        # sphinx.ext.viewcode can't follow class instance attribute
+        # then AttributeError logging output only verbose mode.
         return None
     except Exception:
-        # sphinx.ext.viewcode follows Python domain directives.
-        # Consequently, if no actual modules exist as specified by py:function
-        # or other directives, viewcode emits numerous warnings.
-        # These should only be displayed in verbose mode.
+        # sphinx.ext.viewcode follow python domain directives.
+        # because of that, if there are no real modules exists that specified
+        # by py:function or other directives, viewcode emits a lot of warnings.
+        # It should be displayed only verbose mode.
         return None
 
 
@@ -157,30 +157,36 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
                                               refid=fullname, refdoc=env.docname)
             signode += onlynode
 
-def update_env_info(app: Sphinx, env: BuildEnvironment, docnames: Iterable[str], other: BuildEnvironment) -> None:
+
+def env_merge_info(app: Sphinx, env: BuildEnvironment, docnames: Iterable[str],
+                   other: BuildEnvironment) -> None:
     if not hasattr(other, '_viewcode_modules'):
         return
-    # Initialize a dictionary for _viewcode_modules in the main environment if not present
+    # create a _viewcode_modules dict on the main environment
     if not hasattr(env, '_viewcode_modules'):
         env._viewcode_modules = {}  # type: ignore
-    # Merge information from the subprocess environment into the main environment
+    # now merge in the information from the subprocess
     env._viewcode_modules.update(other._viewcode_modules)  # type: ignore
 
-def resolve_missing_reference(app: Sphinx, env: BuildEnvironment, node: Element, contnode: Node) -> Node:
-    # Special handling for "viewcode" reference nodes
+
+def missing_reference(app: Sphinx, env: BuildEnvironment, node: Element, contnode: Node
+                      ) -> Node:
+    # resolve our "viewcode" reference nodes -- they need special treatment
     if node['reftype'] == 'viewcode':
         return make_refnode(app.builder, node['refdoc'], node['reftarget'],
                             node['refid'], contnode)
+
     return None
 
-def compile_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
+
+def collect_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
     env = app.builder.env
     if not hasattr(env, '_viewcode_modules'):
         return
     highlighter = app.builder.highlighter  # type: ignore
     urito = app.builder.get_relative_uri
 
-    module_names = set(env._viewcode_modules)  # type: ignore
+    modnames = set(env._viewcode_modules)  # type: ignore
     for modname, entry in status_iterator(
             sorted(env._viewcode_modules.items()),  # type: ignore
             __('highlighting module code... '), "blue",
@@ -190,40 +196,53 @@ def compile_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
             continue
         code, tags, used, refname = entry
 
-        # Generate a page name for the highlighted source code
+        # construct a page name for the highlighted source
         pagename = '_modules/' + modname.replace('.', '/')
-        # Highlight the source using the builder's highlighter
-        lexer = env.config.highlight_language if env.config.highlight_language in ('python3', 'default', 'none') else 'python'
+        # highlight the source using the builder's highlighter
+        if env.config.highlight_language in ('python3', 'default', 'none'):
+            lexer = env.config.highlight_language
+        else:
+            lexer = 'python'
 
         highlighted = highlighter.highlight_block(code, lexer, linenos=False)
-        # Split the highlighted code into lines and add pre tags
+        # split the code into lines
         lines = highlighted.splitlines()
-        pre_wrap_start, pre_wrap_content = lines[0].split('<pre>')
-        lines[0:1] = [pre_wrap_start + '<pre>', pre_wrap_content]
+        # split off wrap markup from the first line of the actual code
+        before, after = lines[0].split('<pre>')
+        lines[0:1] = [before + '<pre>', after]
 
-        # Insert anchors for collected tags
-        max_index = len(lines) - 1
+        # nothing to do for the last line; it always starts with </pre> anyway
+        # now that we have code lines (starting at index 1), insert anchors for
+        # the collected tags (HACK: this only works if the tag boundaries are
+        # properly nested!)
+        maxindex = len(lines) - 1
         for name, (type_, start, end) in tags.items():
             docname = 'api'
             backlink = urito(pagename, docname) + '#' + refname + '.' + name
 
-            a_elem = '<a class="viewcode-back docs-link" href="{}" style="margin-right: 3px;">{}</a> '.format(backlink, _('[docs]')) if name in used else ''
+            if name in used:
+                a_elem = '<a class="viewcode-back docs-link" href="{}" style="margin-right: 3px;">{}</a> '.format(backlink, _('[docs]'))
+            else:
+                a_elem = ''
 
-            file_path = modname.replace('.', '/') + '.py'
-            github_link = get_github_line_link(app, file_path, start, min(end, max_index))
-            github_a_elem = '<a class="viewcode-back" href="{}">{}</a>'.format(github_link, _('[github]')) if github_link is not None else ''
+            file_ = modname.replace('.', '/') + '.py'
+            github_line_link = get_github_line_link(app, file_, start, min(end, maxindex))
+            if github_line_link is not None:
+                github_a_elem = '<a class="viewcode-back" href="{}">{}</a>'.format(github_line_link, _('[github]'))
+            else:
+                github_a_elem = ''
 
             div_elem = '<div class="viewcode-block" id="{}">'.format(name)
 
-            lines[start] = div_elem + github_a_elem + a_elem + lines[start]
-            lines[min(end, max_index)] += '</div>'
+            lines[start] = div_elem + github_a_elem  + a_elem + lines[start]
+            lines[min(end, maxindex)] += '</div>'
 
-        # Discover parent modules for submodules
+        # try to find parents (for submodules)
         parents = []
         parent = modname
         while '.' in parent:
             parent = parent.rsplit('.', 1)[0]
-            if parent in module_names:
+            if parent in modnames:
                 parents.append({
                     'link': urito(pagename, '_modules/' +
                                   parent.replace('.', '/')),
@@ -232,7 +251,7 @@ def compile_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
                         'title': _('Module code')})
         parents.reverse()
 
-        # Create context with module code details
+        # putting it all together
         context = {
             'parents': parents,
             'title': modname,
@@ -241,54 +260,48 @@ def compile_pages(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]]:
         }
         yield (pagename, context, 'page.html')
 
-    if not module_names:
+    if not modnames:
         return
 
-    index_html = ['\n']
+    html = ['\n']
+    # the stack logic is needed for using nested lists for submodules
     stack = ['']
-    for modname in sorted(module_names):
+    for modname in sorted(modnames):
         if modname.startswith(stack[-1]):
             stack.append(modname + '.')
-            index_html.append('<ul>')
+            html.append('<ul>')
         else:
             stack.pop()
             while not modname.startswith(stack[-1]):
                 stack.pop()
-                index_html.append('</ul>')
+                html.append('</ul>')
             stack.append(modname + '.')
-        index_html.append('<li><a href="%s">%s</a></li>\n' % (
+        html.append('<li><a href="%s">%s</a></li>\n' % (
             urito('_modules/index', '_modules/' + modname.replace('.', '/')),
             modname))
-    index_html.append('</ul>' * (len(stack) - 1))
+    html.append('</ul>' * (len(stack) - 1))
     context = {
         'title': _('Overview: module code'),
         'body': (_('<h1>All modules for which code is available</h1>') +
-                 ''.join(index_html)),
+                 ''.join(html)),
     }
 
     yield ('_modules/index', context, 'page.html')
 
 
 def setup(app: Sphinx) -> Dict[str, Any]:
-    """
-    Set up the Sphinx application with necessary configurations and events for viewcode.
-
-    :param app: The Sphinx application instance.
-    :return: A dictionary with version and environment details.
-    """
     app.add_config_value('viewcode_import', None, False)
     app.add_config_value('viewcode_enable_epub', False, False)
     app.add_config_value('viewcode_follow_imported_members', True, False)
     app.connect('doctree-read', doctree_read)
-    # Removed problematic connection to 'env-merge-info'
-    # The function `env_merge_info` is not defined.
+    app.connect('env-merge-info', env_merge_info)
     app.connect('html-collect-pages', collect_pages)
     app.connect('missing-reference', missing_reference)
     # app.add_config_value('viewcode_include_modules', [], 'env')
     # app.add_config_value('viewcode_exclude_modules', [], 'env')
     app.add_event('viewcode-find-source')
     app.add_event('viewcode-follow-imported')
-    logger.info('Loaded custom viewcode extension.')  # Changed to logger for consistency
+    print('Loaded custom viewcode.')
     return {
         'version': sphinx.__display_version__,
         'env_version': 1,
