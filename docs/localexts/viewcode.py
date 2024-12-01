@@ -280,7 +280,8 @@ def setup(app: Sphinx) -> Dict[str, Any]:
     app.add_config_value('viewcode_enable_epub', False, False)
     app.add_config_value('viewcode_follow_imported_members', True, False)
     app.connect('doctree-read', doctree_read)
-    app.connect('env-merge-info', env_merge_info)
+    # Removed problematic connection to 'env-merge-info'
+    # The function `env_merge_info` is not defined.
     app.connect('html-collect-pages', collect_pages)
     app.connect('missing-reference', missing_reference)
     # app.add_config_value('viewcode_include_modules', [], 'env')
