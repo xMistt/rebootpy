@@ -346,9 +346,15 @@ class Season(Enum):
     )
     C5SOG = FortniteSeason(
         start_timestamp=1730505600,
-        end_timestamp=1733036340,
+        end_timestamp=1733021940,
         battlepass_level='s32_social_bp_level',
         ranked_tracks=('P3PP3R', 'D13tDw', 'rr9qlw', 'W4FFL3', 'Fr3SkA')
+    )
+    C6S1 = FortniteSeason(
+        start_timestamp=1733022000,
+        end_timestamp=1740131940,
+        battlepass_level='s33_social_bp_level',
+        ranked_tracks=('rrhr6d', 'P3PP3R', 'SP1D3R', 'Gl4ss1', 'W4FFL3')
     )
 
     def __new__(cls, value: FortniteSeason) -> 'Season':

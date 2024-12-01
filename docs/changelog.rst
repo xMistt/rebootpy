@@ -6,7 +6,7 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
-v0.9.4 (pre-release)
+v0.9.4
 ------
 
 Changes
@@ -41,6 +41,7 @@ Added
 - [:ref:`Ext Commands <rebootpy_ext_commands>`] Added :attr:`ext.commands.Context.member` & :attr:`ext.commands.Context.friend`
 - Added :meth:`ClientPartyMember.set_kicks()`, :meth:`ClientPartyMember.clear_kicks()` & :attr:`PartyMember.kicks`
 - Added :func:`event_party_playlist_request()` and :class:`PlaylistRequest` which is used whenever a party member attempts to change the current playlist.
+- Added ``Season.C6S1``
 
 Bug Fixes
 ~~~~~
@@ -48,6 +49,7 @@ Bug Fixes
 - Fixed an issue parsing squad assignments if the client wasn't leader.
 - Fixed :meth:`Client.fetch_multiple_br_stats_collections` and :meth:`User.fetch_br_stats_collection` incorrectly saying the user was private.
 - Fixed an issue where :meth:`Client.restart` would be stuck forever.
+- Updated member meta to reflect new season changes.
 
 Removed
 ~~~~~~~

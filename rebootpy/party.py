@@ -671,9 +671,7 @@ class PartyMemberMeta(MetaBase):
             "Default:BattlePassInfo_j": json.dumps({
                 "BattlePassInfo": {
                     "bHasPurchasedPass": False,
-                    "passLevel": 1,
-                    "selfBoostXp": 0,
-                    "friendBoostXp": 0
+                    "passLevel": 1
                 }
             }),
             "Default:bIsPartyUsingPartySignal_b": "false",
@@ -940,14 +938,12 @@ class PartyMemberMeta(MetaBase):
                 banner_info.get('seasonLevel'))
 
     @property
-    def battlepass_info(self) -> Tuple[bool, int, int, int]:
+    def battlepass_info(self) -> Tuple[bool, int]:
         base = self.get_prop('Default:BattlePassInfo_j')
         bp_info = base['BattlePassInfo']
 
         return (bp_info['bHasPurchasedPass'],
-                bp_info['passLevel'],
-                bp_info['selfBoostXp'],
-                bp_info['friendBoostXp'])
+                bp_info['passLevel'])
 
     @property
     def platform(self) -> str:
@@ -1097,9 +1093,7 @@ class PartyMemberMeta(MetaBase):
         return {key: self.set_prop(key, final)}
 
     def set_battlepass_info(self, has_purchased: Optional[bool] = None,
-                            level: Optional[int] = None,
-                            self_boost_xp: Optional[int] = None,
-                            friend_boost_xp: Optional[int] = None
+                            level: Optional[int] = None
                             ) -> Dict[str, Any]:
         data = (self.get_prop('Default:BattlePassInfo_j'))['BattlePassInfo']
 
@@ -1107,10 +1101,6 @@ class PartyMemberMeta(MetaBase):
             data['bHasPurchasedPass'] = has_purchased
         if level is not None:
             data['passLevel'] = level
-        if self_boost_xp is not None:
-            data['selfBoostXp'] = self_boost_xp
-        if friend_boost_xp is not None:
-            data['friendBoostXp'] = friend_boost_xp
 
         final = {'BattlePassInfo': data}
         key = 'Default:BattlePassInfo_j'
@@ -1850,13 +1840,13 @@ class PartyMemberBase(User):
         return self.meta.banner
 
     @property
-    def battlepass_info(self) -> Tuple[bool, int, int, int]:
-        """:class:`tuple`: A tuple consisting of has purchased, battlepass
-        level, self boost xp, friends boost xp.
+    def battlepass_info(self) -> Tuple[bool, int]:
+        """:class:`tuple`: A tuple consisting of has purchased and battlepass
+        level.
 
         Example output: ::
 
-            (True, 30, 80, 70)
+            (True, 30)
         """
         return self.meta.battlepass_info
 
@@ -3045,9 +3035,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             return await self.patch(updated=prop)
 
     async def set_battlepass_info(self, has_purchased: Optional[bool] = None,
-                                  level: Optional[int] = None,
-                                  self_boost_xp: Optional[int] = None,
-                                  friend_boost_xp: Optional[int] = None
+                                  level: Optional[int] = None
                                   ) -> None:
         """|coro|
 
@@ -3069,10 +3057,6 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         level: Optional[:class:`int`]
             Sets the battle pass level (not the shown level).
             *Defaults to 1*
-        self_boost_xp: Optional[:class:`int`]
-            Sets the self boost xp (doesn't actually have an effect).
-        friend_boost_xp: Optional[:class:`int`]
-            Set the friend boost xp (doesn't actually have an effect).
 
         Raises
         ------
@@ -3081,9 +3065,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         """
         prop = self.meta.set_battlepass_info(
             has_purchased=has_purchased,
-            level=level,
-            self_boost_xp=self_boost_xp,
-            friend_boost_xp=friend_boost_xp
+            level=level
         )
 
         if not self.edit_lock.locked():
