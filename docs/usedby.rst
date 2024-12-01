@@ -6,7 +6,7 @@ Who uses fortnitepy?
 Yunite
 ------
 
-.. image:: https://yunite.xyz/img/android-chrome-384x384.png
+.. image:: https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTutd7rkz1i4CHkvuSvbNgbs3CVdJm8pfFExg&s
    :target: https://yunite.xyz
    :height: 100
 
