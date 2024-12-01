@@ -254,6 +254,7 @@ Enumerations
     .. attribute:: C5S3
     .. attribute:: C5S4
     .. attribute:: C5SOG
+    .. attribute:: C6S1
 
 .. class:: RankingType
 
