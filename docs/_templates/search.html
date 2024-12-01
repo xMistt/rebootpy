@@ -2,29 +2,29 @@
 
 {%- block regular_scripts -%}
 {{ super() }}
-<script src="{{ pathto('_static/searchtools.js', 1) }}"></script>
-<script src="{{ pathto('_static/language_data.js', 1) }}"></script>
+<script src="{{ pathto('_static/searchtools.js', 1) }}" defer></script>
+<script src="{{ pathto('_static/language_data.js', 1) }}" defer></script>
 {%- endblock regular_scripts-%}
 
 {%- block htmltitle -%}
-<title>{{ _("Search") }} - {{ docstitle }}</title>
+<title>{{ _("Search Documentation") }} - {{ docstitle }}</title>
 {%- endblock htmltitle -%}
 
 {% block content %}
-<div id="fallback" class="admonition error">
-    <p class="admonition-title">{% trans %}Error{% endtrans %}</p>
+<div id="fallback-message" class="admonition error">
+    <p class="admonition-title">{% trans %}JavaScript Required{% endtrans %}</p>
     <p>
-        {% trans %}Please activate JavaScript to enable the search functionality.{% endtrans %}
+        {% trans %}To use the search function, please enable JavaScript.{% endtrans %}
     </p>
 </div>
 <script>
-    document.getElementById('fallback').hidden = true;
+    document.getElementById('fallback-message').hidden = true;
 </script>
 
-<div id="search-results"></div>
+<div id="search-results-container"></div>
 {% endblock %}
 
 {% block scripts -%}
 {{ super() }}
-<script src="{{ pathto('searchindex.js', 1) }}"></script>
+<script src="{{ pathto('searchindex.js', 1) }}" defer></script>
 {%- endblock scripts %}
