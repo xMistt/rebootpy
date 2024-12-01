@@ -1,49 +1,39 @@
-$(document).ready(function(){
-    var settingsBackgroundElement = $("#settings-background");
-    var settingsContainerElement = $("#settings-container");
-    var settingsButtonElement = $("#settings-button");
-    var settingsCloseButtonElement = $("#settings-close-button");
 
-    var radioThemeLight = $("#radio-theme-light");
-    var radioThemeDark = $("#radio-theme-dark");
-    var radioLabelThemeLight = $("#radio-label-theme-light");
-    var radioLabelThemeDark = $("#radio-label-theme-dark");
+$(document).ready(function() {
+    const settingsBackground = $("#settings-background");
+    const settingsContainer = $("#settings-container");
+    const settingsButton = $("#settings-button");
+    const settingsCloseButton = $("#settings-close-button");
 
-    function isVisible() {
-        return settingsBackgroundElement.css("display") === "flex";
-    }
+    const themeRadioLight = $("#radio-theme-light");
+    const themeRadioDark = $("#radio-theme-dark");
+    const lightLabel = $("#radio-label-theme-light");
+    const darkLabel = $("#radio-label-theme-dark");
 
-    function toggleSettings(visible) {
-        if (visible === undefined) visible = !isVisible();
-        settingsBackgroundElement.css("display", visible ? "flex" : "none");
-    }
+    const isSettingsVisible = () => settingsBackground.css("display") === "flex";
 
-    settingsButtonElement.click(function() {
-        toggleSettings();
+    const toggleSettingsVisibility = (visible = !isSettingsVisible()) => {
+        settingsBackground.css("display", visible ? "flex" : "none");
+    };
+
+    settingsButton.on('click', toggleSettingsVisibility);
+    settingsBackground.on('click', toggleSettingsVisibility);
+
+    settingsContainer.on('click', (e) => {
+        e.stopPropagation();
     });
 
-    settingsBackgroundElement.click(function() {
-        toggleSettings();
-    });
+    settingsCloseButton.on('click', toggleSettingsVisibility);
 
-    settingsContainerElement.click(function(e) {
-        e.stopPropagation()
-    });
-
-    settingsCloseButtonElement.click(function() {
-        toggleSettings();
-    });
-
-    // Actual settings below
-
-    radioLabelThemeLight.click(function() {
+    // Settings actions
+    lightLabel.on('click', () => {
         setTheme("light");
     });
 
-    radioLabelThemeDark.click(function() {
+    darkLabel.on('click', () => {
         setTheme("dark");
     });
 
-    let elemToCheck = getCurrentTheme() === "light" ? radioThemeLight : radioThemeDark;
-    elemToCheck.attr("checked", "checked");
+    const currentThemeRadio = getCurrentTheme() === "light" ? themeRadioLight : themeRadioDark;
+    currentThemeRadio.attr("checked", "checked");
 });

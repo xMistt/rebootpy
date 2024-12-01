@@ -4,7 +4,7 @@ Getting started
 Installation
 ------------
 
-**rebootpy requires Python 3.5 or higher**
+**rebootpy requires Python 3.7 or higher**
 
 **Windows**
 

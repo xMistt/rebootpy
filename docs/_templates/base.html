@@ -1,10 +1,11 @@
+
 <!doctype html>
 <html class="no-js">
 
 <head>
     {%- block site_meta -%}
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark">
 
     {%- if metatags %}{{ metatags }}{% endif -%}
@@ -32,7 +33,7 @@
 
     {# Favicon #}
     {%- if favicon -%}
-    <link rel="shortcut icon" href="{{ pathto('_static/' + favicon, 1) }}" />
+    <link rel="shortcut icon" href="{{ pathto('_static/' + favicon, 1) }}" type="image/x-icon" />
     {%- endif -%}
 
     {#- Generator banner -#}
@@ -43,19 +44,15 @@
     {#- Site title -#}
     {%- block htmltitle -%}
     {% if pagename == master_doc %}
-    <title>{{ _("Home") }} - {{ docstitle|striptags|e }}</title>
+    <title>{{ _('Home') }} - {{ docstitle|striptags|e }}</title>
     {% else %}
     <title>{{ title|striptags|e }} - {{ docstitle|striptags|e }}</title>
     {% endif %}
     {%- endblock -%}
 
     <script>
-        var theme = localStorage.getItem('theme');
-        if (theme === null) {
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
-            else theme = 'light';
-        }
-        document.documentElement.setAttribute("data-theme", theme);
+        const themePreference = localStorage.getItem('theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute("data-theme", themePreference);
     </script>
 
     {%- block scripts -%}
@@ -111,11 +108,8 @@
 
     {%- if READTHEDOCS %}
     <script>
-        if (typeof READTHEDOCS_DATA !== "undefined") {
-            if (!READTHEDOCS_DATA.features) {
-                READTHEDOCS_DATA.features = {};
-            }
-            READTHEDOCS_DATA.features.docsearch_disabled = true;
+        if (typeof READTHEDOCS_DATA !== "undefined" && !READTHEDOCS_DATA.features) {
+            READTHEDOCS_DATA.features = { docsearch_disabled: true };
         }
     </script>
     {%- endif %}
