@@ -80,14 +80,18 @@ Added
 ~~~~~
 
 - Added :meth:`Client.fetch_ranked_stats()` & :meth:`User.fetch_ranked_stats()` (all classes that inherit from :class:`User` like :class:`Friend`, :class:`PartyMember`, etc will all have this method - search ``fetch_ranked_stats`` to see all).
-- Added new enum values for the new season.
-    - ``SeasonStartTimestamp.C5SOG``
-    .. note::
+- Added new enum values for the new season:
 
-    This timestamp includes the last 6 hours of C5S4 in order to include all stats from the first day of the season, it's the same timestamp that both `FortniteTracker <https://fortnitetracker.com/>`_ and `fortnite.gg <https://fortnite.gg/>`_ use for this season.
+    - ``SeasonStartTimestamp.C5SOG``
+
+      .. note::
+
+         This timestamp includes the last 6 hours of C5S4 in order to include all stats from the first day of the season. It's the same timestamp that both `FortniteTracker <https://fortnitetracker.com/>`_ and `fortnite.gg <https://fortnite.gg/>`_ use for this season.
+
     - ``SeasonEndTimestamp.C5S4``
     - ``SeasonEndTimestamp.C5SOG``
     - ``BattlePassStat.C5SOG``
+
 - Added ``kill_other_sessions`` parameter to :class:`BasicClient` & :class:`Client`, if you were manually setting the value of the attribute yourself, this'll still work.
 
 Bug Fixes
