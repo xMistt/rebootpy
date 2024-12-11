@@ -6,6 +6,14 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
+v0.9.5 (pre-release)
+------
+
+Added
+~~~~~
+
+- Added ``RankingType.BALLISTIC`` & the ballistic ranked track to `Season.C6S1`.
+
 v0.9.4
 ------
 
@@ -42,6 +50,9 @@ Added
 - Added :meth:`ClientPartyMember.set_kicks()`, :meth:`ClientPartyMember.clear_kicks()` & :attr:`PartyMember.kicks`
 - Added :func:`event_party_playlist_request()` and :class:`PlaylistRequest` which is used whenever a party member attempts to change the current playlist.
 - Added ``Season.C6S1``
+.. note::
+
+    The C5SOG reload ranked season has extended into C6S1 resetting in C6S2. This means C5SOG & C6S1 ranked stats will be identical.
 
 Bug Fixes
 ~~~~~
@@ -70,7 +81,10 @@ Added
 
 - Added :meth:`Client.fetch_ranked_stats()` & :meth:`User.fetch_ranked_stats()` (all classes that inherit from :class:`User` like :class:`Friend`, :class:`PartyMember`, etc will all have this method - search ``fetch_ranked_stats`` to see all).
 - Added new enum values for the new season.
-    - ``SeasonStartTimestamp.C5SOG`` - please note, that this timestamp includes the last 6 hours of C5S4 in order to include all stats from the first day of the season, it's the same timestamp that both `FortniteTracker <https://fortnitetracker.com/>`_ and `fortnite.gg <https://fortnite.gg/>`_ use for this season.
+    - ``SeasonStartTimestamp.C5SOG``
+    .. note::
+
+    This timestamp includes the last 6 hours of C5S4 in order to include all stats from the first day of the season, it's the same timestamp that both `FortniteTracker <https://fortnitetracker.com/>`_ and `fortnite.gg <https://fortnite.gg/>`_ use for this season.
     - ``SeasonEndTimestamp.C5S4``
     - ``SeasonEndTimestamp.C5SOG``
     - ``BattlePassStat.C5SOG``

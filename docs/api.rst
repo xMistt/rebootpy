@@ -265,6 +265,7 @@ Enumerations
     .. attribute:: ROCKET_RACING
     .. attribute:: RELOAD
     .. attribute:: RELOAD_ZB
+    .. attribute:: BALLISTIC
 
 .. class:: Rank
 

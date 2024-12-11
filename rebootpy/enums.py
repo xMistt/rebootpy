@@ -354,7 +354,8 @@ class Season(Enum):
         start_timestamp=1733022000,
         end_timestamp=1740131940,
         battlepass_level='s33_social_bp_level',
-        ranked_tracks=('rrhr6d', 'P3PP3R', 'SP1D3R', 'Gl4ss1', 'W4FFL3')
+        ranked_tracks=('rrhr6d', 'P3PP3R', 'SP1D3R', 'Gl4ss1', 'W4FFL3',
+                       'G4RL1C')
     )
 
     def __new__(cls, value: FortniteSeason) -> 'Season':
@@ -373,6 +374,7 @@ class RankingType(Enum):
     ROCKET_RACING   = 'delmar-competitive'
     RELOAD          = 'ranked_blastberry_build'
     RELOAD_ZB       = 'ranked_blastberry_nobuild'
+    BALLISTIC       = 'ranked-feral'
 
 
 class Rank(Enum):
