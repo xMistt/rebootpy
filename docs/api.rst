@@ -266,6 +266,8 @@ Enumerations
     .. attribute:: RELOAD
     .. attribute:: RELOAD_ZB
     .. attribute:: BALLISTIC
+    .. attribute:: OG
+    .. attribute:: OG_ZERO_BUILD
 
 .. class:: Rank
 
