@@ -12,7 +12,8 @@ v0.9.5 (pre-release)
 Added
 ~~~~~
 
-- Added ``RankingType.BALLISTIC`` & the ballistic ranked track to `Season.C6S1`.
+- Added ``RankingType.BALLISTIC``
+- Added ``RankingType.OG`` & ``RankingType.OG_ZERO_BUILD``
 
 v0.9.4
 ------
