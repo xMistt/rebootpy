@@ -12,17 +12,17 @@ The preferred method to login is :class:`DeviceAuth`. To set up and handle this 
 of auth, you should use :class:`AdvancedAuth`. `This example <https://github.com/xMistt/rebootpy/blob/main/examples/basic_bot.py>`_ demonstrates
 how you can set up this auth with file storage for the preferred login which is :class:`DeviceAuth`.
 
-.. autoclass:: ExchangeCodeAuth
-
-.. autoclass:: AuthorizationCodeAuth
-
-.. autoclass:: DeviceAuth
-
-.. autoclass:: RefreshTokenAuth
-
 .. autoclass:: AdvancedAuth
 
 .. autoclass:: DeviceCodeAuth
+
+.. autoclass:: DeviceAuth
+
+.. autoclass:: AuthorizationCodeAuth
+
+.. autoclass:: ExchangeCodeAuth
+
+.. autoclass:: RefreshTokenAuth
 
 
 Clients

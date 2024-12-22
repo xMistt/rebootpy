@@ -496,6 +496,10 @@ class AuthorizationCodeAuth(ExchangeCodeAuth):
     https://www.epicgames.com, log in to the new account and then enter the
     link above again to generate an authorization code.
 
+    **How to get an authorization code:**
+
+    .. image:: https://raw.githubusercontent.com/xMistt/rebootpy/main/docs/resources/images/authorization_code.png
+
     .. note::
 
         An authorization code only works for a single login within a short
