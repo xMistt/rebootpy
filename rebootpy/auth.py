@@ -722,10 +722,13 @@ class AdvancedAuth(Auth):
 
     1. By :class:`DeviceAuth` if ``device_id``, ``account_id`` and ``secret``
     are present.
+
     2. :class:`DeviceCodeAuth` is tried if ``prompt_device_code``
     is ``True``.
+
     3. :class:`ExchangeCodeAuth` is tried if ``exchange_code`` is present
     or if ``prompt_exchange_code`` is ``True``.
+
     4. :class:`AuthorizationCodeAuth` is tried if ``authorization_code`` is
     present or if ``prompt_authorization_code`` is ``True``.
 
