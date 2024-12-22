@@ -98,7 +98,7 @@ class Paginator:
 
     def __init__(self, prefix: str = '',
                  suffix: str = '',
-                 max_size: int = 10000) -> None:
+                 max_size: int = 100) -> None:
         self.prefix = prefix
         self.suffix = suffix
         self.max_size = max_size
