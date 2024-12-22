@@ -912,7 +912,7 @@ class FortniteHelpCommand(HelpCommand):
         Defaults to ``6``.
     width: :class:`int`
         The maximum number of characters that fit in a line.
-        Defaults to ``42``.
+        Defaults to ``39``.
     indent: :class:`int`
         How much to indent the commands and other text from a title.
         Defaults to ``4``.
@@ -956,7 +956,7 @@ class FortniteHelpCommand(HelpCommand):
         self.no_category = options.pop('no_category_heading', 'No Category')
 
         self.height = options.pop('height', 6)
-        self.width = options.pop('width', 42)
+        self.width = options.pop('width', 39)
         self.indent = options.pop('indent', 4)
 
         self.title_prefix = options.pop('title_prefix', ' +')
