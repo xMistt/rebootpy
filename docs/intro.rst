@@ -21,7 +21,7 @@ Installation
 Authentication
 --------------
 
-To get a bot running, you must use one of several :ref:`authentication methods <authentication>`. If you do not know which one to use, you should stick with :class:`AdvancedAuth` which is used in most examples. :class:`AdvancedAuth` requires you to enter an authorization code upon the bots initial launch. When the bot has successfully authenticated, it will automatically generate credentials which can be used at a later point. That means you can launch your bot without any extra stuff needed after its first launch.
+To get a bot running, you must use one of several :ref:`authentication methods <authentication>`. If you do not know which one to use, you should stick with :class:`AdvancedAuth` which is used in most examples. :class:`AdvancedAuth` by default will prompt you to login via device code on the Epic Games website upon the bots initial launch. When the bot has successfully authenticated, it will automatically generate credentials which can be used at a later point. That means you can launch your bot without any extra stuff needed after its first launch.
 
 Basic example
 -------------
