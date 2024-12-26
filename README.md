@@ -56,7 +56,7 @@ async def hello(ctx):
 bot.run()
 ```
 
-# Authorization
+# Authorization Code
 How to get a one time authorization code:
 1. Log into the epic games account of your choice [here](https://www.epicgames.com/id/login?redirectUrl=https%3A%2F%2Fwww.epicgames.com%2Fid%2Fapi%2Fredirect%3FclientId%3D3f69e56c7649492c8cc29f1af08a8a12%26responseType%3Dcode).
 2. Copy the value of the `authorizationCode` field from the response as shown in the image below:
@@ -66,7 +66,7 @@ How to get a one time authorization code:
 Keep in mind that authorization code isn't the only method of authentication, you can view all of them [here](https://rebootpy.readthedocs.io/en/latest/api.html#authentication), DeviceAuth is recommended once you've generated device auths.
 
 # Credit
-Thanks to [Kysune](https://github.com/SzymonLisowiec), [iXyles](https://github.com/iXyles), [Vrekt](https://github.com/Vrekt) and [amrsatrio](https://github.com/Amrsatrio) for ideas and/or work that this library is built upon.
+Thanks to [Kysune](https://github.com/SzymonLisowiec), [iXyles](https://github.com/iXyles), [Vrekt](https://github.com/Vrekt), [amrsatrio](https://github.com/Amrsatrio) and [This Nils](https://github.com/thisnils) for ideas and/or work that this library is built upon.
 
 # Need help?
 If you need more help feel free to join this [discord server](https://discord.gg/rnk869s).
