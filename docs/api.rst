@@ -353,14 +353,12 @@ this decorator if you are in a subclass of :class:`Client`.
 
     Called whenever the xmpp connection is closed. This means that it is called both when it's lost or closed gracefully.
     
-.. function:: event_device_auth_generate(details, email)
+.. function:: event_device_auth_generate(details)
 
     This event is called whenever new device authentication details are generated.
 
     :param details: A dictionary containing the keys ``device_id``, ``account_id`` and ``secret``.
     :type details: :class:`dict`
-    :param email: Email of the account that just generated new device auth details.
-    :type email: :class:`str`
 
 .. function:: event_device_code_generated(link)
 
