@@ -9,7 +9,7 @@ version = ''
 with open('rebootpy/__init__.py') as f:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE).group(1)
 
-requirements = ['aiohttp>=3.3', 'aioxmpp>=0.10.4']
+requirements = ['aiohttp>=3.10.10', 'aioxmpp>=0.13.3', 'aioconsole>=0.1.15', 'pytz>=2024.2']
 try:
     with open('requirements.txt') as f:
         requirements = f.read().splitlines()
