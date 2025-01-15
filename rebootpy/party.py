@@ -2908,6 +2908,59 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
 
+    async def set_jam_emote(self, asset: str, *,
+                            run_for: Optional[float] = None,
+                            key: Optional[str] = None,
+                            section: Optional[int] = None) -> None:
+        """|coro|
+
+        Sets the jam emote of the client.
+
+        Parameters
+        ----------
+        asset: :class:`str`
+            The EID of the jam emote.
+
+            .. note::
+
+                If you only have the Jam Track ID of the jawm track you want
+                to play, you can replcae `sid` with `eid` and then add either
+                `_vox`, `_drum`, `_lead` or `_bass` to the end depending on
+                what instrument you want to use. e.g. `sid_placeholder_10`
+                becomes `sid_placeholder_10_vox`.
+
+        run_for: Optional[:class:`float`]
+            Seconds the jam emote should run for before being cancelled.
+             ``None`` (default) means it will run indefinitely and you can
+             then clear it with :meth:`PartyMember.clear_emote()`.
+        key: Optional[:class:`str`]
+            The encryption key to use for this emote.
+        section: Optional[:class:`int`]
+            The section.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        if asset != '' and '.' not in asset:
+            asset = f'/SparksSongTemplates/Items/JamEmotes/{asset}.{asset}'
+
+        prop = self.meta.set_emote(
+            emote=asset,
+            emote_ekey=key,
+            section=section
+        )
+
+        self._cancel_clear_emote()
+        if run_for is not None:
+            self.clear_emote_task = self.client.loop.create_task(
+                self._schedule_clear_emote(run_for)
+            )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
+
     async def set_emoji(self, asset: str, *,
                         run_for: Optional[float] = 2,
                         key: Optional[str] = None,
