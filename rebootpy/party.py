@@ -823,6 +823,42 @@ class PartyMemberMeta(MetaBase):
                 }
             }),
             "Default:UtcTimeStartedMatchAthena_s": "0001-01-01T00:00:00.000Z",
+            "Default:MpLoadout_j": json.dumps({
+                "MpLoadout": {
+                    "d": {
+                        "sb": {
+                            "i": "SparksBass:Sparks_Bass_Generic",
+                            "v": {
+                                "0": "0"
+                            }
+                        },
+                        "sg": {
+                            "i": "SparksGuitar:Sparks_Guitar_Generic",
+                            "v": {
+                                "0": "0"
+                            }
+                        },
+                        "sd": {
+                            "i": "SparksDrums:Sparks_Drum_Generic",
+                            "v": {
+                                "0": "0"
+                            }
+                        },
+                        "sk": {
+                            "i": "SparksKeyboard:Sparks_Keytar_Generic",
+                            "v": {
+                                "0": "0"
+                            }
+                        },
+                        "sm": {
+                            "i": "SparksMicrophone:Sparks_Mic_Generic",
+                            "v": {
+                                "0": "0"
+                            }
+                        }
+                    }
+                }
+            })
         }
 
         if meta is not None:
@@ -1191,6 +1227,47 @@ class PartyMemberMeta(MetaBase):
         data['linkId']['mnemonic'] = playlist_id
 
         final = {'SuggestedIsland': data}
+        return {key: self.set_prop(key, final)}
+
+    def set_instruments(self,
+                        bass: Optional[str] = None,
+                        bass_variants: Optional[dict] = None,
+                        guitar: Optional[str] = None,
+                        guitar_variants: Optional[dict] = None,
+                        drums: Optional[str] = None,
+                        drums_variants: Optional[dict] = None,
+                        keytar: Optional[str] = None,
+                        keytar_variants: Optional[dict] = None,
+                        microphone: Optional[str] = None,
+                        microphone_variants: Optional[dict] = None
+                        ) -> Dict[str, Any]:
+
+        prop = self.get_prop('Default:MpLoadout_j')
+        data = prop['MpLoadout']['d']
+
+        if bass is not None:
+            data['sb']['i'] = f'SparksBass:{bass}'
+        if bass_variants is not None:
+            data['sb']['v'] = bass_variants
+        if guitar is not None:
+            data['sg']['i'] = f'SparksGuitar:{guitar}'
+        if guitar_variants is not None:
+            data['sg']['v'] = guitar_variants
+        if drums is not None:
+            data['sd']['i'] = f'SparksDrums:{drums}'
+        if drums_variants is not None:
+            data['sd']['v'] = drums_variants
+        if keytar is not None:
+            data['sk']['i'] = f'SparksKeyboard:{keytar}'
+        if keytar_variants is not None:
+            data['sk']['v'] = keytar_variants
+        if microphone is not None:
+            data['sm']['i'] = f'SparksMicrophone:{microphone}'
+        if microphone_variants is not None:
+            data['sm']['v'] = microphone_variants
+
+        final = {'MpLoadout': {"d": json.dumps(data)}}
+        key = 'Default:MpLoadout_j'
         return {key: self.set_prop(key, final)}
 
 
@@ -2924,10 +3001,10 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             .. note::
 
                 If you only have the Jam Track ID of the jawm track you want
-                to play, you can replcae `sid` with `eid` and then add either
-                `_vox`, `_drum`, `_lead` or `_bass` to the end depending on
-                what instrument you want to use. e.g. `sid_placeholder_10`
-                becomes `sid_placeholder_10_vox`.
+                to play, you can replcae ``sid`` with ``eid`` and then add either
+                ``_vox``, ``_drum``, ``_lead`` or ``_bass`` to the end depending on
+                what instrument you want to use. e.g. ``sid_placeholder_10``
+                becomes ``sid_placeholder_10_vox``.
 
         run_for: Optional[:class:`float`]
             Seconds the jam emote should run for before being cancelled.
@@ -3286,6 +3363,66 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
             if not self.edit_lock.locked():
                 return await self.patch(updated=prop)
+
+    async def set_instruments(self,
+                              bass: Optional[str] = None,
+                              bass_variants: Optional[str] = None,
+                              guitar: Optional[str] = None,
+                              guitar_variants: Optional[str] = None,
+                              drums: Optional[str] = None,
+                              drums_variants: Optional[str] = None,
+                              keytar: Optional[str] = None,
+                              keytar_variants: Optional[str] = None,
+                              microphone: Optional[str] = None,
+                              microphone_variants: Optional[str] = None
+                              ) -> None:
+        """|coro|
+
+        Sets the clients instruments for use in jam emotes.
+
+        Parameters
+        ----------
+        bass: Optional[:class:`str`]
+            The ID of the bass instrument.
+        bass_variants: Optional[:class:`dict`]
+            The raw variants for the bass instrument.
+        guitar: Optional[:class:`str`]
+            The ID of the guitar instrument.
+        guitar_variants: Optional[:class:`dict`]
+            The raw variants for the guitar instrument.
+        drums: Optional[:class:`str`]
+            The ID of the drums instrument.
+        drums_variants: Optional[:class:`dict`]
+            The raw variants for the drums instrument.
+        keytar: Optional[:class:`str`]
+            The ID of the keytar instrument.
+        keytar_variants: Optional[:class:`dict`]
+            The raw variants for the keytar instrument.
+        microphone: Optional[:class:`str`]
+            The ID of the microphone instrument.
+        microphone_variants: Optional[:class:`dict`]
+            The raw variants for the microphone instrument.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        prop = self.meta.set_instruments(
+            bass=bass,
+            bass_variants=bass_variants,
+            guitar=guitar,
+            guitar_variants=guitar_variants,
+            drums=drums,
+            drums_variants=drums_variants,
+            keytar=keytar,
+            keytar_variants=keytar_variants,
+            microphone=microphone,
+            microphone_variants=microphone_variants
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
 
 
 class PartyBase:

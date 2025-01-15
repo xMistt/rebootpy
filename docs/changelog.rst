@@ -14,7 +14,8 @@ Added
 
 - Added ``RankingType.BALLISTIC``
 - Added ``RankingType.OG`` & ``RankingType.OG_ZERO_BUILD``
-- Added :meth:`ClientPartyMember.set_jam_emote()`,
+- Added :meth:`ClientPartyMember.set_jam_emote()`
+- Added :meth:`ClientPartyMember.set_instruments()`
 
 v0.9.4
 ------
