@@ -6,7 +6,7 @@ Need more help?
 Support Discord
 ---------------
 
-Feel free to join `this discord <https://discord.gg/rnk869s>`_. Asking question about the library there will greatly speed up the average response time as there are multiple experienced members (hopefully) available that can offer you help. Keep in mind that this is a discord server for general epicgames app development. Use ``#fortnitepy-help`` for rebootpy related questions.
+Feel free to join `this discord <https://discord.gg/rnk869s>`_. Asking question about the library there will greatly speed up the average response time as there are multiple experienced members (hopefully) available that can offer you help. Keep in mind that this is a discord server for general epicgames app development. Use ``#fortnitepy`` for rebootpy related questions.
 
 If you need to get in contact with me directly, you can join the discord above and then ping me (`mistxoli``).
 
