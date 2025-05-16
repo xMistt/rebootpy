@@ -1442,6 +1442,61 @@ class PartyMeta(MetaBase):
             "Default:TileStates_j": json.dumps({
                 "TileStates": []
             }),
+            "Default:MatchmakingInfo_j": json.dumps({
+                "MatchmakingInfo": {
+                    "currentIsland": {
+                        "linkId": {
+                            "mnemonic": "",
+                            "version": -1
+                        },
+                        "session": {
+                            "iD": "",
+                            "joinInfo": {
+                                "joinability": "CanNotBeJoinedOrWatched",
+                                "sessionKey": ""
+                            }
+                        },
+                        "world": {
+                            "iD": "",
+                            "ownerId": "INVALID",
+                            "name": "",
+                            "bIsJoinable": False
+                        },
+                        "productModes": [],
+                        "privacy": "Undefined",
+                        "regionId": "EU",
+                        "matchmakingId": ""
+                    },
+                    "bIsEligibleForMatchmaking": True,
+                    "suggestedIsland": {
+                        "linkId": {
+                            "mnemonic": "",
+                            "version": -1
+                        },
+                        "session": {
+                            "iD": "",
+                            "joinInfo": {
+                                "joinability": "CanNotBeJoinedOrWatched",
+                                "sessionKey": ""
+                            }
+                        },
+                        "world": {
+                            "iD": "",
+                            "ownerId": "INVALID",
+                            "name": "",
+                            "bIsJoinable": False
+                        },
+                        "productModes": [],
+                        "privacy": "Undefined",
+                        "regionId": "EU",
+                        "matchmakingId": ""
+                    },
+                    "worldSessionId": "",
+                    "travelId": "",
+                    "playlistVersion": 1,
+                    "matchmakingId": "00000000000000000000000000000000"
+                }
+            })
             "Default:ZoneInstanceId_s": "",
             "urn:epic:cfg:accepting-members_b": "true",
             "urn:epic:cfg:build-id_s": "1:3:",
