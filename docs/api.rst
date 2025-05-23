@@ -147,6 +147,7 @@ Enumerations
     .. attribute:: SWITCH
     .. attribute:: IOS
     .. attribute:: ANDROID
+    .. attribute:: SWITCH_2
     .. attribute:: UNKNOWN
 
         Used when an un-official client (e.g. one using a library similar to
