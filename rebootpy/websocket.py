@@ -99,7 +99,7 @@ class WebsocketRequest(aiohttp.client_reqrep.ClientRequest):
                                        "HTTP/1.1"
         await writer.write_headers(status_line, self.headers)
 
-        self._writer = self.loop.create_task(self.write_bytes(writer, conn))
+        self._writer = self.loop.create_task(self.write_bytes(writer, conn, None))
 
         response_class = self.response_class
         assert response_class is not None
