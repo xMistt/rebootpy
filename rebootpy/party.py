@@ -822,6 +822,61 @@ class PartyMemberMeta(MetaBase):
                     "gameSessionKey": ""
                 }
             }),
+            "Default:MatchmakingInfo_j": json.dumps({
+                "MatchmakingInfo": {
+                    "currentIsland": {
+                        "linkId": {
+                            "mnemonic": "",
+                            "version": -1
+                        },
+                        "session": {
+                            "iD": "",
+                            "joinInfo": {
+                                "joinability": "CanNotBeJoinedOrWatched",
+                                "sessionKey": ""
+                            }
+                        },
+                        "world": {
+                            "iD": "",
+                            "ownerId": "INVALID",
+                            "name": "",
+                            "bIsJoinable": False
+                        },
+                        "productModes": [],
+                        "privacy": "Undefined",
+                        "regionId": "EU",
+                        "matchmakingId": ""
+                    },
+                    "bIsEligibleForMatchmaking": True,
+                    "suggestedIsland": {
+                        "linkId": {
+                            "mnemonic": "",
+                            "version": -1
+                        },
+                        "session": {
+                            "iD": "",
+                            "joinInfo": {
+                                "joinability": "CanNotBeJoinedOrWatched",
+                                "sessionKey": ""
+                            }
+                        },
+                        "world": {
+                            "iD": "",
+                            "ownerId": "INVALID",
+                            "name": "",
+                            "bIsJoinable": False
+                        },
+                        "productModes": [],
+                        "privacy": "Undefined",
+                        "regionId": "EU",
+                        "matchmakingId": ""
+                    },
+                    "worldSessionId": "",
+                    "travelId": "",
+                    "playlistVersion": 1,
+                    "matchmakingId": "00000000000000000000000000000000"
+                }
+            }),
             "Default:UtcTimeStartedMatchAthena_s": "0001-01-01T00:00:00.000Z",
             "Default:MpLoadout_j": json.dumps({
                 "MpLoadout": {
@@ -924,6 +979,10 @@ class PartyMemberMeta(MetaBase):
     def pickaxe_variants(self) -> List[Dict[str, str]]:
         return self.variants.get('athenaPickaxe', {}).get('i', [])
 
+    @property
+    def kicks_variants(self) -> List[Dict[str, str]]:
+        return self.variants.get('CosmeticShoes', {}).get('i', [])
+      
     @property
     def contrail_variants(self) -> List[Dict[str, str]]:
         return self.variants.get('athenaContrail', {}).get('i', [])
@@ -1802,6 +1861,20 @@ class PartyMemberBase(User):
             :meth:`ClientPartyMember.set_backpack()`.
         """
         return self.meta.backpack_variants
+
+    @property
+    def kicks_variants(self) -> List[Dict[str, str]]:
+        """:class:`list`: A list containing the raw variants data for the
+        currently equipped kicks.
+
+        .. warning::
+
+            Variants doesn't seem to follow much logic. Therefore this returns
+            the raw variants data received from fortnite's service. This can
+            be directly passed with the ``variants`` keyword to
+            :meth:`ClientPartyMember.set_kicks()`.
+        """
+        return self.meta.kicks_variants
 
     @property
     def pickaxe_variants(self) -> List[Dict[str, str]]:
@@ -2824,6 +2897,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
     async def set_kicks(self,
                         asset: Optional[str] = None, *,
                         key: Optional[str] = None,
+                        variants: Optional[List[Dict[str, str]]] = None
                         ) -> None:
         """|coro|
 
@@ -2856,13 +2930,25 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             prop = self.meta.get_prop('Default:AthenaCosmeticLoadout_j')
             asset = prop['AthenaCosmeticLoadout']['shoesDef']
 
+        new = self.meta.variants
+        if variants is not None:
+            new['CosmeticShoes'] = {'i': variants}
+        else:
+            try:
+                del new['CosmeticShoes']
+            except KeyError:
+                pass
+
         prop = self.meta.set_cosmetic_loadout(
-            shoes=asset,
-            shoes_ekey=key,
+            contrail=asset,
+            contrail_ekey=key,
+        )
+        prop2 = self.meta.set_variants(
+            variants=new
         )
 
         if not self.edit_lock.locked():
-            return await self.patch(updated=prop)
+            return await self.patch(updated={**prop, **prop2})
 
     async def clear_kicks(self) -> None:
         """|coro|

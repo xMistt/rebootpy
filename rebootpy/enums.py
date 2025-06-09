@@ -188,6 +188,7 @@ class Platform(Enum):
     SWITCH        = 'SWT'
     IOS           = 'IOS'
     ANDROID       = 'AND'
+    SWITCH_2      = 'SWT2'
     UNKNOWN       = 'UNKNOWN'
 
     @classmethod
