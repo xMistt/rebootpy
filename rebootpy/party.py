@@ -3523,6 +3523,23 @@ class PartyBase:
         self._update_config(data.get('config'))
         self.meta = PartyMeta(self, data['meta'])
 
+        members = data.get('members')
+        if members:
+            asyncio.create_task(
+                self._update_members(
+                    members,
+                    remove_missing=False,
+                    fetch_user_data=False
+                )
+            )
+
+    async def _update_members(
+        self,
+        members_data: list,
+        remove_missing: bool = True,
+        fetch_user_data: bool = True
+    ) -> None:
+
     def __str__(self) -> str:
         return self.id
 
