@@ -3539,6 +3539,17 @@ class PartyBase:
         remove_missing: bool = True,
         fetch_user_data: bool = True
     ) -> None:
+        existing_ids = set(self._members.keys())
+        incoming_ids = set()
+
+        for raw in members_data:
+            member = await self._create_member(raw, fetch_user_data)
+            incoming_ids.add(member.id)
+            self._members[member.id] = member
+
+        if remove_missing:
+            for missing in existing_ids - incoming_ids:
+                del self._members[missing]
 
     def __str__(self) -> str:
         return self.id
