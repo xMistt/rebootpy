@@ -3511,10 +3511,6 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             return await self.patch(updated=prop)
 
 
-import asyncio
-from collections import OrderedDict
-from typing import List, Optional, Tuple
-
 class PartyBase:
     def __init__(self, client: 'Client', data: dict) -> None:
         self._client = client
