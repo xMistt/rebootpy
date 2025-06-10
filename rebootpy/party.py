@@ -3511,6 +3511,10 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             return await self.patch(updated=prop)
 
 
+import asyncio
+from collections import OrderedDict
+from typing import List, Optional, Tuple
+
 class PartyBase:
     def __init__(self, client: 'Client', data: dict) -> None:
         self._client = client
@@ -3523,22 +3527,24 @@ class PartyBase:
         self._update_config(data.get('config'))
         self.meta = PartyMeta(self, data['meta'])
 
-        members = data.get('members')
-        if members:
-            asyncio.create_task(
-                self._update_members(
-                    members,
-                    remove_missing=False,
-                    fetch_user_data=False
-                )
+        asyncio.create_task(
+            self._update_members(
+                data.get('members'),
+                remove_missing=False,
+                fetch_user_data=False
             )
+        )
 
     async def _update_members(
         self,
-        members_data: list,
+        members_data: Optional[List[dict]] = None,
         remove_missing: bool = True,
         fetch_user_data: bool = True
     ) -> None:
+        if members_data is None:
+            lookup = await self._client.http.party_lookup(self._id)
+            members_data = lookup['members']
+
         existing_ids = set(self._members.keys())
         incoming_ids = set()
 
