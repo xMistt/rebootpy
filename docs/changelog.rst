@@ -6,6 +6,14 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
+v0.9.6 (pre-release)
+------
+
+Bug Fixes
+~~~~~
+
+- Fixed :meth:`ClientPartyMember.set_emote()` not playing emotes & ``PartyMember.emote`` always being ``None`` no matter what.
+
 v0.9.5
 ------
 
