@@ -6,7 +6,7 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
-v0.9.5 (pre-release)
+v0.9.5
 ------
 
 Added
@@ -16,6 +16,12 @@ Added
 - Added ``RankingType.OG`` & ``RankingType.OG_ZERO_BUILD``
 - Added :meth:`ClientPartyMember.set_jam_emote()`
 - Added :meth:`ClientPartyMember.set_instruments()`
+
+Bug Fixes
+~~~~~
+
+- Fixed an issue where ``Client.user`` couldn't be created.
+- Fixed :meth:`Client.fetch_user_by_display_name()` not fetching ``external_auths``.
 
 v0.9.4
 ------

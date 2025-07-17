@@ -1193,26 +1193,6 @@ class HTTPClient:
             }
         ))
 
-    async def account_graphql_get_clients_external_auths(self,
-                                                         **kwargs: Any
-                                                         ) -> dict:
-        return await self.graphql_request(GraphQLRequest(
-            query="""
-            query AccountQuery {
-                Account {
-                    myAccount {
-                        externalAuths {
-                            type
-                            accountId
-                            externalAuthId
-                            externalDisplayName
-                        }
-                    }
-                }
-            }
-            """
-        ), **kwargs)
-
     ###################################
     #          Eula Tracking          #
     ###################################

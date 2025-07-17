@@ -996,7 +996,8 @@ class BasicClient:
                     pass
 
         try:
-            data = await self.http.account_get_by_display_name(display_name)
+            lookup = await self.http.account_get_by_display_name(display_name)
+            data = await self.http.account_get_multiple_by_user_id([lookup.get('id')])
         except HTTPException as e:
             error_code = 'errors.com.epicgames.account.account_not_found'
             if e.message_code == error_code:
@@ -1004,8 +1005,8 @@ class BasicClient:
             raise
 
         if raw:
-            return data
-        return self.store_user(data, try_cache=cache)
+            return data[0]
+        return self.store_user(data[0], try_cache=cache)
 
     async def fetch_users_by_display_name(self, display_name: str, *,
                                           raw: bool = False
