@@ -48,7 +48,7 @@ class MyBot(commands.Bot):
         store_device_auth_details(details)
 
     async def event_ready(self):
-        print(f'Bot ready as {bot.user.display_name} ({bot.user.id}).')
+        print(f'Bot ready as {self.user.display_name} ({self.user.id}).')
 
     async def event_friend_request(self, request):
         await request.accept()
