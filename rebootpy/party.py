@@ -2941,7 +2941,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
         prop = self.meta.set_cosmetic_loadout(
             shoes=asset,
-            shoes_ekey==key,
+            shoes_ekey=key,
         )
         prop2 = self.meta.set_variants(
             variants=new
