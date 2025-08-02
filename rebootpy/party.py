@@ -2940,8 +2940,8 @@ class ClientPartyMember(PartyMemberBase, Patchable):
                 pass
 
         prop = self.meta.set_cosmetic_loadout(
-            contrail=asset,
-            contrail_ekey=key,
+            shoes=asset,
+            shoes_ekey==key,
         )
         prop2 = self.meta.set_variants(
             variants=new
