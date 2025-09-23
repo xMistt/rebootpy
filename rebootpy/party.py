@@ -900,8 +900,8 @@ class PartyMemberMeta(MetaBase):
 
     @property
     def ready(self) -> bool:
-        base = self.get_prop('Default:LobbyState_j')
-        return base['LobbyState'].get('gameReadiness', 'NotReady')
+        base = self.get_prop('Default:MatchmakingInfo_j')
+        return base['MatchmakingInfo'].get('readyStatus', 'NotReady')
 
     @property
     def input(self) -> str:
@@ -1101,7 +1101,6 @@ class PartyMemberMeta(MetaBase):
 
     def set_lobby_state(self, *,
                         in_game_ready_check_status: Optional[Any] = None,
-                        game_readiness: Optional[str] = None,
                         ready_input_type: Optional[str] = None,
                         current_input_type: Optional[str] = None,
                         hidden_matchmaking_delay_max: Optional[int] = None,
@@ -1111,8 +1110,6 @@ class PartyMemberMeta(MetaBase):
 
         if in_game_ready_check_status is not None:
             data['inGameReadyCheckStatus'] = in_game_ready_check_status
-        if game_readiness is not None:
-            data['gameReadiness'] = game_readiness
         if ready_input_type is not None:
             data['readyInputType'] = ready_input_type
         if current_input_type is not None:
@@ -1298,6 +1295,15 @@ class PartyMemberMeta(MetaBase):
 
         final = {'MpLoadout': {"d": json.dumps(data)}}
         key = 'Default:MpLoadout_j'
+        return {key: self.set_prop(key, final)}
+
+    def set_ready_state(self, state: str) -> Dict[str, Any]:
+        key = 'Default:MatchmakingInfo_j'
+        data = (self.get_prop('Default:MatchmakingInfo_j'))['MatchmakingInfo']
+
+        data['readyStatus'] = state
+
+        final = {'MatchmakingInfo': data}
         return {key: self.set_prop(key, final)}
 
 
@@ -2450,8 +2456,8 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         state: :class:`ReadyState`
             The ready state you wish to set.
         """
-        prop = self.meta.set_lobby_state(
-            game_readiness=state.value
+        prop = self.meta.set_ready_state(
+            state=state.value
         )
 
         if not self.edit_lock.locked():
