@@ -576,49 +576,6 @@ class PartyMemberMeta(MetaBase):
         self.def_character = DefaultCharactersChapter3.get_random_name()
 
         self.schema = {
-            "Default:CurrentIsland_j": json.dumps({
-                "CurrentIsland": {
-                    "linkId": {
-                        "mnemonic": "",
-                        "version": -1
-                    },
-                    "worldId": {
-                        "iD": "",
-                        "ownerId": "INVALID",
-                        "name": ""
-                    },
-                    "sessionId": "",
-                    "joinInfo": {
-                        "islandJoinability": "CanNotBeJoinedOrWatched",
-                        "bIsWorldJoinable": False,
-                        "sessionKey": ""
-                    }
-                }
-            }),
-            "Default:SuggestedIsland_j": json.dumps({
-                "SuggestedIsland": {
-                    "linkId": {
-                        "mnemonic": "",
-                        "version": -1
-                    },
-                    "session": {
-                        "iD": "",
-                        "joinInfo": {
-                            "joinability": "CanNotBeJoinedOrWatched",
-                            "sessionKey": ""
-                        }
-                    },
-                    "world": {
-                        "iD": "",
-                        "ownerId": "INVALID",
-                        "name": "",
-                        "bIsJoinable": False
-                    },
-                    "productModes": [],
-                    "privacy": "Undefined",
-                    "regionId": "EU"
-                }
-            }),
             "Default:ArbitraryCustomDataStore_j": json.dumps({
                 "ArbitraryCustomDataStore": []
             }),
@@ -746,7 +703,8 @@ class PartyMemberMeta(MetaBase):
                 "FrontendEmote": {
                     "pickable": "None",
                     "emoteEKey": "",
-                    "emoteSection": -1
+                    "emoteSection": -1,
+                    "multipurposeEmoteData": -1
                 }
             }),
             "Default:JoinInProgressData_j": json.dumps({
@@ -762,7 +720,6 @@ class PartyMemberMeta(MetaBase):
             "Default:LobbyState_j": json.dumps({
                 "LobbyState": {
                     "inGameReadyCheckStatus": "None",
-                    "gameReadiness": "NotReady",
                     "readyInputType": "Count",
                     "currentInputType": "MouseAndKeyboard",
                     "hiddenMatchmakingDelayMax": 0,
@@ -787,11 +744,13 @@ class PartyMemberMeta(MetaBase):
                     "hasCompletedSTWTutorial": False,
                     "hasPurchasedSTW": False,
                     "platformSupportsSTW": True,
-                    "bReturnToLobbyAndReadyUp": False,
-                    "bHideReadyUp": False,
                     "bDownloadOnDemandActive": False,
                     "bIsPartyLFG": False,
-                    "bShouldRecordPartyChannel": False
+                    "bRecVoice": False,
+                    "bRecText": False,
+                    "bIsInAllSelectExperiment": False,
+                    "bAllowEmoteBeatSyncing": True,
+                    "eOSProductUserId": ""
                 }
             }),
             "Default:PlatformData_j": json.dumps({
@@ -825,56 +784,63 @@ class PartyMemberMeta(MetaBase):
             "Default:MatchmakingInfo_j": json.dumps({
                 "MatchmakingInfo": {
                     "currentIsland": {
-                        "linkId": {
-                            "mnemonic": "",
-                            "version": -1
+                        "island": {
+                            "linkId": {
+                                "mnemonic": "",
+                                "version": -1
+                            },
+                            "session": {
+                                "iD": "",
+                                "joinInfo": {
+                                    "joinability": "CanNotBeJoinedOrWatched",
+                                    "sessionKey": ""
+                                }
+                            },
+                            "world": {
+                                "iD": "",
+                                "ownerId": "INVALID",
+                                "name": "",
+                                "bIsJoinable": False
+                            },
+                            "productModes": [],
+                            "privacy": "Undefined",
+                            "regionId": "EU"
                         },
-                        "session": {
-                            "iD": "",
-                            "joinInfo": {
-                                "joinability": "CanNotBeJoinedOrWatched",
-                                "sessionKey": ""
-                            }
-                        },
-                        "world": {
-                            "iD": "",
-                            "ownerId": "INVALID",
-                            "name": "",
-                            "bIsJoinable": False
-                        },
-                        "productModes": [],
-                        "privacy": "Undefined",
-                        "regionId": "EU",
+                        "timestamp": 0,
                         "matchmakingId": ""
                     },
-                    "bIsEligibleForMatchmaking": True,
-                    "suggestedIsland": {
-                        "linkId": {
-                            "mnemonic": "",
-                            "version": -1
+                    "bIsEligible": True,
+                    "islandSelection": {
+                        "island": {
+                            "linkId": {
+                                "mnemonic": "playlist_defaultsquad",
+                                "version": -1
+                            },
+                            "session": {
+                                "iD": "",
+                                "joinInfo": {
+                                    "joinability": "CanNotBeJoinedOrWatched",
+                                    "sessionKey": ""
+                                }
+                            },
+                            "world": {
+                                "iD": "",
+                                "ownerId": "INVALID",
+                                "name": "",
+                                "bIsJoinable": False
+                            },
+                            "productModes": [],
+                            "privacy": "Private",
+                            "regionId": "EU"
                         },
-                        "session": {
-                            "iD": "",
-                            "joinInfo": {
-                                "joinability": "CanNotBeJoinedOrWatched",
-                                "sessionKey": ""
-                            }
-                        },
-                        "world": {
-                            "iD": "",
-                            "ownerId": "INVALID",
-                            "name": "",
-                            "bIsJoinable": False
-                        },
-                        "productModes": [],
-                        "privacy": "Undefined",
-                        "regionId": "EU",
+                        "timestamp": 0,
                         "matchmakingId": ""
                     },
                     "worldSessionId": "",
                     "travelId": "",
-                    "playlistVersion": 1,
-                    "matchmakingId": "00000000000000000000000000000000"
+                    "playlistVersion": 0,
+                    "maxMatchmakingDelay": 0,
+                    "readyStatus": "NotReady"
                 }
             }),
             "Default:UtcTimeStartedMatchAthena_s": "0001-01-01T00:00:00.000Z",
@@ -912,6 +878,11 @@ class PartyMemberMeta(MetaBase):
                             }
                         }
                     }
+                }
+            }),
+            "Default:FrontendMimosa_j": json.dumps({
+                "FrontendMimosa": {
+                    "frontendMimosaEnum": "None"
                 }
             })
         }
