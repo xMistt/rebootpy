@@ -13,6 +13,8 @@ Bug Fixes
 ~~~~~
 
 - Fixed :meth:`ClientPartyMember.set_emote()` not playing emotes & ``PartyMember.emote`` always being ``None`` no matter what.
+- Fixed :meth:`ClientPartyMember.set_ready()`.
+- Fixed :meth:`ClientParty.set_playlist()`.
 
 v0.9.5
 ------

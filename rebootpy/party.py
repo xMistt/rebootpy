@@ -1306,6 +1306,20 @@ class PartyMemberMeta(MetaBase):
         final = {'MatchmakingInfo': data}
         return {key: self.set_prop(key, final)}
 
+    def set_playlist(self, playlist: str, version: int) -> Dict[str, Any]:
+        key = 'Default:MatchmakingInfo_j'
+        data = (self.get_prop('Default:MatchmakingInfo_j'))['MatchmakingInfo']
+
+        if playlist:
+            data['islandSelection']['island']['linkId']['mnemonic'] = playlist
+        if version:
+            data['islandSelection']['island']['linkId']['version'] = version
+
+        data['islandSelection']['timestamp'] = int(datetime.datetime.now(datetime.UTC).timestamp())
+
+        final = {'MatchmakingInfo': data}
+        return {key: self.set_prop(key, final)}
+
 
 class PartyMeta(MetaBase):
     def __init__(self, party: 'PartyBase',
@@ -1555,17 +1569,6 @@ class PartyMeta(MetaBase):
         }
         key = 'Default:SquadInformation_j'
         return {key: self.set_prop(key, final)}
-    
-    def set_playlist(self, playlist: str, version: int) -> Dict[str, Any]:
-        data = (self.get_prop('Default:SelectedIsland_j'))
-
-        if playlist:
-            data['SelectedIsland']['linkId']['mnemonic'] = playlist
-        if version:
-            data['SelectedIsland']['linkId']['version'] = version
-
-        key = 'Default:SelectedIsland_j'
-        return {key: self.set_prop(key, data)}
 
     def set_region(self, region: Region) -> Dict[str, Any]:
         key = 'Default:RegionId_s'
@@ -2458,6 +2461,15 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         """
         prop = self.meta.set_ready_state(
             state=state.value
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
+
+    async def _set_playlist(self, playlist: str, version: int) -> None:
+        prop = self.meta.set_playlist(
+            playlist=playlist,
+            version=version
         )
 
         if not self.edit_lock.locked():
@@ -4397,46 +4409,6 @@ class ClientParty(PartyBase, Patchable):
                 deleted=deleted,
                 config=config,
             )
-    
-    async def set_playlist(self, playlist: str, version: int = -1) -> None:
-        """|coro|
-
-        Sets the current playlist of the party.
-
-        Sets the playlist to Duos: ::
-
-            await party.set_playlist(
-                playlist='Playlist_DefaultDuo',
-            )
-
-        Sets the playlist to ESL Capture The Flag: ::
-
-            await party.set_playlist(
-                playlist='0363-4024-8917'
-            )
-
-        Parameters
-        ----------
-        playlist: :class:`str`
-            The playlist id or island code.
-        version: :class:`int`
-            The version of the playlist/island, defaults to ``-1`` which is
-            latest.
-
-        Raises
-        ------
-        Forbidden
-            The client is not the leader of the party.
-        """
-        if self.me is not None and not self.me.leader:
-            raise Forbidden('You have to be leader for this action to work.')
-
-        prop = self.meta.set_playlist(
-            playlist=playlist,
-            version=version
-        )
-        if not self.edit_lock.locked():
-            return await self.patch(updated=prop)
 
     async def set_region(self, region: Region) -> None:
         """|coro|
@@ -4555,6 +4527,34 @@ class ClientParty(PartyBase, Patchable):
             return await self.patch(config=config)
         else:
             self._config_cache.update(config)
+
+    async def set_playlist(self, playlist: str = "", version: int = -1) -> None:
+        """|coro|
+
+        Sets the current playlist of the party.
+
+        Sets the playlist to Duos: ::
+
+            await party.set_playlist(
+                playlist='Playlist_DefaultDuo',
+            )
+
+        Sets the playlist to ESL Capture The Flag: ::
+
+            await party.set_playlist(
+                playlist='0363-4024-8917'
+            )
+
+        Parameters
+        ----------
+        playlist: :class:`str`
+            The playlist id or island code.
+        version: :class:`int`
+            The version of the playlist/island, defaults to ``-1`` which is
+            latest.
+        """
+
+        await self.me._set_playlist(playlist=playlist, version=version)
 
 
 class ReceivedPartyInvitation:
