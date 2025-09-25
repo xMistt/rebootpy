@@ -39,7 +39,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Optional, Union, Awaitable, Any, Tuple
 from .errors import HTTPException
 from .party import (Party, PartyJoinRequest, ReceivedPartyInvitation,
-                    PartyJoinConfirmation, PlaylistRequest)
+                    PartyJoinConfirmation)
 from .presence import Presence
 from .enums import AwayStatus
 from .utils import to_iso, from_iso
