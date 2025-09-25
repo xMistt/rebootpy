@@ -1247,15 +1247,6 @@ class PartyMemberMeta(MetaBase):
         key = 'Default:PackedState_j'
         return {key: self.set_prop(key, data)}
 
-    def set_requested_playlist(self, playlist_id: str) -> Dict[str, Any]:
-        key = 'Default:SuggestedIsland_j'
-        data = (self.get_prop('Default:SuggestedIsland_j'))['SuggestedIsland']
-
-        data['linkId']['mnemonic'] = playlist_id
-
-        final = {'SuggestedIsland': data}
-        return {key: self.set_prop(key, final)}
-
     def set_instruments(self,
                         bass: Optional[str] = None,
                         bass_variants: Optional[dict] = None,
@@ -4881,71 +4872,3 @@ class PartyJoinRequest:
             An error occurred while requesting.
         """
         return await self.party.invite(self.friend.id)
-
-
-class PlaylistRequest:
-    """Represents a playlist request. These are sent whenever a party member
-    who isn't the leader attempts to change the playlist.
-
-    .. info::
-
-        If you want to decline a PlaylistRequest, simply don't call the
-        accept method, and it will be ignored.
-
-    Attributes
-    ----------
-    client: :class:`Client`
-        The client.
-    party: :class:`ClientParty`
-        The party that the user is trying to change the playlist in.
-    member: :class:`PartyMember`
-        The party member who requested to change the playlist.
-    playlist: :class:`str`
-        The playlist id/island code that the user is suggesting.
-    version: :class:`int`
-        The version of the playlist/island that the user is requesting, is
-        usually -1 which means the latest version.
-    region: :class:`Region`
-        The region that the player is trying to set the party to.
-    """
-
-    __slots__ = ('client', 'party', 'member', 'playlist', 'version', 'region')
-
-    def __init__(self,
-                 client: 'Client',
-                 party: ClientParty,
-                 member: PartyMember,
-                 raw_suggestion: dict
-                 ) -> None:
-        self.client = client
-        self.party = party
-        self.member = member
-        self.playlist = raw_suggestion['linkId']['mnemonic']
-        self.version = raw_suggestion['linkId']['version']
-        self.region = Region(raw_suggestion['regionId'])
-
-    async def accept(self, update_region: bool = False) -> None:
-        """|coro|
-
-        Accepts the playlist request.
-
-        Parameters
-        ----------
-        update_region: :class:`bool`
-            Whether or not you want to update the region alongside the
-            playlist, defaults to ``False``.
-
-        Raises
-        ------
-        HTTPException
-            An error occurred while requesting.
-        """
-        if update_region:
-            await self.party.set_region(
-                region=self.region
-            )
-
-        return await self.party.set_playlist(
-            playlist=self.playlist,
-            version=self.version
-        )

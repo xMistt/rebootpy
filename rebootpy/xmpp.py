@@ -1249,28 +1249,6 @@ class XMPPClient:
                     except KeyError:
                         pass
 
-        if (body.get('member_state_updated').get('Default:SuggestedIsland_j')
-                and party.me.leader):
-            island_raw = json.loads(
-                body['member_state_updated']['Default:SuggestedIsland_j']
-            )
-
-            if island_raw['SuggestedIsland']['linkId']['mnemonic']:
-                request = PlaylistRequest(
-                    client=self.client,
-                    party=party,
-                    member=member,
-                    raw_suggestion=island_raw['SuggestedIsland']
-                )
-
-                if not self.client._event_has_destination(
-                    'party_playlist_request'
-                ):
-                    await request.accept()
-                else:
-                    self.client.dispatch_event('party_playlist_request',
-                                               request)
-
         self.client.dispatch_event('party_member_update', member)
 
         # Only dispatch the events below if the update is not the initial

@@ -16,6 +16,12 @@ Bug Fixes
 - Fixed :meth:`ClientPartyMember.set_ready()`.
 - Fixed :meth:`ClientParty.set_playlist()`.
 
+Removed
+~~~~~~~
+
+- Removed :func:`event_party_playlist_request()` and :class:`PlaylistRequest` as playlist requests have been removed (any member can change playlist now, not just party leaders).
+
+
 v0.9.5
 ------
 
