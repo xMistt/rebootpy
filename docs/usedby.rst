@@ -10,7 +10,7 @@ OliTracker
    :target: https://olitracker.com
    :height: 100
 
-OliTracker is a website that offers detailed stats & ranked tracking with past seasons, current season & lifetime leaderboards.
+OliTracker is a website that offers detailed stats & ranked tracking with past seasons, current season & lifetime leaderboards. You can also upload replay files to view platform distribution in your matches and detailed statistics about every player
 
 PartyBot
 --------
@@ -23,7 +23,7 @@ PartyBot is a self hosted so called lobby bot that you can mess around with in a
 
 
 FN LobbyBots
------------------
+--------
 
 .. image:: https://fortnitelobbybots.com/images/logo.webp
    :target: https://fortnitelobbybots.com/
