@@ -1,27 +1,16 @@
 .. currentmodule:: rebootpy
 
-Who uses fortnitepy?
+Who uses rebootpy?
 ====================
 
-Yunite
+OliTracker
 ------
 
-.. image:: https://yunite.xyz/img/android-chrome-384x384.png
-   :target: https://yunite.xyz
+.. image:: https://olitracker.com/cdn/logo.png
+   :target: https://olitracker.com
    :height: 100
 
-Yunite is a multipurpose discord bot that offers features like safe custom game registration, self organized tournaments with accurate placings and more.
-
-
-Rematch.gg
-----------
-
-.. image:: https://rematch.gg/assets/img/logo/rematch-full-new.png
-   :target: https://rematch.gg
-   :height: 100
-
-Rematch.gg is a platform that hosts fortnite scrims for cash prizes as well as offer a place for people to connect and play tournaments, zone wars, box fights and more.
-
+OliTracker is a website that offers detailed stats & ranked tracking with past seasons, current season & lifetime leaderboards.
 
 PartyBot
 --------
@@ -33,11 +22,11 @@ PartyBot
 PartyBot is a self hosted so called lobby bot that you can mess around with in a party. You can use it to showcase rare outfits and other cosmetics.
 
 
-EasyFortniteStats
+FN LobbyBots
 -----------------
 
-.. image:: https://gblobscdn.gitbook.com/spaces%2F-LjpXsmo7aeUKmSF7KVz%2Favatar-1612982571858.png?alt=media
-   :target: https://www.easyfnstats.com
+.. image:: https://fortnitelobbybots.com/images/logo.webp
+   :target: https://fortnitelobbybots.com/
    :height: 100
 
-EasyFortniteStats is a discord bot built around fortnite stats and news. It features graphical stats, item shop, ingame radio and more.
+FN LobbyBots is a website where you can spin up a lobby bot immediately for free, with no download or host, to play around with.
