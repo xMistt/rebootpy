@@ -30,3 +30,7 @@ FN LobbyBots
    :height: 100
 
 FN LobbyBots is a website where you can spin up a lobby bot immediately for free, with no download or host, to play around with.
+
+----
+
+If you want your project/website displayed here, join `this Discord <https://discord.gg/rnk869s`_ and tell me about it in the **#fortnitepy** channel.
