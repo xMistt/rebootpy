@@ -1306,7 +1306,7 @@ class PartyMemberMeta(MetaBase):
         if version:
             data['islandSelection']['island']['linkId']['version'] = version
 
-        data['islandSelection']['timestamp'] = int(datetime.datetime.now(datetime.UTC).timestamp())
+        data['islandSelection']['timestamp'] = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
 
         final = {'MatchmakingInfo': data}
         return {key: self.set_prop(key, final)}
