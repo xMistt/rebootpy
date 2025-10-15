@@ -9,12 +9,19 @@ You can also view the changelog of the original library, fortnitepy, `here <http
 v0.9.6 (pre-release)
 ------
 
+Added
+~~~~~
+
+- Added :attr:`ClientParty.region`
+
 Bug Fixes
 ~~~~~
 
 - Fixed :meth:`ClientPartyMember.set_emote()` not playing emotes & ``PartyMember.emote`` always being ``None`` no matter what.
 - Fixed :meth:`ClientPartyMember.set_ready()`.
 - Fixed :meth:`ClientParty.set_playlist()`.
+- Fixed :attr:`ClientParty.playlist_info`
+
 
 Removed
 ~~~~~~~

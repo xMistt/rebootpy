@@ -1306,7 +1306,9 @@ class PartyMemberMeta(MetaBase):
         if version:
             data['islandSelection']['island']['linkId']['version'] = version
 
-        data['islandSelection']['timestamp'] = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+        data['islandSelection']['timestamp'] = int(datetime.datetime.now(
+            datetime.timezone.utc
+        ).timestamp())
 
         final = {'MatchmakingInfo': data}
         return {key: self.set_prop(key, final)}
@@ -1502,13 +1504,13 @@ class PartyMeta(MetaBase):
 
         self.meta_ready_event.set()
 
-    @property
-    def playlist_info(self) -> Tuple[str]:
-        base = self.get_prop('Default:SelectedIsland_j')
-        info = base['SelectedIsland']
-
-        return (info['linkId']['mnemonic'],
-                info.get('session', {}).get('iD', ''))
+    # @property
+    # def playlist_info(self) -> Tuple[str]:
+    #     base = self.get_prop('Default:SelectedIsland_j')
+    #     info = base['SelectedIsland']
+    #
+    #     return (info['linkId']['mnemonic'],
+    #             info.get('session', {}).get('iD', ''))
 
     @property
     def region(self) -> str:
@@ -3564,7 +3566,23 @@ class PartyBase:
                 '820665c477184929aa5d0e1f56902cfd'
             )
         """
-        return self.meta.playlist_info
+        playlist_id = max(
+            (
+                json.loads(m.meta.schema['Default:MatchmakingInfo_j'])
+                ['MatchmakingInfo']['islandSelection'] for m in self.members
+            ),
+            key=lambda data: data['timestamp']
+        )['island']['linkId']['mnemonic']
+
+        session_id = next(
+            json.loads(member.meta.schema['Default:MatchmakingInfo_j'])
+            ['MatchmakingInfo']['currentIsland']['island']['session']['iD']
+            for member in self.members
+        )
+
+        return (playlist_id, session_id)
+
+        # return self.meta.playlist_info
 
     @property
     def squad_fill(self) -> bool:
@@ -3587,6 +3605,11 @@ class PartyBase:
         for this party. This includes information about a members position and
         visibility."""
         return self._squad_assignments
+
+    @property
+    def region(self) -> Region:
+        """:class:`Region`: The currently set region of this party."""
+        return Region(self.meta.region)
 
     def _add_member(self, member: PartyMember) -> None:
         self._members[member.id] = member
@@ -3912,7 +3935,7 @@ class ClientParty(PartyBase, Patchable):
                     'numKills': 0,
                     'bFellToDeath': False,
                 },
-                'GamePlaylistName_s': self.meta.playlist_info[0],
+                'GamePlaylistName_s': self.playlist_info[0],
                 'Event_PlayersAlive_s': '0',
                 'Event_PartySize_s': str(len(self._members)),
                 'Event_PartyMaxSize_s': str(self.max_size),
