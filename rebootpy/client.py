@@ -491,7 +491,7 @@ class BasicClient:
     def __init__(self, auth: Auth,
                  **kwargs: Any) -> None:
         self.cache_users = kwargs.get('cache_users', True)
-        self.build = kwargs.get('build', '++Fortnite+Release-33.00-CL-38324112')  # noqa
+        self.build = kwargs.get('build', '++Fortnite+Release-38.10-CL-47888945')  # noqa
         self.os = kwargs.get('os', 'Windows/10.0.19045.1.768.64bit')
         self.deployment_id = kwargs.get(
             'deployment_id', '62a9473a2dca46b29ccf17577fcf42d7'
