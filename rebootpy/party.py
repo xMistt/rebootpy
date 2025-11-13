@@ -807,7 +807,7 @@ class PartyMemberMeta(MetaBase):
                         }),
                         "timestamp": 0,
                         "bUsingGracefulUpgrade": True,
-                        "matchmakingId": "00D7AFCB40BE8A78612F479E2B5C9FBD"
+                        "matchmakingId": ""
                     },
                     "bIsEligible": True,
                     "islandSelection": {
