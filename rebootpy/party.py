@@ -604,6 +604,9 @@ class PartyMemberMeta(MetaBase):
                     "contrailEKey": "",
                     "shoesDef": "None",
                     "shoesEKey": "",
+                    "mimosaDef": "None",
+                    "mimosaEKey": "",
+                    "cosmeticVariantPrimaryAssets": [],
                     "scratchpad": [],
                     "cosmeticStats": [
                         {
@@ -846,43 +849,56 @@ class PartyMemberMeta(MetaBase):
             "Default:UtcTimeStartedMatchAthena_s": "0001-01-01T00:00:00.000Z",
             "Default:MpLoadout_j": json.dumps({
                 "MpLoadout": {
-                    "d": {
+                    "d": json.dumps({
+                        "ac": {
+                            "i": self.def_character,
+                            "v": ["0"]
+                        },
+                        "ab": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "ag": {
+                            "i": "DefaultGlider",
+                            "v": ["0"]
+                        },
                         "sb": {
-                            "i": "SparksBass:Sparks_Bass_Generic",
+                            "i": "Sparks_Bass_Generic",
                             "v": {
                                 "0": "0"
                             }
                         },
                         "sg": {
-                            "i": "SparksGuitar:Sparks_Guitar_Generic",
+                            "i": "Sparks_Guitar_Generic",
                             "v": {
                                 "0": "0"
                             }
                         },
                         "sd": {
-                            "i": "SparksDrums:Sparks_Drum_Generic",
+                            "i": "Sparks_Drum_Generic",
                             "v": {
                                 "0": "0"
                             }
                         },
                         "sk": {
-                            "i": "SparksKeyboard:Sparks_Keytar_Generic",
+                            "i": "Sparks_Keytar_Generic",
                             "v": {
                                 "0": "0"
                             }
                         },
                         "sm": {
-                            "i": "SparksMicrophone:Sparks_Mic_Generic",
+                            "i": "Sparks_Mic_Generic",
                             "v": {
                                 "0": "0"
                             }
                         }
-                    }
+                    })
                 }
             }),
             "Default:FrontendMimosa_j": json.dumps({
                 "FrontendMimosa": {
-                    "frontendMimosaEnum": "None"
+                    "frontendMimosaAnimType": "None",
+                    "frontendMimosaInstanceId": "a64ddcdf-0733-49dd-90f2-ca031a403a39"
                 }
             })
         }
@@ -1185,16 +1201,19 @@ class PartyMemberMeta(MetaBase):
                              victory_crowns: Optional[int] = None,
                              rank: Optional[int] = None
                              ) -> Dict[str, Any]:
+        mp_loadout = json.loads(self.get_prop('Default:MpLoadout_j')['MpLoadout']['d'])
 
         prop = self.get_prop('Default:AthenaCosmeticLoadout_j')
         data = prop['AthenaCosmeticLoadout']
 
         if character is not None:
-            data['characterPrimaryAssetId'] = character
+            data['characterPrimaryAssetId'] = f'AthenaCharacter:{character}'
+            mp_loadout['ac']['i'] = character
         if character_ekey is not None:
             data['characterEKey'] = character_ekey
         if backpack is not None:
             data['backpackDef'] = self.maybesub(backpack)
+            mp_loadout['ab']['i'] = backpack
         if backpack_ekey is not None:
             data['backpackEKey'] = backpack_ekey
         if pickaxe is not None:
@@ -1218,9 +1237,13 @@ class PartyMemberMeta(MetaBase):
         if rank is not None:
             data['cosmeticStats'][0]['statValue'] = rank
 
+        mp_final = {'MpLoadout': {"d": json.dumps(mp_loadout)}}
+        mp_key = 'Default:MpLoadout_j'
+
         final = {'AthenaCosmeticLoadout': data}
         key = 'Default:AthenaCosmeticLoadout_j'
-        return {key: self.set_prop(key, final)}
+
+        return {key: self.set_prop(key, final), mp_key: self.set_prop(mp_key, mp_final)}
 
     def set_variants(self, variants: List[dict]) -> Dict[str, Any]:
         final = {
@@ -1261,26 +1284,26 @@ class PartyMemberMeta(MetaBase):
                         ) -> Dict[str, Any]:
 
         prop = self.get_prop('Default:MpLoadout_j')
-        data = prop['MpLoadout']['d']
+        data = json.loads(prop['MpLoadout']['d'])
 
         if bass is not None:
-            data['sb']['i'] = f'SparksBass:{bass}'
+            data['sb']['i'] = bass
         if bass_variants is not None:
             data['sb']['v'] = bass_variants
         if guitar is not None:
-            data['sg']['i'] = f'SparksGuitar:{guitar}'
+            data['sg']['i'] = guitar
         if guitar_variants is not None:
             data['sg']['v'] = guitar_variants
         if drums is not None:
-            data['sd']['i'] = f'SparksDrums:{drums}'
+            data['sd']['i'] = drums
         if drums_variants is not None:
             data['sd']['v'] = drums_variants
         if keytar is not None:
-            data['sk']['i'] = f'SparksKeyboard:{keytar}'
+            data['sk']['i'] = keytar
         if keytar_variants is not None:
             data['sk']['v'] = keytar_variants
         if microphone is not None:
-            data['sm']['i'] = f'SparksMicrophone:{microphone}'
+            data['sm']['i'] = microphone
         if microphone_variants is not None:
             data['sm']['v'] = microphone_variants
 
@@ -2524,10 +2547,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         HTTPException
             An error occurred while requesting.
         """
-        if asset is not None:
-            if asset != '' and '.' not in asset:
-                asset = f'AthenaCharacter:{asset}'
-        else:
+        if not asset:
             prop = self.meta.get_prop('Default:AthenaCosmeticLoadout_j')
             asset = prop['AthenaCosmeticLoadout']['characterPrimaryAssetId']
 
