@@ -891,6 +891,10 @@ class PartyMemberMeta(MetaBase):
                             "v": {
                                 "0": "0"
                             }
+                        },
+                        "mm": {
+                            "i": "None",
+                            "v": []
                         }
                     })
                 }
@@ -900,6 +904,10 @@ class PartyMemberMeta(MetaBase):
                     "frontendMimosaAnimType": "None",
                     "frontendMimosaInstanceId": "a64ddcdf-0733-49dd-90f2-ca031a403a39"
                 }
+            }),
+            "CosmeticLoadout:LoadoutSchema_Mimosa": json.dumps({
+                "loadoutSlots": [],
+                "shuffleType": "DISABLED"
             })
         }
 
@@ -1004,6 +1012,11 @@ class PartyMemberMeta(MetaBase):
     def custom_data_store(self) -> list:
         base = self.get_prop('Default:ArbitraryCustomDataStore_j')
         return base['ArbitraryCustomDataStore']
+
+    @property
+    def mimosa_loadout(self) -> dict:
+        base = self.get_prop('CosmeticLoadout:LoadoutSchema_Mimosa')
+        return base
 
     @property
     def emote(self) -> str:
@@ -1260,6 +1273,114 @@ class PartyMemberMeta(MetaBase):
         }
         key = 'Default:ArbitraryCustomDataStore_j'
         return {key: self.set_prop(key, final)}
+
+    def set_mimosa_loadout(self,
+                          asset: Optional[str] = None,
+                          item_customizations: Optional[List[Dict[str, str]]] = None,
+                          companion_id: Optional[str] = None,
+                          instance_id: Optional[str] = None
+                          ) -> Dict[str, Any]:
+        """Sets the Mimosa (pet) loadout with new schema.
+        
+        Parameters
+        ----------
+        asset: Optional[:class:`str`]
+            The full asset ID for the pet (e.g., 'CosmeticMimosa:companion_ripequiver:uuid')
+        item_customizations: Optional[List[Dict[:class:`str`, :class:`str`]]]
+            List of customization dictionaries with channelTag, variantTag, and optional additionalData
+        companion_id: Optional[:class:`str`]
+            The companion ID for MpLoadout (e.g., 'Companion_RipeQuiver')
+        instance_id: Optional[:class:`str`]
+            The instance UUID for the pet
+        
+        Returns
+        -------
+        Dict[:class:`str`, Any]
+            The property update dictionary
+        """
+        result = {}
+        
+        # Update CosmeticLoadout:LoadoutSchema_Mimosa
+        loadout_slots = []
+        
+        if asset is not None and asset != '' and asset.lower() != 'none':
+            slot = {
+                "slotTemplate": "CosmeticLoadoutSlotTemplate:LoadoutSlot_MimosaMain",
+                "equippedItemId": asset,
+            }
+            
+            if item_customizations:
+                slot["itemCustomizations"] = item_customizations
+            else:
+                slot["itemCustomizations"] = []
+            
+            loadout_slots.append(slot)
+        
+        final = {
+            "loadoutSlots": loadout_slots,
+            "shuffleType": "DISABLED"
+        }
+        
+        key = 'CosmeticLoadout:LoadoutSchema_Mimosa'
+        result[key] = self.set_prop(key, final)
+        
+        # Update MpLoadout mm field
+        mp_loadout = json.loads(self.get_prop('Default:MpLoadout_j')['MpLoadout']['d'])
+        
+        if companion_id and companion_id.lower() != 'none':
+            # Build mm field values: [emote, particle, variant1, variant2, ...]
+            mm_values = ['', '']  # Start with empty emote and particle
+            
+            # Extract values from item_customizations
+            if item_customizations:
+                for custom in item_customizations:
+                    channel = custom.get('channelTag', '')
+                    if channel == 'Companion.Emote':
+                        # Extract emote name (e.g., "Emote.CompanionEmote0" -> "CompanionEmote0" or "Peter")
+                        emote = custom.get('variantTag', '')
+                        if emote.startswith('Emote.'):
+                            emote = emote.replace('Emote.', '')
+                        mm_values[0] = emote
+                    elif channel == 'Particle':
+                        # Add particle asset (short name)
+                        particle = custom.get('additionalData', '')
+                        if particle:
+                            if ':' in particle:
+                                particle = particle.split(':')[1]
+                            mm_values[1] = particle
+                    elif channel == 'Outfit':
+                        # Add variant tag value (e.g., "Stage2" -> "2")
+                        variant = custom.get('variantTag', 'Stage1')
+                        if variant.startswith('Stage'):
+                            stage_num = variant.replace('Stage', '')
+                            mm_values.append(stage_num)
+            
+            # Pad with zeros to ensure we have at least 7 values
+            while len(mm_values) < 7:
+                mm_values.append('0')
+            
+            mp_loadout['mm'] = {
+                'i': companion_id,
+                'v': mm_values
+            }
+        else:
+            mp_loadout['mm'] = {
+                'i': 'None',
+                'v': []
+            }
+        
+        mp_final = {'MpLoadout': {"d": json.dumps(mp_loadout)}}
+        mp_key = 'Default:MpLoadout_j'
+        result[mp_key] = self.set_prop(mp_key, mp_final)
+        
+        # Update FrontendMimosa instance ID
+        if instance_id:
+            frontend_mimosa = self.get_prop('Default:FrontendMimosa_j')
+            frontend_mimosa['FrontendMimosa']['frontendMimosaInstanceId'] = instance_id
+            mimosa_key = 'Default:FrontendMimosa_j'
+            result[mimosa_key] = self.set_prop(mimosa_key, frontend_mimosa)
+        
+        return result
 
     def set_match_state(self, location: str = None) -> Dict[str, Any]:
         data = (self.get_prop('Default:PackedState_j'))
@@ -2713,63 +2834,56 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         """
         await self.set_backpack(asset="")
 
-    async def set_pet(self, asset: Optional[str] = None, *,
-                      key: Optional[str] = None,
-                      variants: Optional[List[Dict[str, str]]] = None
+    async def set_pet(self, asset: Optional[str] = None,
                       ) -> None:
         """|coro|
 
-        Sets the pet of the client.
+        Sets the pet of the client using the Mimosa loadout schema.
 
         Parameters
         ----------
         asset: Optional[:class:`str`]
-            | The ID of the pet.
+            | The companion ID (e.g., 'companion_ripequiver' or 'Companion_RipeQuiver').
             | Defaults to the last set pet.
-
-            .. note::
-
-                Cosmetics other than outfits require a path, usually the
-                correct path will be set by default, but you really should
-                handle this just in case. Read more about it
-                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
-        key: Optional[:class:`str`]
-            The encryption key to use for this pet.
-        variants: Optional[:class:`list`]
-            The variants to use for this pet. Defaults to ``None`` which
-            resets variants.
-
-        Raises
         ------
         HTTPException
             An error occurred while requesting.
         """
-        if asset is not None:
-            if asset != '' and '.' not in asset:
-                asset = f'/BRCosmetics/Athena/Items/Cosmetics/PetCarriers/{asset}.{asset}'
+        if asset is not None and asset != '' and asset.lower() != 'none':
+            companion_id = asset
+            if '/' in asset or '.' in asset:
+                import re
+                match = re.search(r'([^/]+)\.([^.]+)$', asset)
+                if match:
+                    companion_id = match.group(2)
+            
+            mp_companion_id = companion_id
+            if not mp_companion_id.startswith('Companion_'):
+                parts = mp_companion_id.replace('companion_', '').split('_')
+                mp_companion_id = 'Companion_' + ''.join(word.capitalize() for word in parts)
+            
+            
+            if 'CosmeticMimosa:' not in asset:
+                if not asset.lower().startswith('companion_'):
+                    asset = 'companion_' + asset.lower().replace('companion_', '')
+                mimosa_asset = f'CosmeticMimosa:{asset}'
+            else:
+                mimosa_asset = asset
+            
+           
+            
+            prop = self.meta.set_mimosa_loadout(
+                asset=mimosa_asset,
+                companion_id=mp_companion_id,
+            )
         else:
-            prop = self.meta.get_prop('Default:AthenaCosmeticLoadout_j')
-            asset = prop['AthenaCosmeticLoadout']['backpackDef']
-
-        new = self.meta.variants
-        if variants is not None:
-            new['AthenaBackpack'] = {'i': variants}
-        else:
-            try:
-                del new['AthenaBackpack']
-            except KeyError:
-                pass
-
-        prop = self.meta.set_cosmetic_loadout(
-            backpack=asset,
-            backpack_ekey=key,
-        )
-        prop2 = self.meta.set_variants(
-            variants=new
-        )
+            prop = self.meta.set_mimosa_loadout(
+                asset=None,
+                companion_id=None
+            )
 
         if not self.edit_lock.locked():
-            return await self.patch(updated={**prop, **prop2})
+            return await self.patch(updated=prop)
 
     async def clear_pet(self) -> None:
         """|coro|
@@ -2781,7 +2895,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         HTTPException
             An error occurred while requesting.
         """
-        await self.set_backpack(asset="")
+        await self.set_pet(asset=None)
 
     async def set_pickaxe(self, asset: Optional[str] = None, *,
                           key: Optional[str] = None,
