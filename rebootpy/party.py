@@ -1226,7 +1226,15 @@ class PartyMemberMeta(MetaBase):
             data['characterEKey'] = character_ekey
         if backpack is not None:
             data['backpackDef'] = self.maybesub(backpack)
-            mp_loadout['ab']['i'] = backpack
+            if backpack and backpack != 'None':
+                import re
+                match = re.search(r'([^/]+)\.([^.]+)$', backpack)
+                if match:
+                    mp_loadout['ab']['i'] = match.group(2)
+                else:
+                    mp_loadout['ab']['i'] = backpack
+            else:
+                mp_loadout['ab']['i'] = backpack if backpack else 'None'
         if backpack_ekey is not None:
             data['backpackEKey'] = backpack_ekey
         if pickaxe is not None:
@@ -1299,8 +1307,6 @@ class PartyMemberMeta(MetaBase):
             The property update dictionary
         """
         result = {}
-        
-        # Update CosmeticLoadout:LoadoutSchema_Mimosa
         loadout_slots = []
         
         if asset is not None and asset != '' and asset.lower() != 'none':
@@ -1324,38 +1330,31 @@ class PartyMemberMeta(MetaBase):
         key = 'CosmeticLoadout:LoadoutSchema_Mimosa'
         result[key] = self.set_prop(key, final)
         
-        # Update MpLoadout mm field
         mp_loadout = json.loads(self.get_prop('Default:MpLoadout_j')['MpLoadout']['d'])
         
         if companion_id and companion_id.lower() != 'none':
-            # Build mm field values: [emote, particle, variant1, variant2, ...]
-            mm_values = ['', '']  # Start with empty emote and particle
+            mm_values = ['', ''] 
             
-            # Extract values from item_customizations
             if item_customizations:
                 for custom in item_customizations:
                     channel = custom.get('channelTag', '')
                     if channel == 'Companion.Emote':
-                        # Extract emote name (e.g., "Emote.CompanionEmote0" -> "CompanionEmote0" or "Peter")
                         emote = custom.get('variantTag', '')
                         if emote.startswith('Emote.'):
                             emote = emote.replace('Emote.', '')
                         mm_values[0] = emote
                     elif channel == 'Particle':
-                        # Add particle asset (short name)
                         particle = custom.get('additionalData', '')
                         if particle:
                             if ':' in particle:
                                 particle = particle.split(':')[1]
                             mm_values[1] = particle
                     elif channel == 'Outfit':
-                        # Add variant tag value (e.g., "Stage2" -> "2")
                         variant = custom.get('variantTag', 'Stage1')
                         if variant.startswith('Stage'):
                             stage_num = variant.replace('Stage', '')
                             mm_values.append(stage_num)
             
-            # Pad with zeros to ensure we have at least 7 values
             while len(mm_values) < 7:
                 mm_values.append('0')
             
@@ -1373,7 +1372,6 @@ class PartyMemberMeta(MetaBase):
         mp_key = 'Default:MpLoadout_j'
         result[mp_key] = self.set_prop(mp_key, mp_final)
         
-        # Update FrontendMimosa instance ID
         if instance_id:
             frontend_mimosa = self.get_prop('Default:FrontendMimosa_j')
             frontend_mimosa['FrontendMimosa']['frontendMimosaInstanceId'] = instance_id
@@ -1904,18 +1902,6 @@ class PartyMemberBase(User):
         """
         asset = self.meta.backpack
         if '/petcarriers/' not in asset.lower():
-            result = re.search(r".*\.([^\'\"]*)", asset.strip("'"))
-
-            if result is not None and result.group(1) != 'None':
-                return result.group(1)
-
-    @property
-    def pet(self) -> str:
-        """:class:`str`: The ID of the pet this member currently has equipped.
-        ``None`` if no pet is equipped.
-        """
-        asset = self.meta.backpack
-        if '/petcarriers/' in asset.lower():
             result = re.search(r".*\.([^\'\"]*)", asset.strip("'"))
 
             if result is not None and result.group(1) != 'None':
@@ -2834,8 +2820,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         """
         await self.set_backpack(asset="")
 
-    async def set_pet(self, asset: Optional[str] = None,
-                      ) -> None:
+    async def set_pet(self, asset: Optional[str] = None) -> None:
         """|coro|
 
         Sets the pet of the client using the Mimosa loadout schema.
@@ -2874,7 +2859,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             
             prop = self.meta.set_mimosa_loadout(
                 asset=mimosa_asset,
-                companion_id=mp_companion_id,
+                companion_id=mp_companion_id
             )
         else:
             prop = self.meta.set_mimosa_loadout(
