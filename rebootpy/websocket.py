@@ -29,6 +29,7 @@ import aiohttp
 import json
 import functools
 import logging
+import base64
 
 from .message import FriendMessage, PartyMessage
 
@@ -36,6 +37,16 @@ from aiohttp import hdrs, helpers, client_reqrep, connector
 from aiohttp.http import StreamWriter, HttpVersion10, HttpVersion11
 
 log = logging.getLogger(__name__)
+
+
+def decode_message_body(body: str) -> str:
+    try:
+        decoded = base64.b64decode(body).decode('utf-8')
+        decoded = decoded.rstrip('\x00')
+        parsed = json.loads(decoded)
+        return parsed.get('msg', body)
+    except (ValueError, KeyError, json.JSONDecodeError, Exception):
+        return body
 
 
 class WebsocketRequest(aiohttp.client_reqrep.ClientRequest):
@@ -189,10 +200,13 @@ class WebsocketClient:
                     return
 
             try:
+                decoded_content = decode_message_body(
+                    data['payload']['message']['body']
+                )
                 m = FriendMessage(
                     client=self.client,
                     author=author,
-                    content=data['payload']['message']['body']
+                    content=decoded_content
                 )
                 self.client.dispatch_event('friend_message', m)
             except ValueError:
@@ -207,11 +221,14 @@ class WebsocketClient:
                     or user_id not in party._members):
                 return
 
+            decoded_content = decode_message_body(
+                data['payload']['message']['body']
+            )
             self.client.dispatch_event('party_message', PartyMessage(
                 client=self.client,
                 party=party,
                 author=party._members[data['payload']['message']['senderId']],
-                content=data['payload']['message']['body']
+                content=decoded_content
             ))
 
     async def connect_to_websocket(self) -> None:
