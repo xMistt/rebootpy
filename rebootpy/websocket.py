@@ -182,9 +182,11 @@ class WebsocketClient:
             await self.send_presence(
                 connection_id=data['connectionId']
             )
-        elif (message_type == 'MESSAGE' and
-              'type' in data and
-              data['type'] == 'social.chat.v1.NEW_WHISPER'):
+        elif (
+                message_type == 'MESSAGE' and
+                data.get('type') == 'social.chat.v1.NEW_MESSAGE' and
+                data.get('payload').get('conversation').get('type') == 'dm'
+        ):
             author = self.client.get_friend(
                 data['payload']['message']['senderId']
             )
@@ -211,9 +213,11 @@ class WebsocketClient:
                 self.client.dispatch_event('friend_message', m)
             except ValueError:
                 pass
-        elif (message_type == 'MESSAGE' and
-              'type' in data and
-              data['type'] == 'social.chat.v1.NEW_MESSAGE'):
+        elif (
+            message_type == 'MESSAGE' and
+            data.get('type') == 'social.chat.v1.NEW_MESSAGE' and
+            data.get('payload').get('conversation').get('type') == 'party'
+        ):
             user_id = data['payload']['message']['senderId']
             party = self.client.party
 
