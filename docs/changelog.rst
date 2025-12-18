@@ -6,7 +6,7 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
-v0.9.6 (pre-release)
+v0.9.6
 ------
 
 Added
@@ -21,6 +21,7 @@ Bug Fixes
 - Fixed :meth:`ClientPartyMember.set_ready()`.
 - Fixed :meth:`ClientParty.set_playlist()`.
 - Fixed :attr:`ClientParty.playlist_info`
+- Fixed :meth:`event_friend_message()` & :meth:`event_party_message()`
 
 
 Removed
