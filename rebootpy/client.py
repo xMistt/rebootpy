@@ -1183,7 +1183,10 @@ class BasicClient:
                         u = self.store_user(result, try_cache=cache)
                         _users.append(u)
 
-        _users_ids = {user.id for user in _users}
+        _users_ids = {
+            user.id if isinstance(user, User) else user["id"]
+            for user in _users
+        }
         disabled = [
             user_id for user_id in new if user_id not in _users_ids
         ]
