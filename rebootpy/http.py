@@ -349,6 +349,11 @@ class HabaneroService(Route):
     AUTH = 'FORTNITE_ACCESS_TOKEN'
 
 
+class EpicGamesProductService(Route):
+    BASE = 'https://egp-idsoc-proxy-prod.ol.epicgames.com'
+    AUTH = 'FORTNITE_ACCESS_TOKEN'
+
+
 def create_aiohttp_closed_event(session) -> asyncio.Event:
     """Work around aiohttp issue that doesn't properly close transports on exit.
 
@@ -1192,6 +1197,15 @@ class HTTPClient:
                 'displayName': display_name
             }
         ))
+
+    async def account_get_multiple_disabled_by_user_id(self,
+                                                       user_ids: Iterable[str],
+                                                       **kwargs: Any) -> list:
+        params = {
+            'accountId': ','.join(user_ids)
+        }
+        r = EpicGamesProductService('/account/api/public/account')
+        return await self.get(r, params=params, **kwargs)
 
     ###################################
     #          Eula Tracking          #

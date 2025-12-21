@@ -1182,6 +1182,32 @@ class BasicClient:
                     else:
                         u = self.store_user(result, try_cache=cache)
                         _users.append(u)
+
+        _users_ids = {user.id for user in _users}
+        disabled = [
+            user_id for user_id in new if user_id not in _users_ids
+        ]
+
+        chunk_tasks = []
+        chunks = (disabled[i:i + 100] for i in range(0, len(disabled), 100))
+        for chunk in chunks:
+            task = self.http.account_get_multiple_disabled_by_user_id(chunk)
+            chunk_tasks.append(task)
+
+        if len(chunk_tasks) > 0:
+            d = await asyncio.gather(*chunk_tasks)
+            for results in d:
+                for result in results:
+                    if raw:
+                        _users.append(result)
+                    else:
+                        u = self.store_user(
+                            result,
+                            try_cache=cache,
+                            disabled=True
+                        )
+                        _users.append(u)
+    
         return _users
 
     async def search_users(self, prefix: str,
@@ -1324,7 +1350,12 @@ class BasicClient:
 
         return entries
 
-    def store_user(self, data: dict, *, try_cache: bool = True) -> User:
+    def store_user(self,
+                   data: dict,
+                   *,
+                   try_cache: bool = True,
+                   disabled = False
+                   ) -> User:
         try:
             user_id = data.get(
                 'accountId',
@@ -1336,7 +1367,7 @@ class BasicClient:
         except KeyError:
             pass
 
-        user = User(self, data)
+        user = User(self, data, disabled)
         if self.cache_users:
             self._users[user.id] = user
         return user
@@ -3142,7 +3173,12 @@ class Client(BasicClient):
             if user is not None:
                 self.store_blocked_user(user)
 
-    def store_user(self, data: dict, *, try_cache: bool = True) -> User:
+    def store_user(self,
+                   data: dict,
+                   *,
+                   try_cache: bool = True,
+                   disabled: bool = False
+                   ) -> User:
         try:
             user_id = data.get(
                 'accountId',
@@ -3154,7 +3190,7 @@ class Client(BasicClient):
         except KeyError:
             pass
 
-        user = User(self, data)
+        user = User(self, data, disabled)
         if self.cache_users:
             self._users[user.id] = user
         return user

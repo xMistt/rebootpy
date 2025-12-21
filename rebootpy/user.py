@@ -113,12 +113,14 @@ class ExternalAuth:
 
 class UserBase:
     __slots__ = ('client', '_epicgames_display_name', '_external_display_name',
-                 '_id', '_external_auths')
+                 '_id', '_external_auths', '_disabled')
 
     def __init__(self, client: 'BasicClient',
                  data: dict,
+                 disabled: bool = False,
                  **kwargs: Any) -> None:
         self.client = client
+        self._disabled = disabled
         if data:
             self._update(data)
 
@@ -188,6 +190,13 @@ class UserBase:
     def jid(self) -> JID:
         """:class:`aioxmpp.JID`: The JID of the user."""
         return JID.fromstr('{0.id}@{0.client.service_host}'.format(self))
+
+    @property
+    def disabled(self) -> str:
+        """:class:`bool`: Whether or not this users account is disabled,
+        meaning they cannot login. Other attributes/functions may not work
+        properly if this is true."""
+        return self._disabled
 
     async def fetch(self) -> None:
         """|coro|
@@ -600,8 +609,9 @@ class User(UserBase):
 
     def __init__(self, client: 'BasicClient',
                  data: dict,
+                 disabled: bool = False,
                  **kwargs: Any) -> None:
-        super().__init__(client, data)
+        super().__init__(client, data, disabled)
 
     def __repr__(self) -> str:
         return ('<User id={0.id!r} display_name={0.display_name!r} '
