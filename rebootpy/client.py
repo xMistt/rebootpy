@@ -1188,7 +1188,7 @@ class BasicClient:
             for user in _users
         }
         disabled = [
-            user_id for user_id in new if user_id not in _users_ids
+            user_id for user_id in new if user_id not in _users_ids and user_id
         ]
 
         chunk_tasks = []
