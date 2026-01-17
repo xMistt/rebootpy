@@ -26,11 +26,17 @@ import datetime
 import asyncio
 import logging
 import time
+import base64
+import uuid
+import json
 
 from aioxmpp import JID
 from aiohttp import BaseConnector
 from typing import (Iterable, Union, Optional, Any, Awaitable, Callable, Dict,
                     List, Tuple)
+
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives import serialization
 
 from .errors import (PartyError, HTTPException, NotFound, Forbidden,
                      DuplicateFriendship, FriendshipRequestAlreadySent,
@@ -2772,6 +2778,10 @@ class Client(BasicClient):
         self.auto_update_status = '{current_playlist}' in self.status
         self.current_status_playlist = 'Battle Royale - Squad'
 
+        self.private_key = None
+        self.public_key_b64 = None
+        self.key_data = {}
+
         self._listeners = {}
         self._events = {}
         self._friends = {}
@@ -2979,7 +2989,13 @@ class Client(BasicClient):
         log.debug('Connected to XMPP')
 
         await self.websocket.run()
-        log.debug('Connected to Websocket')
+        log.debug('Connected to websocket')
+
+        self.generate_keypair()
+        self.key_data = await self.http.register_public_key(
+            public_key=self.public_key_b64
+        )
+        log.debug('Registered public key')
 
         await self.initialize_party(priority=priority)
         log.debug('Party created')
@@ -3619,6 +3635,46 @@ class Client(BasicClient):
             raise asyncio.TimeoutError('Party join timed out.')
 
         return party
+
+    def generate_keypair(self) -> None:
+        self.private_key = Ed25519PrivateKey.generate()
+        public_key = self.private_key.public_key()
+
+        public_key_bytes = public_key.public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw
+        )
+
+        self.public_key_b64 = base64.b64encode(public_key_bytes).decode()
+
+    def create_signed_message(self,
+                              conversation_id: str,
+                              content: str
+                              ) -> Tuple[str, str]:
+        timestamp_ms = int(
+            datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000
+        )
+
+        message_info = {
+            "mid": str(uuid.uuid4()),
+            "sid": self.user.id,
+            "rid": conversation_id,
+            "msg": content,
+            "tst": timestamp_ms,
+            "seq": 1,
+            "rec": False,
+            "mts": [],
+            "cty": "Persistent"
+        }
+
+        body = base64.b64encode(
+            json.dumps(message_info).encode()
+        ).decode("utf-8")
+        message = body.encode() + bytes([0])
+        signature = self.private_key.sign(message)
+        signature_string = base64.b64encode(signature).decode()
+
+        return body, signature_string
 
     async def join_party(self, party_id: str) -> ClientParty:
         """|coro|

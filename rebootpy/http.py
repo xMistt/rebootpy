@@ -30,6 +30,8 @@ import re
 import time
 import functools
 import datetime
+import base64
+import uuid
 
 from typing import TYPE_CHECKING, Iterable, List, Optional, Any, Union, Tuple
 from urllib.parse import quote as urllibquote
@@ -354,6 +356,11 @@ class EpicGamesProductService(Route):
     AUTH = 'FORTNITE_ACCESS_TOKEN'
 
 
+class PublicKeyService(Route):
+    BASE = 'https://publickey-service-live.ecosec.on.epicgames.com'
+    AUTH = 'FORTNITE_ACCESS_TOKEN'
+
+
 def create_aiohttp_closed_event(session) -> asyncio.Event:
     """Work around aiohttp issue that doesn't properly close transports on exit.
 
@@ -449,6 +456,8 @@ class HTTPClient:
             return self.client.auth.ios_authorization
         elif u_auth == 'FORTNITE_ACCESS_TOKEN':
             return self.client.auth.authorization
+        elif u_auth == 'EAS_ACCESS_TOKEN':
+            return self.client.auth.eas_authorization
         return auth
 
     def add_header(self, key: str, val: Any) -> None:
@@ -1758,6 +1767,10 @@ class HTTPClient:
         r = ChatService('/epic/oauth/v2/token')
         return await self.post(r, **kwargs)
 
+    async def eas_token_oauth_grant(self, **kwargs: Any) -> Any:
+        r = ChatService('/epic/oauth/v1/token')
+        return await self.post(r, **kwargs)
+
     async def chat_send_presence(self,
                                  connection_id: str,
                                  **kwargs: Any
@@ -1785,24 +1798,63 @@ class HTTPClient:
                         f'{self.client.user.id}/presence/{connection_id}')
         return await self.patch(r, json=payload, **kwargs)
 
+    async def chat_get_conversation_id(self,
+                                       user_id: str
+                                       ) -> str:
+        payload = {
+            "title": "",
+            "type": "dm",
+            "members": [
+                self.client.user.id,
+                user_id
+            ]
+        }
+
+        r = ChatService(
+            '/epic/chat/v1/public/_/conversations?createIfExists=false'
+        )
+        data = await self.post(r, json=payload, auth="EAS_ACCESS_TOKEN")
+
+        return data.get('conversationId')
+
     async def friend_send_message(self, user_id: str, content: str) -> Any:
         if len(content) >= 2048:
             raise ChatError("Message body exceeds max length of 2048")
 
+        conversation_id = await self.chat_get_conversation_id(
+            user_id=user_id
+        )
+
+        body, signature = self.client.create_signed_message(
+            conversation_id=conversation_id,
+            content=content
+        )
+
         payload = {
+            "allowedRecipients": [
+                user_id,
+                self.client.user.id
+            ],
             "message": {
-                "body": content
-            }
+                "body": body
+            },
+            "isReportable": False,
+            "metadata": {
+                "TmV": "2",
+                "Pub": self.client.key_data.get("jwt"),
+                "Sig": signature,
+                "PlfNm": "WIN",
+                "PlfId": self.client.user.id,
+            },
         }
 
         r = ChatService(
-            '/epic/chat/v1/public/{deployment_id}'
-            '/whisper/{client_id}/{user_id}',
-            deployment_id=self.client.deployment_id,
-            client_id=self.client.user.id,
-            user_id=user_id
+            '/epic/chat/v1/public/_/conversations/{conversation_id}/'
+            'messages?fromAccountId={client_id}',
+            conversation_id=conversation_id,
+            client_id=self.client.user.id
         )
-        return await self.post(r, json=payload)
+        return await self.post(r, json=payload, auth="EAS_ACCESS_TOKEN")
 
     async def party_send_message(self, content: str) -> Any:
         if len(content) >= 2048:
@@ -1827,3 +1879,17 @@ class HTTPClient:
             client_id=self.client.user.id,
         )
         return await self.post(r, json=payload)
+
+    ###################################
+    #       Public Key Service        #
+    ###################################
+
+    async def register_public_key(self, public_key: str) -> dict:
+        payload = {
+            "key": public_key,
+            "algorithm": "ed25519"
+        }
+
+        r = PublicKeyService('/publickey/v2/publickey/')
+        return await self.post(r, json=payload)
+
