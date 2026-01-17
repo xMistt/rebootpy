@@ -3649,7 +3649,8 @@ class Client(BasicClient):
 
     def create_signed_message(self,
                               conversation_id: str,
-                              content: str
+                              content: str,
+                              type: str = "Persistent"
                               ) -> Tuple[str, str]:
         timestamp_ms = int(
             datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000
@@ -3664,7 +3665,7 @@ class Client(BasicClient):
             "seq": 1,
             "rec": False,
             "mts": [],
-            "cty": "Persistent"
+            "cty": type
         }
 
         body = base64.b64encode(

@@ -1863,22 +1863,39 @@ class HTTPClient:
         if self.client.party.member_count == 1:
             raise ChatError("Client is in a party alone.")
 
+        body, signature = self.client.create_signed_message(
+            conversation_id=self.client.party.id,
+            content=content,
+            type="Party"
+        )
+
         payload = {
-            "allowedRecipients": [member.id for member in
-                                  self.client.party.members],
+            "allowedRecipients": [
+                member.id for member in self.client.party.members
+                if member.id != self.client.user.id
+            ],
             "message": {
-                "body": content
-            }
+                "body": body
+            },
+            "isReportable": False,
+            "metadata": {
+                "TmV": "2",
+                "Pub": self.client.key_data.get("jwt"),
+                "Sig": signature,
+                "NPM": "1",
+                "PlfNm": "WIN",
+                "PlfId": self.client.user.id,
+            },
         }
 
         r = ChatService(
-            '/epic/chat/v1/public/{deployment_id}'
-            '/conversations/p-{party_id}/messages?fromAccountId={client_id}',
+            '/epic/chat/v1/public/{deployment_id}/conversations/'
+            '{conversation_id}/messages?fromAccountId={client_id}',
             deployment_id=self.client.deployment_id,
-            party_id=self.client.party.id,
-            client_id=self.client.user.id,
+            conversation_id=f'p-{self.client.party.id}',
+            client_id=self.client.user.id
         )
-        return await self.post(r, json=payload)
+        return await self.post(r, json=payload, auth="EAS_ACCESS_TOKEN")
 
     ###################################
     #       Public Key Service        #
