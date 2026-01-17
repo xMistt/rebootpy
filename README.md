@@ -16,7 +16,7 @@ If you want to check out the original commit history, you can view it [here](htt
 - Support for XMPP events.
 - Support for Parties.
 - Support for Battle Royale stats.
-- ~~Support for friend & party messages.~~ (currently broken on all libraries due to signing algorithm not being reversed yet)
+- Support for friend & party messages.
 
 # Documentation
 https://rebootpy.readthedocs.io/en/latest/
