@@ -53,18 +53,8 @@ class Auth:
         self.fortnite_token = kwargs.get('fortnite_token', 'ZWM2ODRiOGM2ODdmNDc5ZmFkZWEzY2IyYWQ4M2Y1YzY6ZTFmMzFjMjExZjI4NDEzMTg2MjYyZDM3YTEzZmM4NGQ=')  # noqa
         self.device_id = getattr(self, 'device_id', None) or uuid.uuid4().hex
 
-        # It's recommended you only change this if you know what you're doing
-        # as certain functions/API calls may start erroring.
-        self.access_token_type = kwargs.get('token_type', 'eg1')
-
     def initialize(self, client: 'BasicClient') -> None:
         self.client = client
-
-        if self.client.supports_non_eg1:
-            raise ValueError(
-                'Different token types are only supported for BasicClient'
-            )
-
         self._refresh_event = asyncio.Event()
         self._refresh_lock = asyncio.Lock()
         self.refresh_i = 0
@@ -246,7 +236,7 @@ class Auth:
         payload = {
             'grant_type': 'exchange_code',
             'exchange_code': code,
-            'token_type': self.access_token_type,
+            'token_type': 'eg1',
         }
 
         return await self.client.http.account_oauth_grant(
@@ -662,7 +652,7 @@ class DeviceAuth(Auth):
             'device_id': self.device_id,
             'account_id': self.account_id,
             'secret': self.secret,
-            'token_type': self.access_token_type
+            'token_type': 'eg1'
         }
 
         try:
@@ -1227,7 +1217,7 @@ class DeviceCodeAuth(Auth):
                     data={
                         "grant_type": "device_code",
                         "device_code": device_code['device_code'],
-                        'token_type': self.access_token_type
+                        'token_type': 'eg1'
                     },
                     headers={
                     "Content-Type": "application/x-www-form-urlencoded"
@@ -1276,7 +1266,7 @@ class DeviceCodeAuth(Auth):
             data={
                 "grant_type": "exchange_code",
                 "exchange_code": exchange_code['code'],
-                'token_type': self.access_token_type
+                'token_type': 'eg1'
             },
             priority=priority
         )

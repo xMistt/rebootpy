@@ -504,7 +504,6 @@ class BasicClient:
         )
 
         self.kill_other_sessions = kwargs.get('kill_other_sessions', True)
-        self.supports_non_eg1 = False
         self.accept_eula = True
         self.event_prefix = 'event_'
 
@@ -2772,7 +2771,6 @@ class Client(BasicClient):
         self.wait_for_member_meta_in_events = kwargs.get('wait_for_member_meta_in_events', True)  # noqa
         self.leave_party_at_shutdown = kwargs.get('leave_party_at_shutdown', True)  # noqa
 
-        self.supports_non_eg1 = True
         self.xmpp = XMPPClient(self, ws_connector=kwargs.get('ws_connector'))
         self.websocket = WebsocketClient(self)
         self.party = None
