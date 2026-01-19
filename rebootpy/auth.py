@@ -60,7 +60,7 @@ class Auth:
     def initialize(self, client: 'BasicClient') -> None:
         self.client = client
 
-        if self.client.supports_non_eg1:
+        if not self.client.supports_non_eg1 and self.access_token_type != 'eg1':  # noqa
             raise ValueError(
                 'Different token types are only supported for BasicClient'
             )
