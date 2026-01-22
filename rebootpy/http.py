@@ -1798,9 +1798,9 @@ class HTTPClient:
                         f'{self.client.user.id}/presence/{connection_id}')
         return await self.patch(r, json=payload, **kwargs)
 
-    async def chat_get_conversation_id(self,
-                                       user_id: str
-                                       ) -> str:
+    async def chat_get_conversation_data(self,
+                                         user_id: str
+                                         ) -> str:
         payload = {
             "title": "",
             "type": "dm",
@@ -1813,17 +1813,16 @@ class HTTPClient:
         r = ChatService(
             '/epic/chat/v1/public/_/conversations?createIfExists=false'
         )
-        data = await self.post(r, json=payload, auth="EAS_ACCESS_TOKEN")
-
-        return data.get('conversationId')
+        return await self.post(r, json=payload, auth="EAS_ACCESS_TOKEN")
 
     async def friend_send_message(self, user_id: str, content: str) -> Any:
         if len(content) >= 2048:
             raise ChatError("Message body exceeds max length of 2048")
 
-        conversation_id = await self.chat_get_conversation_id(
+        conversation_data = await self.chat_get_conversation_data(
             user_id=user_id
         )
+        conversation_id = conversation_data.get('conversationId')
 
         body, signature = self.client.create_signed_message(
             conversation_id=conversation_id,
@@ -1838,7 +1837,7 @@ class HTTPClient:
             "message": {
                 "body": body
             },
-            "isReportable": False,
+            "isReportable": conversation_data.get('isReportable'),
             "metadata": {
                 "TmV": "2",
                 "Pub": self.client.key_data.get("jwt"),
