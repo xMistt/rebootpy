@@ -1815,18 +1815,70 @@ class HTTPClient:
         )
         return await self.post(r, json=payload, auth="EAS_ACCESS_TOKEN")
 
-    async def friend_send_message(self, user_id: str, content: str) -> Any:
+    async def chat_get_previous_messages(self,
+                                         conversation_id: str
+                                         ) -> str:
+        r = ChatService(
+            f'/epic/chat/v1/public/_/conversations/{conversation_id}'
+            f'/messages?requestingAccountId={self.client.user.id}&limit=30'
+        )
+        data = await self.get(r, auth="EAS_ACCESS_TOKEN")
+        return data.get("page", [])
+
+    async def friend_send_message(self,
+                                  user_id: str,
+                                  content: str,
+                                  retry_on_fail: bool = True
+                                  ) -> dict:
         if len(content) >= 2048:
             raise ChatError("Message body exceeds max length of 2048")
 
-        conversation_data = await self.chat_get_conversation_data(
-            user_id=user_id
-        )
-        conversation_id = conversation_data.get('conversationId')
+        friend = self.client.get_friend(user_id)
+        if friend is None:
+            try:
+                friend = await self.client.wait_for(
+                    'friend_add',
+                    check=lambda f: f.id == user_id,
+                    timeout=1
+                )
+            except asyncio.TimeoutError:
+                raise ChatError(
+                    f"Tried to send message to non-friend {user_id}"
+                )
+
+        if not friend._conversation_id or friend._is_reportable is None:
+            conversation_data = await self.chat_get_conversation_data(
+                user_id=user_id
+            )
+            friend._conversation_id = conversation_data.get('conversationId')
+            friend._is_reportable   = conversation_data.get('isReportable')
+
+        # previous_messages = await self.chat_get_previous_messages(
+        #     conversation_id=friend._conversation_id
+        # )
+        # latest_message = max(
+        #     (
+        #         m for m in previous_messages
+        #         if m.get("type") == "social.chat.v1.NEW_MESSAGE"
+        #            and m.get("senderId") == self.client.user.id
+        #     ),
+        #     key=lambda m: m["createdAt"],
+        #     default=None
+        # )
+        #
+        # if latest_message:
+        #     sequence = json.loads(
+        #         base64.b64decode(
+        #             latest_message.get("message", {}).get("body", {})
+        #         ).decode("utf-8")
+        #     ).get('seq', 0) + 1
+        # else:
+        #     sequence = 1
 
         body, signature = self.client.create_signed_message(
-            conversation_id=conversation_id,
-            content=content
+            conversation_id=friend._conversation_id,
+            content=content,
+            sequence=0
         )
 
         payload = {
@@ -1837,7 +1889,7 @@ class HTTPClient:
             "message": {
                 "body": body
             },
-            "isReportable": conversation_data.get('isReportable'),
+            "isReportable": friend._is_reportable,
             "metadata": {
                 "TmV": "2",
                 "Pub": self.client.key_data.get("jwt"),
@@ -1850,10 +1902,27 @@ class HTTPClient:
         r = ChatService(
             '/epic/chat/v1/public/_/conversations/{conversation_id}/'
             'messages?fromAccountId={client_id}',
-            conversation_id=conversation_id,
+            conversation_id=friend._conversation_id,
             client_id=self.client.user.id
         )
-        return await self.post(r, json=payload, auth="EAS_ACCESS_TOKEN")
+
+        try:
+            return await self.post(r, json=payload, auth="EAS_ACCESS_TOKEN")
+        except HTTPException as exc:
+            if (
+                retry_on_fail
+                and exc.message_code
+                == "errors.com.epicgames.social.chat.is_reportable_mismatch"
+            ):
+                friend._is_reportable = None
+
+                return await self.friend_send_message(
+                    user_id=user_id,
+                    content=content,
+                    retry_on_fail=False
+                )
+
+            raise exc
 
     async def party_send_message(self, content: str) -> Any:
         if len(content) >= 2048:

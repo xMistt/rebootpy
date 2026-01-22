@@ -114,13 +114,21 @@ class FriendBase(UserBase):
 class Friend(FriendBase):
     """Represents a friend on Fortnite"""
 
-    __slots__ = FriendBase.__slots__ + ('_nickname', '_note', '_last_logout')
+    __slots__ = FriendBase.__slots__ + (
+        '_nickname',
+        '_note',
+        '_last_logout',
+        '_conversation_id',
+        '_is_reportable',
+    )
 
     def __init__(self, client: 'Client', data: dict) -> None:
         super().__init__(client, data)
         self._last_logout = None
         self._nickname = None
         self._note = None
+        self._conversation_id = None
+        self._is_reportable = None
 
     def __repr__(self) -> str:
         return ('<Friend id={0.id!r} display_name={0.display_name!r} '

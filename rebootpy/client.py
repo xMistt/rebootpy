@@ -3652,19 +3652,20 @@ class Client(BasicClient):
     def create_signed_message(self,
                               conversation_id: str,
                               content: str,
-                              type: str = "Persistent"
+                              type: str = "Persistent",
+                              sequence: int = 1
                               ) -> Tuple[str, str]:
-        timestamp_ms = int(
-            datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000
+        timestamp = int(
+            datetime.datetime.now(datetime.timezone.utc).timestamp()
         )
 
         message_info = {
-            "mid": str(uuid.uuid4()),
+            "mid": uuid.uuid4().hex,
             "sid": self.user.id,
             "rid": conversation_id,
             "msg": content,
-            "tst": timestamp_ms,
-            "seq": 1,
+            "tst": timestamp,
+            "seq": sequence,
             "rec": False,
             "mts": [],
             "cty": type
