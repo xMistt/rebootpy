@@ -378,6 +378,7 @@ class RankingType(Enum):
     BALLISTIC       = 'ranked-feral'
     OG              = 'ranked-figment-build'
     OG_ZERO_BUILD   = 'ranked-figment-nobuild'
+    CROWN_JAM       = 'ranked-pimlico'
 
 
 class Rank(Enum):
