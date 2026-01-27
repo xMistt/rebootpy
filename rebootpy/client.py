@@ -3785,7 +3785,7 @@ class Client(BasicClient):
 
     async def send_presence(self, status: Union[str, dict], *,
                             away: AwayStatus = AwayStatus.ONLINE,
-                            to: Optional[JID] = None) -> None:
+                            to: Optional['JID'] = None) -> None:
         """|coro|
 
         Sends this status to all or one single friend.

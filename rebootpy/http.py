@@ -1589,7 +1589,7 @@ class HTTPClient:
         conn_type = conf.cls.CONN_TYPE
         payload = {
             'connection': {
-                'id': str(self.client.xmpp.xmpp_client.local_jid),
+                'id': str(self.client.xmpp.local_jid),
                 'meta': {
                     'urn:epic:conn:platform_s': self.client.platform.value,
                     'urn:epic:conn:type_s': conn_type,
@@ -1667,7 +1667,7 @@ class HTTPClient:
             },
             'join_info': {
                 'connection': {
-                    'id': str(self.client.xmpp.xmpp_client.local_jid),
+                    'id': str(self.client.xmpp.local_jid),
                     'meta': {
                         'urn:epic:conn:platform_s': self.client.platform.value,
                         'urn:epic:conn:type_s': conn_type
