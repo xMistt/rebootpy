@@ -54,7 +54,7 @@ class StoreItem:
         self._monthly_limit = data['monthlyLimit']
         self._offer_id = data['offerId']
         self._offer_type = data['offerType']
-        self._refundable = data['refundable']
+        self._refund_type = data['refundType']
         self._items_grants = data['itemGrants']
         self._panel = data['sortPriority']
         self._meta_info = data.get('metaInfo', [])
@@ -158,7 +158,7 @@ class StoreItem:
         """:class:`bool`: ``True`` if item is refundable else
         ``False``.
         """
-        return self._refundable
+        return self._refund_type == 'UserRefundable'
 
     @property
     def grants(self) -> List[dict]:

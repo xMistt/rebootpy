@@ -13,6 +13,13 @@ Added
 ~~~~~
 
 - Added support for looking up disabled accounts.
+- Added support back for sending messages.
+
+Bug Fixes
+~~~~~
+
+- Fixed :meth:`Client.fetch_item_shop()`.
+
 
 v0.9.6
 ------
