@@ -952,7 +952,7 @@ class PartyMemberMeta(MetaBase):
     @property
     def variants(self) -> List[Dict[str, str]]:
         base = self.get_prop('Default:AthenaCosmeticLoadoutVariants_j')
-        return base['AthenaCosmeticLoadoutVariants'].get('vL', {})
+        return base['AthenaCosmeticLoadoutVariants'].get('vD', {})
 
     @property
     def outfit_variants(self) -> List[Dict[str, str]]:
