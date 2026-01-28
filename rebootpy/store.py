@@ -72,7 +72,7 @@ class StoreItem:
     @property
     def display_names(self) -> List[str]:
         """List[:class:`str`]: The display names for this item."""
-        match = re.search(r'^\[VIRTUAL][0-9]+ x (.*) for [0-9]+ .*$',
+        match = re.search(r'^\[VIRTUAL][0-9]+ x (.*) for -?\d+ .*$',
                           self._dev_name).group(1)
         return re.split(r', [0-9]+ x ', match)
 

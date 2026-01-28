@@ -1248,7 +1248,9 @@ class PartyMemberMeta(MetaBase):
     def set_variants(self, variants: List[dict]) -> Dict[str, Any]:
         final = {
             'AthenaCosmeticLoadoutVariants': {
-                'vL': variants
+                'vL': {},
+                'vD': variants,
+                'fT': False
             }
         }
         key = 'Default:AthenaCosmeticLoadoutVariants_j'
