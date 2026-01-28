@@ -19,6 +19,7 @@ Bug Fixes
 ~~~~~
 
 - Fixed :meth:`Client.fetch_item_shop()`.
+- Fixed variants, will add documentation soon.
 
 
 v0.9.6
