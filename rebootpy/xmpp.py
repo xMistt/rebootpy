@@ -1182,6 +1182,7 @@ class XMPPClient:
 
         elif "<success" in raw:
             self.authed = True
+            self.client.dispatch_event('xmpp_session_establish')
 
             await self.websocket.send_str(
                 "<open xmlns='urn:ietf:params:xml:ns:xmpp-framing' to='prod.ol.epicgames.com' version='1.0' />"
