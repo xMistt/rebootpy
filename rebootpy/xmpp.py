@@ -1339,10 +1339,12 @@ class XMPPClient:
     #         pres.status[None] = json.dumps(_status)
     #     await self.stream.send(pres)
 
-    async def send_presence(self,
-                            to: str | None = None,
-                            status: str | dict | None = None,
-                            show: str | None = None) -> None:
+    async def send_presence(
+        self,
+        to: Optional[str] = None,
+        status: Optional[Union[str, dict]] = None,
+        show: Optional[str] = None,
+    ) -> None:
         if status is None:
             status_json = None
         elif isinstance(status, str):
