@@ -1159,17 +1159,6 @@ class XMPPClient:
             await asyncio.sleep(60)
             await self.websocket.send_str("<iq type='get'><ping xmlns='urn:xmpp:ping'/></iq>")
 
-    async def _run(self, future: asyncio.Future) -> None:
-        async with self.xmpp_client.connected() as stream:
-            self.stream = stream
-            stream.soft_timeout = datetime.timedelta(minutes=3)
-            stream.round_trip_time = datetime.timedelta(minutes=3)
-            future.set_result(None)
-
-            # Keep connection alive by awaiting a future that will
-            # never receive a result.
-            await self.client.loop.create_future()
-
     async def parse_message(self, raw: str) -> None:
         if "<stream:features" in raw and not self.authed:
             sasl_msg = base64.b64encode(
@@ -1270,10 +1259,11 @@ class XMPPClient:
 
     async def close(self) -> None:
         log.debug('Attempting to close xmpp client')
-        if self.xmpp_client.running:
-            self.xmpp_client.stop()
+        if self.websocket is not None and not self.websocket.closed:
+            await self.websocket.close()
+            await self.http_session.close()
 
-            while self.xmpp_client.running:
+            while not self.websocket.closed:
                 await asyncio.sleep(0)
 
         if self._task:
@@ -1282,8 +1272,8 @@ class XMPPClient:
             self._ping_task.cancel()
 
         self._ping_task = None
-        self.xmpp_client = None
-        self.stream = None
+        self.websocket = None
+        self.http_session = None
 
         log.debug('Successfully closed xmpp client')
 
