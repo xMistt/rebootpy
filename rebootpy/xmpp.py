@@ -1275,6 +1275,7 @@ class XMPPClient:
         self.websocket = None
         self.http_session = None
 
+        self.client.dispatch_event('xmpp_session_close')
         log.debug('Successfully closed xmpp client')
 
         # let loop run one iteration for events to be dispatched

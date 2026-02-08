@@ -550,13 +550,12 @@ this decorator if you are in a subclass of :class:`Client`.
     :param request: Request object.
     :type request: :class:`PartyJoinRequest`
 
-.. function:: event_party_invite_cancel()
-
-    This event is called when an invite has been cancelled.
-
-.. function:: event_party_invite_decline()
+.. function:: event_party_invite_decline(friend)
 
     This event is called when an invite has been declined.
+
+    :param friend: The friend who declined the invite.
+    :type party: :class:`Friend`
 
 .. function:: event_party_playlist_change(party, before, after)
 
