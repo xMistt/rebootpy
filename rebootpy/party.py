@@ -3615,11 +3615,6 @@ class PartyBase:
 
     @property
     def squad_fill(self) -> bool:
-        """:class:`str`: The current region of this party."""
-        return self.meta.region
-
-    @property
-    def squad_fill(self) -> bool:
         """:class:`bool`: ``True`` if squad fill is enabled else ``False``."""
         return self.meta.squad_fill
 
@@ -4036,7 +4031,7 @@ class ClientParty(PartyBase, Patchable):
                 'meta': {},
                 'connections': [
                     {
-                        'id': str(self.client.xmpp.xmpp_client.local_jid),
+                        'id': str(self.client.xmpp.local_jid),
                         'connected_at': now,
                         'updated_at': now,
                         'offline_ttl': default_config.offline_ttl,

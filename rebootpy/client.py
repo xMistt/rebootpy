@@ -30,7 +30,6 @@ import base64
 import uuid
 import json
 
-from aioxmpp import JID
 from aiohttp import BaseConnector
 from typing import (Iterable, Union, Optional, Any, Awaitable, Callable, Dict,
                     List, Tuple)
@@ -3786,7 +3785,7 @@ class Client(BasicClient):
 
     async def send_presence(self, status: Union[str, dict], *,
                             away: AwayStatus = AwayStatus.ONLINE,
-                            to: Optional[JID] = None) -> None:
+                            to: Optional['JID'] = None) -> None:
         """|coro|
 
         Sends this status to all or one single friend.

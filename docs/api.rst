@@ -550,22 +550,12 @@ this decorator if you are in a subclass of :class:`Client`.
     :param request: Request object.
     :type request: :class:`PartyJoinRequest`
 
-.. function:: event_party_member_chatban(member, reason)
-
-    This event is called whenever a member of the party has been banned from the party chat.
-
-    :param member: The member that was banned.
-    :type member: :class:`PartyMember`
-    :param reason: The reason for the ban if available.
-    :type reason: Optional[:class:`str`]
-
-.. function:: event_party_invite_cancel()
-
-    This event is called when an invite has been cancelled.
-
-.. function:: event_party_invite_decline()
+.. function:: event_party_invite_decline(friend)
 
     This event is called when an invite has been declined.
+
+    :param friend: The friend who declined the invite.
+    :type party: :class:`Friend`
 
 .. function:: event_party_playlist_change(party, before, after)
 
