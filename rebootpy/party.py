@@ -1920,16 +1920,8 @@ class PartyMemberBase(User):
         if no corruption value is set.
         """
         data = self.meta.custom_data_store
-        if data:
-            for variants in self.meta.variants.values():
-                inner = variants.get('i', [])
-                for variant in inner:
-                    if variant['c'] == 'Corruption':
-                        for stored in data:
-                            try:
-                                return float(stored)
-                            except ValueError:
-                                pass
+        if isinstance(data, list) and data[0].replace('.', '').isdigit():
+            return float(data[0])
 
     @property
     def has_crown(self) -> bool:
