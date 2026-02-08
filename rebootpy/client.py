@@ -41,7 +41,7 @@ from .errors import (PartyError, HTTPException, NotFound, Forbidden,
                      DuplicateFriendship, FriendshipRequestAlreadySent,
                      MaxFriendshipsExceeded, InviteeMaxFriendshipsExceeded,
                      InviteeMaxFriendshipRequestsExceeded, PartyIsFull)
-from .aiohttp_xmpp import XMPPClient
+from .xmpp import XMPPClient
 from .websocket import WebsocketClient
 from .http import HTTPClient
 from .user import (ClientUser, User, BlockedUser, SacSearchEntryUser,
