@@ -808,14 +808,16 @@ class PartyMemberMeta(MetaBase):
                                 "regionId": ""
                             }
                         }),
-                        "timestamp": 0,
+                        "timestamp": int(datetime.datetime.now(
+                            datetime.timezone.utc
+                        ).timestamp()),
                         "bUsingGracefulUpgrade": True,
                         "matchmakingId": ""
                     },
                     "bIsEligible": True,
                     "islandSelection": {
                         "island": json.dumps({
-                            "LinkId": "playlist_defaultsquad",
+                            "LinkId": "experience_br",
                             "Session": {
                                 "iD": "",
                                 "joinInfo": {
@@ -1075,6 +1077,14 @@ class PartyMemberMeta(MetaBase):
         # Swap y and x because epic uses y for horizontal and x for vertical
         # which messes with my brain.
         return (location['y'], location['x'])
+
+    @property
+    def playlist_selection(self) -> list:
+        prop = self.get_prop('Default:MatchmakingInfo_j')
+        island = prop['MatchmakingInfo']['islandSelection']
+        playlist_id = json.loads(island['island'])['LinkId']
+
+        return playlist_id
 
     def maybesub(self, def_: Any) -> Any:
         return def_ if def_ else 'None'
@@ -1531,14 +1541,6 @@ class PartyMeta(MetaBase):
             self.update(meta, raw=True)
 
         self.meta_ready_event.set()
-
-    # @property
-    # def playlist_info(self) -> Tuple[str]:
-    #     base = self.get_prop('Default:SelectedIsland_j')
-    #     info = base['SelectedIsland']
-    #
-    #     return (info['linkId']['mnemonic'],
-    #             info.get('session', {}).get('iD', ''))
 
     @property
     def region(self) -> str:
@@ -2059,6 +2061,18 @@ class PartyMemberBase(User):
             The coordinates range is roughly ``-135000.0 <= coordinate <= 135000``
         """  # noqa
         return self.meta.frontend_marker_location
+
+    @property
+    def playlist_selection(self) -> Tuple[bool, int]:
+        """:class:`str`: The last playlist that this member selected (the most
+        recently selected playlist of all members is what the game decides
+        to be the current playlist of the party).
+
+        Example output: ::
+
+            experience_reload
+        """
+        return self.meta.playlist_selection
 
     def is_ready(self) -> bool:
         """Whether or not this member is ready.
@@ -3610,8 +3624,6 @@ class PartyBase:
         )
 
         return (playlist_id, session_id)
-
-        # return self.meta.playlist_info
 
     @property
     def squad_fill(self) -> bool:

@@ -563,9 +563,9 @@ this decorator if you are in a subclass of :class:`Client`.
 
     :param party: The party that changed.
     :type party: :class:`ClientParty`
-    :param before: The previous playlist data. Same structure as .
+    :param before: The previous playlist data. Same structure as `ClientParty.playlist_info`.
     :type before: :class:`tuple`
-    :param after: The current playlist data. Same structure as .
+    :param after: The current playlist data. Same structure as `ClientParty.playlist_info`.
     :type after: :class:`tuple`
 
 .. function:: event_party_squad_fill_change(party, before, after)
@@ -844,6 +844,18 @@ this decorator if you are in a subclass of :class:`Client`.
     :type before: Tuple[:class:`float`, class:`float`]
     :param after: The new coordinates.
     :type after: Tuple[:class:`float`, class:`float`]
+
+
+.. function:: event_party_member_playlist_selection_change(member, before, after)
+
+    This event is called when a party member selects a different playlist.
+
+    :param member: The member that changed.
+    :type member: :class:`PartyMember`
+    :param before: The previous playlist id/island code.
+    :type before: str
+    :param after: The new playlist id/island code.
+    :type after: str
 
 
 Stats Reference

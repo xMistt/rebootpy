@@ -60,7 +60,7 @@ _member_meta_attrs = ('ready', 'input', 'outfit',
                       'outfit_variants', 'backpack_variants',
                       'pickaxe_variants', 'contrail_variants',
                       'lobby_map_marker_is_visible',
-                      'lobby_map_marker_coordinates',)
+                      'lobby_map_marker_coordinates', 'playlist_selection',)
 
 
 def is_RandALCat(c: str) -> bool:
@@ -946,6 +946,14 @@ class XMPPClient:
             value = _getattr(member, key)
             if not compare(pre_value, value):
                 _dispatch(key, member, pre_value, value)
+
+                if key == 'playlist_selection':
+                    self.client.dispatch_event(
+                        'party_playlist_change',
+                        self.client.party,
+                        (pre_value, ''),
+                        (value, '')
+                    )
 
     @EventDispatcher.event('com.epicgames.social.party.notification.v0.MEMBER_REQUIRE_CONFIRMATION')  # noqa
     async def event_party_member_require_confirmation(self,

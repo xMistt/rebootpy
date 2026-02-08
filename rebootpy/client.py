@@ -3844,17 +3844,4 @@ class Client(BasicClient):
             code=self.party.playlist_info[0]
         )
 
-        if playlist.is_creative_island:
-            self.current_status_playlist = playlist.name
-        elif 'nobuildbr' in playlist.mnemonic:
-            self.current_status_playlist = 'Zero Build - Battle Royale - ' \
-                                           f'{playlist.name}'
-        elif 'playlist_default' in playlist.mnemonic:
-            self.current_status_playlist = f'Battle Royale - {playlist.name}'
-        elif ('blastberrynobuild' in playlist.mnemonic or
-              'sunflowernobuild' in playlist.mnemonic):
-            self.current_status_playlist = 'Reload - Zero Build - ' \
-                                           f'{playlist.name}'
-        elif ('blastberry' in playlist.mnemonic or
-              'sunflower' in playlist.mnemonic):
-            self.current_status_playlist = f'Reload - {playlist.name}'
+        self.current_status_playlist = playlist.name
