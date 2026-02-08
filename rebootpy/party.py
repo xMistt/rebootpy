@@ -952,7 +952,7 @@ class PartyMemberMeta(MetaBase):
     @property
     def variants(self) -> List[Dict[str, str]]:
         base = self.get_prop('Default:AthenaCosmeticLoadoutVariants_j')
-        return base['AthenaCosmeticLoadoutVariants'].get('vL', {})
+        return base['AthenaCosmeticLoadoutVariants'].get('vD', {})
 
     @property
     def outfit_variants(self) -> List[Dict[str, str]]:
@@ -1213,7 +1213,7 @@ class PartyMemberMeta(MetaBase):
             data['characterEKey'] = character_ekey
         if backpack is not None:
             data['backpackDef'] = self.maybesub(backpack)
-            mp_loadout['ab']['i'] = backpack
+            mp_loadout['ab']['i'] = backpack.split('.')[-1]
         if backpack_ekey is not None:
             data['backpackEKey'] = backpack_ekey
         if pickaxe is not None:
@@ -1248,7 +1248,9 @@ class PartyMemberMeta(MetaBase):
     def set_variants(self, variants: List[dict]) -> Dict[str, Any]:
         final = {
             'AthenaCosmeticLoadoutVariants': {
-                'vL': variants
+                'vL': {},
+                'vD': variants,
+                'fT': False
             }
         }
         key = 'Default:AthenaCosmeticLoadoutVariants_j'

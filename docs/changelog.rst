@@ -6,6 +6,7 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
+
 v0.9.7
 ------
 
@@ -13,6 +14,15 @@ Added
 ~~~~~
 
 - Added support for looking up disabled accounts.
+- **Added support back for sending messages!**
+
+Bug Fixes
+~~~~~
+
+- Fixed :meth:`Client.fetch_item_shop()`.
+- Fixed variants, will add documentation soon.
+- Fixed backpacks not being streamed.
+
 
 v0.9.6
 ------
