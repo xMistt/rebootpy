@@ -1,4 +1,2 @@
 aiohttp>=3.12.7
-aioxmpp>=0.13.3
 aioconsole>=0.1.15
-pytz>=2024.2

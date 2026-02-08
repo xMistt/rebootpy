@@ -24,7 +24,6 @@ SOFTWARE.
 
 import json
 import asyncio
-import aioxmpp
 import re
 import functools
 import datetime

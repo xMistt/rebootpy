@@ -24,7 +24,6 @@ SOFTWARE.
 
 import logging
 
-from aioxmpp import JID
 from typing import TYPE_CHECKING, Any, List, Optional
 from .enums import (UserSearchPlatform, UserSearchMatchType,
                     StatsCollectionType, Season)
@@ -187,9 +186,9 @@ class UserBase:
         return self._epicgames_display_name is not None
 
     @property
-    def jid(self) -> JID:
+    def jid(self) -> str:
         """:class:`aioxmpp.JID`: The JID of the user."""
-        return JID.fromstr('{0.id}@{0.client.service_host}'.format(self))
+        return f'{self.id}@{self.client.service_host}'
 
     @property
     def disabled(self) -> str:
@@ -570,7 +569,7 @@ class ClientUser(UserBase):
         return '{} {}'.format(self.name, self.last_name)
 
     @property
-    def jid(self) -> JID:
+    def jid(self) -> str:
         """:class:`aioxmpp.JID`: The JID of the client. Includes the
         resource part.
         """

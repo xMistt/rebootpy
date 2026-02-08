@@ -625,17 +625,6 @@ this decorator if you are in a subclass of :class:`Client`.
     :param after: The current input.
     :type after: :class:`str`
 
-.. function:: event_party_member_assisted_challenge_change(member, before, after)
-
-    This event is called when a members assisted challenge has been changed.
-
-    :param member: The member that changed.
-    :type member: :class:`PartyMember`
-    :param before: The previous assisted challenge. ``None`` if no assisted challenge was previously set.
-    :type before: :class:`str`
-    :param after: The current assisted challenge. ``None`` if the assisted challenge was removed.
-    :type after: :class:`str`
-
 .. function:: event_party_member_outfit_change(member, before, after)
 
     This event is called when a members outfit has been changed.
