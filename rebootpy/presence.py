@@ -294,8 +294,6 @@ class Presence:
         self.platform = Platform(platform)
         self.received_at = datetime.datetime.utcnow()
 
-        print(data)
-
         self.status = data['Status']
         self.playing = data['bIsPlaying']
         self.joinable = data.get('bIsJoinable', False)
