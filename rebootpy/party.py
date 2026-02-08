@@ -4036,7 +4036,7 @@ class ClientParty(PartyBase, Patchable):
                 'meta': {},
                 'connections': [
                     {
-                        'id': str(self.client.xmpp.xmpp_client.local_jid),
+                        'id': str(self.client.xmpp.local_jid),
                         'connected_at': now,
                         'updated_at': now,
                         'offline_ttl': default_config.offline_ttl,

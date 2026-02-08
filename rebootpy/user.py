@@ -574,7 +574,7 @@ class ClientUser(UserBase):
         """:class:`aioxmpp.JID`: The JID of the client. Includes the
         resource part.
         """
-        return self.client.xmpp.xmpp_client.local_jid
+        return self.client.xmpp.local_jid
 
     def _update(self, data: dict) -> None:
         super()._update(data)
