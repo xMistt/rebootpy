@@ -24,7 +24,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-print('Using aiohttp xmpp')
 # import aioxmpp
 import asyncio
 import json
@@ -233,345 +232,6 @@ class XMLProcessor:
         return False
 
 
-# class WebsocketTransport:
-#     def __init__(self, stream: 'WebsocketXMLStream',
-#                  client: 'Client',
-#                  logger: logging.Logger,
-#                  ws_connector: Optional[aiohttp.BaseConnector] = None) -> None:
-#         self.stream = stream
-#         self.client = client
-#         self.logger = logger
-#         self.ws_connector = ws_connector
-#
-#         self.xml_processor = XMLProcessor()
-#
-#         self.connection = None
-#         self._buffer = b''
-#         self._reader_task = None
-#         self._close_event = asyncio.Event()
-#         self._called_lost = False
-#         self._attempt_reconnect = True
-#
-#     async def create_connection(self, *args,
-#                                 **kwargs) -> aiohttp.ClientWebSocketResponse:
-#         self.logger.debug('Setting up new websocket connection.')
-#
-#         self.session = aiohttp.ClientSession(
-#             connector=self.ws_connector,
-#             connector_owner=self.ws_connector is None,
-#         )
-#         self.connection = con = await self.session.ws_connect(
-#             *args, **kwargs
-#         )
-#
-#         asyncio.create_task(self.reader())
-#         self.stream.connection_made(self)
-#         self._called_lost = False
-#         self._attempt_reconnect = True
-#
-#         self.logger.debug('Websocket connection established.')
-#         return con
-#
-#     async def reader(self) -> None:
-#         self.logger.debug('Websocket reader is now running.')
-#
-#         try:
-#             while True:
-#                 msg = await self.connection.receive()
-#
-#                 self.logger.debug('RECV: {0}'.format(msg))
-#                 if msg.type == aiohttp.WSMsgType.TEXT:
-#                     ret = self.xml_processor.process(msg.data)
-#                     if ret is None:
-#                         continue
-#                     elif ret is False:
-#                         self.stream.data_received(msg.data)
-#                     else:
-#                         type_ = ret[0]
-#                         if type_ == 'presence':
-#                             EventDispatcher.process_presence(
-#                                 self.client,
-#                                 *ret[1]
-#                             )
-#                         elif type_ == 'message':
-#                             EventDispatcher.process_event(
-#                                 self.client,
-#                                 *ret[1]
-#                             )
-#
-#                 if msg.type == aiohttp.WSMsgType.CLOSED:
-#                     if self._attempt_reconnect:
-#                         err = ConnectionError(
-#                             'websocket stream closed'
-#                         )
-#                     else:
-#                         err = None
-#
-#                     if not self._called_lost:
-#                         self._called_lost = True
-#                         self.stream.connection_lost(err)
-#                         self._close_session()
-#
-#                     break
-#
-#                 if msg.type == aiohttp.WSMsgType.ERROR:
-#                     if not self._called_lost:
-#                         self._called_lost = True
-#                         self.stream.connection_lost(
-#                             ConnectionError(
-#                                 'websocket stream received an error: '
-#                                 '{0}'.format(self.connection.exception()))
-#                         )
-#                     break
-#         finally:
-#             self.logger.debug('Websocket reader stopped.')
-#
-#     async def send(self, data: bytes) -> None:
-#         self.logger.debug('SEND: {0}'.format(data))
-#         await self.connection.send_bytes(data)
-#
-#     def write(self, data: bytes) -> None:
-#         self._buffer += data
-#
-#     def flush(self) -> None:
-#         if self._buffer:
-#             asyncio.ensure_future(self.send(self._buffer))
-#
-#         self._buffer = b''
-#
-#     def can_write_eof(self) -> bool:
-#         return False
-#
-#     def write_eof(self) -> None:
-#         raise NotImplementedError("Cannot write_eof() on ws transport.")
-#
-#     def _stop_reader(self) -> None:
-#         if self._reader_task is not None and not self._reader_task.cancelled():
-#             self._reader_task.cancel()
-#
-#     def _close_session(self) -> None:
-#         try:
-#             return asyncio.create_task(self.session.close())
-#         except AttributeError:
-#             pass
-#
-#     def close_callback(self, *args) -> None:
-#         self._close_event.set()
-#
-#     def on_close(self, *args) -> None:
-#         task = self._close_session()
-#         if task is not None:
-#             task.add_done_callback(self.close_callback)
-#
-#     def _close(self) -> None:
-#         if not self.connection:
-#             raise RuntimeError('Cannot close a non-existing connection.')
-#
-#         self.logger.debug('Closing websocket connection.')
-#
-#         task = asyncio.create_task(self.connection.close())
-#         task.add_done_callback(self.on_close)
-#
-#         self._stop_reader()
-#
-#     def close(self) -> None:
-#         self._attempt_reconnect = False
-#         self._close()
-#
-#     def abort(self) -> None:
-#         self.logger.debug('Received abort signal.')
-#         self._close()
-#
-#     async def wait_closed(self) -> None:
-#         await self._close_event
-#
-#     def get_extra_info(self, *args, **kwargs) -> Any:
-#         return self.connection.get_extra_info(*args, **kwargs)
-#
-#
-# class WebsocketXMLStreamWriter(aioxmpp.xml.XMLStreamWriter):
-#     def close(self) -> None:
-#         if self._closed:
-#             return
-#         self._closed = True
-#         self._writer.endElementNS(
-#             (aioxmpp.utils.namespaces.xmlstream, "stream"),
-#             None
-#         )
-#         for prefix in self._nsmap_to_use:
-#             self._writer.endPrefixMapping(prefix)
-#         self._writer.endDocument()
-#         self._writer.flush()
-#         del self._writer
-#
-#
-# class WebsocketXMLStream(aioxmpp.protocol.XMLStream):
-#     def _reset_state(self) -> None:
-#         self._kill_state()
-#
-#         self._processor = aioxmpp.xml.XMPPXMLProcessor()
-#         self._processor.stanza_parser = self.stanza_parser
-#         self._processor.on_stream_header = self._rx_stream_header
-#         self._processor.on_stream_footer = self._rx_stream_footer
-#         self._processor.on_exception = self._rx_exception
-#         self._parser = aioxmpp.xml.make_parser()
-#         self._parser.setContentHandler(self._processor)
-#         self._debug_wrapper = None
-#
-#         if self._logger.getEffectiveLevel() <= logging.DEBUG:
-#             dest = aioxmpp.protocol.DebugWrapper(self._transport, self._logger)
-#             self._debug_wrapper = dest
-#         else:
-#             dest = self._transport
-#
-#         self._writer = WebsocketXMLStreamWriter(
-#             dest,
-#             self._to,
-#             nsmap={None: "jabber:client"},
-#             sorted_attributes=self._sorted_attributes)
-#
-#     def error_future(self) -> asyncio.Future:
-#         def callback(*args):
-#             future = args[0]
-#
-#             try:
-#                 future.result()
-#             except asyncio.CancelledError:
-#                 pass
-#             except Exception:
-#                 pass
-#
-#         fut = super().error_future()
-#         fut.add_done_callback(callback)
-#         return fut
-#
-#
-# class XMPPOverWebsocketConnector(aioxmpp.connector.BaseConnector):
-#     def __init__(self, client, ws_connector=None):
-#         self.client = client
-#         self.ws_connector = ws_connector
-#
-#     @property
-#     def tls_supported(self) -> bool:
-#         return False
-#
-#     @property
-#     def dane_supported(self) -> bool:
-#         return False
-#
-#     async def connect(self, loop: asyncio.AbstractEventLoop,
-#                       metadata: aioxmpp.security_layer.SecurityLayer,
-#                       domain: str,
-#                       host: str,
-#                       port: int,
-#                       negotiation_timeout: Union[int, float],
-#                       base_logger: Optional[logging.Logger] = None
-#                       ) -> Tuple[WebsocketTransport,
-#                                  WebsocketXMLStream,
-#                                  aioxmpp.nonza.StreamFeatures]:
-#         features_future = asyncio.Future()
-#
-#         stream = WebsocketXMLStream(
-#             to=domain,
-#             features_future=features_future,
-#             base_logger=base_logger,
-#         )
-#
-#         if base_logger is not None:
-#             logger = base_logger.getChild(type(self).__name__)
-#         else:
-#             logger = logging.getLogger(".".join([
-#                 __name__, type(self).__qualname__,
-#             ]))
-#
-#         transport = WebsocketTransport(
-#             stream,
-#             self.client,
-#             logger,
-#             ws_connector=self.ws_connector
-#         )
-#         await transport.create_connection(
-#             'wss://{host}'.format(host=host),
-#             protocols=('xmpp',),
-#             timeout=10,
-#         )
-#
-#         return transport, stream, await features_future
-#
-#
-# # Suppress noisy log message on stream failure
-# async def _patched_main_impl(self):
-#     failure_future = self._failure_future
-#
-#     override_peer = []
-#     if self.stream.sm_enabled:
-#         sm_location = self.stream.sm_location
-#         if sm_location:
-#             override_peer.append((
-#                 str(sm_location[0]),
-#                 sm_location[1],
-#                 aioxmpp.connector.STARTTLSConnector(),
-#             ))
-#     override_peer += self.override_peer
-#
-#     _, xmlstream, features = await aioxmpp.node.connect_xmlstream(
-#         self._local_jid,
-#         self._security_layer,
-#         negotiation_timeout=self.negotiation_timeout.total_seconds(),
-#         override_peer=override_peer,
-#         logger=self.logger
-#     )
-#
-#     self._had_connection = True
-#
-#     try:
-#         features, _ = await self._negotiate_stream(
-#             xmlstream,
-#             features
-#         )
-#
-#         if self._is_suspended:
-#             self.on_stream_resumed()
-#         self._is_suspended = False
-#         self._backoff_time = None
-#
-#         exc = await failure_future
-#         # self.logger.error("stream failed: %s", exc)
-#         self.logger.debug("stream failed: %s", exc)
-#         raise exc
-#     except asyncio.CancelledError:
-#         self.logger.info("client shutting down (on request)")
-#         # cancelled, this means a clean shutdown is requested
-#         await self.stream.close()
-#         raise
-#     finally:
-#         self.logger.info("stopping stream")
-#         self.stream.stop()
-#
-#
-# # Were just patching this method to suppress an exception
-# # which is raised on stream error.
-# def _patched_done_handler(self, task):
-#     try:
-#         task.result()
-#     except asyncio.CancelledError:
-#         pass
-#     except Exception as err:
-#         try:
-#             if self._sm_enabled:
-#                 self._xmlstream.abort()
-#             else:
-#                 self._xmlstream.close()
-#         except Exception:
-#             pass
-#         self.on_failure(err)
-#         # self._logger.exception("broker task failed")
-#
-#
-# aioxmpp.node.Client._main_impl = _patched_main_impl
-# aioxmpp.stream.StanzaStream._done_handler = _patched_done_handler
-
-
 class XMPPClient:
     def __init__(self, client: 'Client', ws_connector=None) -> None:
         self.client = client
@@ -603,9 +263,6 @@ class XMPPClient:
 
         self.stanza = "<presence/>"
 
-        # self.resource = f"V2:Fortnite:{client.platform.value}::{uuid.uuid4().hex.upper()}"
-        # self.jid = f"{self.client.user.id}@prod.ol.epicgames.com/{resource}"
-
     @property
     def resource(self) -> str:
         return f"V2:Fortnite:{self.client.platform.value}::{self.resource_hex}"
@@ -616,25 +273,6 @@ class XMPPClient:
 
     def _jid(self, user_id: str) -> str:
         return f"{user_id}@{self.client.service_host}"
-
-        # return aioxmpp.JID.fromstr('{}@{}'.format(
-        #     user_id,
-        #     self.client.service_host
-        # ))
-
-    # def _remove_illegal_characters(self, chars: str) -> str:
-    #     fixed = []
-    #     for c in chars:
-    #         try:
-    #             aioxmpp.stringprep.resourceprep(c)
-    #         except ValueError:
-    #             continue
-    #
-    #         if is_RandALCat(c):
-    #             continue
-    #
-    #         fixed.append(c)
-    #     return ''.join(fixed)
 
     def _create_invite(self, from_id: str, data: dict) -> dict:
         sent_at = from_iso(data['sent'])
@@ -1533,7 +1171,6 @@ class XMPPClient:
             await self.client.loop.create_future()
 
     async def parse_message(self, raw: str) -> None:
-        # Stage 1: Server features (we can now auth)
         if "<stream:features" in raw and not self.authed:
             sasl_msg = base64.b64encode(
                 f"\x00{self.client.user.id}\x00{self.client.auth.access_token}".encode()
@@ -1543,18 +1180,13 @@ class XMPPClient:
                 f"<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>{sasl_msg}</auth>"
             )
 
-        # Stage 2: Successful SASL
         elif "<success" in raw:
             self.authed = True
-            print("Authenticated successfully — binding session...")
 
-            # Reopen stream after SASL success
             await self.websocket.send_str(
                 "<open xmlns='urn:ietf:params:xml:ns:xmpp-framing' to='prod.ol.epicgames.com' version='1.0' />"
             )
 
-        # Stage 3: Bind resource & start session
-        # elif "<bind" in raw and not self.bound:
         elif raw.startswith("<stream:features") and "xmpp-bind" in raw:
             self.bound = True
             await self.websocket.send_str(
@@ -1567,21 +1199,10 @@ class XMPPClient:
             await self.websocket.send_str(
                 "<iq type='set' id='sess_1'><session xmlns='urn:ietf:params:xml:ns:xmpp-session'/></iq>"
             )
-            try:
-                print('my local jid:')
-                print(self.local_jid)
-            except Exception as e:
-                print(e)
-            print(f"Bound resource — starting heartbeat loop.")
             self.client.loop.create_task(self.loop_ping())
             self.client.loop.create_task(self.presence_manager())
 
             self.ready = True
-
-        # Stage 4: Normal traffic or errors
-        elif "<failure" in raw or "<stream:error" in raw:
-            print("Error:", raw)
-
         else:
             ret = self.xml_processor.process(raw)
 
@@ -1598,7 +1219,7 @@ class XMPPClient:
                 elif type_ == "message":
                     EventDispatcher.process_event(self.client, *ret[1])
                 else:
-                    print(f"Unhandled XML type: {type_}")
+                    log(f"Unhandled XML type: {type_}")
 
 
     async def presence_manager(self) -> None:
@@ -1606,8 +1227,6 @@ class XMPPClient:
         while True:
             if self.stanza != stanza:
                 await self.websocket.send_str(self.stanza)
-                print(f'updated presence - {self.stanza}')
-
                 stanza = self.stanza
             await asyncio.sleep(1)
 
@@ -1647,7 +1266,6 @@ class XMPPClient:
 
         while not self.ready:
             await asyncio.sleep(1)
-        print('now letting rest of client initalise')
 
     async def close(self) -> None:
         log.debug('Attempting to close xmpp client')
@@ -1690,10 +1308,8 @@ class XMPPClient:
                      status: Optional[Union[str, dict]] = None,
                      show: Optional[str]) -> None:
         if status is None:
-            # Just announce you're online without extra data
             self.stanza = "<presence/>"
         else:
-            # Build Fortnite-style JSON status
             _status = status if isinstance(status, dict) else {
                 "Status": status,
                 "ProductName": "Fortnite"
@@ -1735,7 +1351,6 @@ class XMPPClient:
                             to: str | None = None,
                             status: str | dict | None = None,
                             show: str | None = None) -> None:
-        # Build JSON status payload
         if status is None:
             status_json = None
         elif isinstance(status, str):
@@ -1745,14 +1360,12 @@ class XMPPClient:
         else:
             raise TypeError("status must be None, str or dict")
 
-        # Build the base presence stanza
         to_attr = f" to='{to}'" if to else ""
         show_tag = f"<show>{show}</show>" if show else ""
         status_tag = f"<status>{status_json}</status>" if status_json else ""
 
         presence = f"<presence{to_attr}>{show_tag}{status_tag}</presence>"
 
-        # Send over WebSocket
         await self.websocket.send_str(presence)
 
     async def get_presence(self, jid: str):
