@@ -3615,11 +3615,6 @@ class PartyBase:
 
     @property
     def squad_fill(self) -> bool:
-        """:class:`str`: The current region of this party."""
-        return self.meta.region
-
-    @property
-    def squad_fill(self) -> bool:
         """:class:`bool`: ``True`` if squad fill is enabled else ``False``."""
         return self.meta.squad_fill
 
