@@ -1919,8 +1919,11 @@ class PartyMemberBase(User):
         if no corruption value is set.
         """
         data = self.meta.custom_data_store
-        if isinstance(data, list) and data[0].replace('.', '').isdigit():
-            return float(data[0])
+        if isinstance(data, list) and data:
+            try:
+                return float(data[0])
+            except (TypeError, ValueError):
+                pass
 
     @property
     def has_crown(self) -> bool:
