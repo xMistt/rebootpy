@@ -6,6 +6,14 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
+v1.0.0
+------
+
+Changes
+~~~~~
+
+- (**Breaking**) The XMPP client has been rewritten to be entirely in aiohttp, this should just be a drop in replacement but you may encounter errors that I overlooked. If you do, please create an issue on GitHub so I can promptly fix it.
+
 
 v0.9.7
 ------
