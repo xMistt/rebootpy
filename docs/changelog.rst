@@ -14,6 +14,10 @@ Changes
 
 - (**Breaking**) The XMPP client has been rewritten to be entirely in aiohttp, this should just be a drop in replacement but you may encounter errors that I overlooked. If you do, please create an issue on GitHub so I can promptly fix it.
 
+Added
+~~~~~
+
+- Added :attr:`PartyMember.playlist_selection` & :meth:`event_party_member_playlist_selection_change()`
 
 v0.9.7
 ------

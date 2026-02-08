@@ -853,9 +853,9 @@ this decorator if you are in a subclass of :class:`Client`.
     :param member: The member that changed.
     :type member: :class:`PartyMember`
     :param before: The previous playlist id/island code.
-    :type before: str
+    :type before: :class:`str`
     :param after: The new playlist id/island code.
-    :type after: str
+    :type after: :class:`str`
 
 
 Stats Reference

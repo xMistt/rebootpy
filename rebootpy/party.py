@@ -1548,7 +1548,7 @@ class PartyMeta(MetaBase):
 
     @property
     def squad_fill(self) -> bool:
-        return self.get_prop('Default:AthenaSquadFill_b')
+        return self.get_prop('Default:PreferredPrivacy_s') == 'Fill'
 
     @property
     def privacy(self) -> Optional[PartyPrivacy]:
@@ -2068,9 +2068,7 @@ class PartyMemberBase(User):
         recently selected playlist of all members is what the game decides
         to be the current playlist of the party).
 
-        Example output: ::
-
-            experience_reload
+        Example output: `experience_reload`
         """
         return self.meta.playlist_selection
 
