@@ -1213,7 +1213,7 @@ class PartyMemberMeta(MetaBase):
             data['characterEKey'] = character_ekey
         if backpack is not None:
             data['backpackDef'] = self.maybesub(backpack)
-            mp_loadout['ab']['i'] = backpack
+            mp_loadout['ab']['i'] = backpack.split('/')[-1]
         if backpack_ekey is not None:
             data['backpackEKey'] = backpack_ekey
         if pickaxe is not None:
