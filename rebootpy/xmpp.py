@@ -809,11 +809,6 @@ class XMPPClient:
                     value
                 )
 
-        if self.client.auto_update_status and \
-                (_getattr(party, 'playlist_info')[0]
-                 != pre_values['playlist_info'][0]):
-            await self.client.auto_update_status_text()
-
     @EventDispatcher.event('com.epicgames.social.party.notification.v0.MEMBER_STATE_UPDATED')  # noqa
     async def event_party_member_state_updated(self,
                                                ctx: EventContext) -> None:
@@ -958,6 +953,11 @@ class XMPPClient:
                         (pre_value, ''),
                         (value, '')
                     )
+
+                    if self.client.auto_update_status:
+                        self.client.loop.create_task(
+                            self.client.auto_update_status_text()
+                        )
 
     @EventDispatcher.event('com.epicgames.social.party.notification.v0.MEMBER_REQUIRE_CONFIRMATION')  # noqa
     async def event_party_member_require_confirmation(self,

@@ -3847,3 +3847,4 @@ class Client(BasicClient):
         )
 
         self.current_status_playlist = playlist.name
+        self.party.update_presence()
