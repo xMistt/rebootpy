@@ -241,6 +241,7 @@ class XMPPClient:
 
         self._ping_task = None
         self._presence_task = None
+        self._watchdog_task = None
         self._is_suspended = False
         self._reconnect_recover_task = None
         self._last_disconnected_at = None
@@ -258,6 +259,7 @@ class XMPPClient:
         self._ready = False
         self._connected = False
         self._restarting = False
+        self._last_pong = None
 
         self.resource_hex = uuid.uuid4().hex.upper()
 
@@ -1164,24 +1166,53 @@ class XMPPClient:
     #     client.on_stream_suspended.connect(self.on_stream_suspended)
     #     client.on_stream_destroyed.connect(self.on_stream_destroyed)
 
+    async def ping_watchdog(self) -> None:
+        while self._connected:
+            log.debug(f'last pong: {self._last_pong}')
+            if (
+                self._last_pong is not None and
+                datetime.datetime.now() - self._last_pong
+                > datetime.timedelta(seconds=20)
+            ):
+                log.debug(
+                    'No ping response in 20 second, '
+                    'assuming dead connection and restarting.'
+                )
+                await self.restart()
+
+            await asyncio.sleep(5)
+
     async def xmpp_send(self, data: str) -> None:
         if self.websocket.closed:
             raise ConnectionError("Attempted to write to closed websocket.")
 
         try:
-            await self.websocket.send_str(data)
-        except aiohttp.client_exceptions.ClientConnectionResetError:
+            await asyncio.wait_for(
+                self.websocket.send_str(data),
+                timeout=5.0
+            )
+        except asyncio.TimeoutError:
+            log.debug('XMPP send timed out, restarting now...')
             await self.restart()
+        except aiohttp.client_exceptions.ClientConnectionResetError:
+            log.debug('Disconnected from websocket, restarting now...')
+            await self.restart()
+        except Exception as e:
+            log.debug(f'Unknown XMPP send error: {e}')
+            raise
 
     async def loop_ping(self) -> None:
         while self._connected:
-            await asyncio.sleep(60)
+            log.debug('Sending XMPP ping')
             await self.xmpp_send(
-                "<iq type='get'><ping xmlns='urn:xmpp:ping'/></iq>"
+                "<iq type='get' id='ping'><ping xmlns='urn:xmpp:ping'/></iq>"
             )
+            log.debug('Sent XMPP ping')
+            await asyncio.sleep(10)
 
     async def parse_message(self, raw: str) -> None:
-        log.debug(f'Received websocket message - {raw}')
+        if '<presence' not in raw:
+            log.debug(f'Received websocket message - {raw}')
 
         if "<stream:features" in raw and not self._authed:
             sasl_msg = base64.b64encode(
@@ -1213,11 +1244,18 @@ class XMPPClient:
                 "<iq type='set' id='sess_1'><session xmlns='urn:ietf:params:xml:ns:xmpp-session'/></iq>"
             )
             self._ping_task = self.client.loop.create_task(self.loop_ping())
+            self._watchdog_task = self.client.loop.create_task(
+                self.ping_watchdog()
+            )
             self._presence_task = self.client.loop.create_task(
                 self.presence_manager()
             )
 
             self._ready = True
+        elif 'type="result"' in raw and 'id="ping"' in raw:
+            self._last_pong = datetime.datetime.now()
+            self.client.dispatch_event('internal_xmpp_session_pong')
+            log.debug(f'Received XMPP pong')
         else:
             ret = self.xml_processor.process(raw)
 
@@ -1245,34 +1283,34 @@ class XMPPClient:
             await asyncio.sleep(1)
 
     async def connect_to_xmpp(self) -> None:
-        async with self.http_session.ws_connect(
-            "wss://xmpp-service-prod.ol.epicgames.com",
-            headers={
-                "Authorization": f"Bearer {self.client.auth.access_token}",
-                "Sec-WebSocket-Protocol": "xmpp"
-            },
-        ) as websocket:
-            self.websocket = websocket
-            self._connected = True
+        log.debug('Attempting to connect to XMPP...')
+        while True:
+            try:
+                async with self.http_session.ws_connect(
+                    "wss://xmpp-service-prod.ol.epicgames.com",
+                    headers={
+                        "Authorization": f"Bearer {self.client.auth.access_token}",
+                        "Sec-WebSocket-Protocol": "xmpp"
+                    },
+                ) as websocket:
+                    self.websocket = websocket
+                    self._connected = True
 
-            await websocket.send_str(
-                "<open xmlns='urn:ietf:params:xml:ns:xmpp-framing' to='prod.ol.epicgames.com' version='1.0' />"
-            )
+                    await self.xmpp_send(
+                        "<open xmlns='urn:ietf:params:xml:ns:xmpp-framing' to='prod.ol.epicgames.com' version='1.0' />"
+                    )
 
-            async for msg in websocket:
-                if msg.type == aiohttp.WSMsgType.TEXT:
-                    await self.parse_message(msg.data)
-
-        # now pointless, need to handle in parse_message..
-        # self.setup_callbacks()
-
-        # i dont even know what this is for
-        # future = self.client.loop.create_future()
-        # self._task = asyncio.ensure_future(self._run(future))
-        # await future
-
-        # will call later from parse_messages - probably similar to the eos ws
-        # self._ping_task = asyncio.ensure_future(self.loop_ping())
+                    async for msg in websocket:
+                        if msg.type == aiohttp.WSMsgType.TEXT:
+                            await self.parse_message(msg.data)
+            except aiohttp.client_exceptions.ClientConnectorDNSError:
+                log.debug(
+                    'DNS error when attempting to connect to XMPP, '
+                    'retrying in 5 seconds..'
+                )
+                await asyncio.sleep(5)
+            finally:
+                await self._close(close_http=False)
 
     async def run(self) -> None:
         self.http_session = aiohttp.ClientSession()
@@ -1281,7 +1319,6 @@ class XMPPClient:
         # need to replace with asyncio event
         while not self._ready:
             await asyncio.sleep(1)
-
 
     async def restart(self) -> None:
         if self._restarting:
@@ -1299,39 +1336,43 @@ class XMPPClient:
 
         self._restarting = False
 
-    async def _close(self) -> None:
+    async def _close(self, close_http: bool = True) -> None:
         log.debug('Attempting to close xmpp client')
 
         self._ready = False
         self._connected = False
         self._authed = False
 
-        if self.websocket is not None and not self.websocket.closed:
-            await self.websocket.close()
-
-            while not self.websocket.closed:
-                await asyncio.sleep(0)
-
-        self.websocket = None
-
-        if self.http_session:
-            await self.http_session.close()
-
-        self.http_session = None
-
         if self._presence_task:
             self._presence_task.cancel()
         if self._ping_task:
             self._ping_task.cancel()
+        if self._watchdog_task:
+            self._watchdog_task.cancel()
 
         self._presence_task = None
         self._ping_task = None
+        self._watchdog_task = None
+
+        if self.websocket is not None and not self.websocket.closed:
+            try:
+                await asyncio.wait_for(self.websocket.close(), timeout=1.0)
+            except Exception:
+                pass
+
+        self.websocket = None
+
+        if self.http_session and close_http:
+            await self.http_session.close()
+
+            self.http_session = None
+
+        # # let loop run one iteration for events to be dispatched
+        # await asyncio.sleep(0)
 
         self.client.dispatch_event('xmpp_session_close')
         log.debug('Successfully closed xmpp client')
 
-        # let loop run one iteration for events to be dispatched
-        await asyncio.sleep(0)
 
     def set_presence(self, *,
                      status: Optional[Union[str, dict]] = None,
@@ -1372,7 +1413,7 @@ class XMPPClient:
 
         presence = f"<presence{to_attr}>{show_tag}{status_tag}</presence>"
 
-        await self.websocket.send_str(presence)
+        await self.xmpp_send(presence)
 
     async def get_presence(self, jid: str):
         await self.send_presence_probe(jid)
@@ -1385,5 +1426,5 @@ class XMPPClient:
         return after
 
     async def send_presence_probe(self, to: str) -> None:
-        await self.websocket.send_str(f"<presence to='{to}' type='probe'/>")
+        await self.xmpp_send(f"<presence to='{to}' type='probe'/>")
 
