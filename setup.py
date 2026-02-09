@@ -9,7 +9,7 @@ version = ''
 with open('rebootpy/__init__.py') as f:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE).group(1)
 
-requirements = ['aiohttp>=3.12.7', 'aioxmpp>=0.13.3', 'aioconsole>=0.1.15', 'pytz>=2024.2']
+requirements = ['aiohttp>=3.12.7', 'aioconsole>=0.1.15', 'cryptography']
 try:
     with open('requirements.txt') as f:
         requirements = f.read().splitlines()
@@ -52,6 +52,8 @@ setuptools.setup(
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
         'Topic :: Internet',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',
