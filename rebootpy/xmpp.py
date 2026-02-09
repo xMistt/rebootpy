@@ -246,7 +246,7 @@ class XMPPClient:
         self._reconnect_recover_task = None
         self._last_disconnected_at = None
         self._last_known_party_id = None
-        self._task = None
+        self._xmpp_task = None
 
         self.send_presence_on_add = True
 
@@ -1309,12 +1309,18 @@ class XMPPClient:
                     'retrying in 5 seconds..'
                 )
                 await asyncio.sleep(5)
+            except asyncio.CancelledError:
+                log.debug("XMPP connect task cancelled")
+                return
             finally:
                 await self._close(close_http=False)
 
     async def run(self) -> None:
+        if self._xmpp_task and not self._xmpp_task.done():
+            return
+
         self.http_session = aiohttp.ClientSession()
-        self.client.loop.create_task(self.connect_to_xmpp())
+        self._xmpp_task = self.client.loop.create_task(self.connect_to_xmpp())
 
         # need to replace with asyncio event
         while not self._ready:
@@ -1329,6 +1335,15 @@ class XMPPClient:
         log.debug('Reconnecting to XMPP...')
 
         await self._close()
+
+        if self._xmpp_task:
+            self._xmpp_task.cancel()
+            try:
+                await self._xmpp_task
+            except asyncio.CancelledError:
+                pass
+            self._xmpp_task = None
+
         await self.run()
 
         await asyncio.sleep(2)
@@ -1343,12 +1358,14 @@ class XMPPClient:
         self._connected = False
         self._authed = False
 
-        if self._presence_task:
-            self._presence_task.cancel()
-        if self._ping_task:
-            self._ping_task.cancel()
-        if self._watchdog_task:
-            self._watchdog_task.cancel()
+        tasks = [
+            self._presence_task,
+            self._ping_task,
+            self._watchdog_task
+        ]
+        for task in tasks:
+            if task:
+                task.cancel()
 
         self._presence_task = None
         self._ping_task = None
