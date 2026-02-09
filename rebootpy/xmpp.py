@@ -240,6 +240,7 @@ class XMPPClient:
         # self.stream = None
 
         self._ping_task = None
+        self._presence_task = None
         self._is_suspended = False
         self._reconnect_recover_task = None
         self._last_disconnected_at = None
@@ -252,9 +253,11 @@ class XMPPClient:
         self.http_session = None
         self.websocket = None
 
-        self.authed = False
-        self.bound = False
-        self.ready = False
+        self._authed = False
+        self._bound = False
+        self._ready = False
+        self._connected = False
+        self._restarting = False
 
         self.resource_hex = uuid.uuid4().hex.upper()
 
@@ -1161,45 +1164,60 @@ class XMPPClient:
     #     client.on_stream_suspended.connect(self.on_stream_suspended)
     #     client.on_stream_destroyed.connect(self.on_stream_destroyed)
 
+    async def xmpp_send(self, data: str) -> None:
+        if self.websocket.closed:
+            raise ConnectionError("Attempted to write to closed websocket.")
+
+        try:
+            await self.websocket.send_str(data)
+        except aiohttp.client_exceptions.ClientConnectionResetError:
+            await self.restart()
+
     async def loop_ping(self) -> None:
-        while True:
+        while self._connected:
             await asyncio.sleep(60)
-            await self.websocket.send_str("<iq type='get'><ping xmlns='urn:xmpp:ping'/></iq>")
+            await self.xmpp_send(
+                "<iq type='get'><ping xmlns='urn:xmpp:ping'/></iq>"
+            )
 
     async def parse_message(self, raw: str) -> None:
-        if "<stream:features" in raw and not self.authed:
+        log.debug(f'Received websocket message - {raw}')
+
+        if "<stream:features" in raw and not self._authed:
             sasl_msg = base64.b64encode(
                 f"\x00{self.client.user.id}\x00{self.client.auth.access_token}".encode()
             ).decode()
 
-            await self.websocket.send_str(
+            await self.xmpp_send(
                 f"<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>{sasl_msg}</auth>"
             )
 
         elif "<success" in raw:
-            self.authed = True
+            self._authed = True
             self.client.dispatch_event('xmpp_session_establish')
 
-            await self.websocket.send_str(
+            await self.xmpp_send(
                 "<open xmlns='urn:ietf:params:xml:ns:xmpp-framing' to='prod.ol.epicgames.com' version='1.0' />"
             )
 
         elif raw.startswith("<stream:features") and "xmpp-bind" in raw:
-            self.bound = True
-            await self.websocket.send_str(
+            self._bound = True
+            await self.xmpp_send(
                 f"<iq type='set' id='bind_1'>"
                 f"<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>"
                 f"<resource>{self.resource}</resource>"
                 f"</bind></iq>"
             )
         elif 'type="result"' in raw and 'id="bind_1"' in raw:
-            await self.websocket.send_str(
+            await self.xmpp_send(
                 "<iq type='set' id='sess_1'><session xmlns='urn:ietf:params:xml:ns:xmpp-session'/></iq>"
             )
-            self.client.loop.create_task(self.loop_ping())
-            self.client.loop.create_task(self.presence_manager())
+            self._ping_task = self.client.loop.create_task(self.loop_ping())
+            self._presence_task = self.client.loop.create_task(
+                self.presence_manager()
+            )
 
-            self.ready = True
+            self._ready = True
         else:
             ret = self.xml_processor.process(raw)
 
@@ -1218,15 +1236,13 @@ class XMPPClient:
                 else:
                     log(f"Unhandled XML type: {type_}")
 
-
     async def presence_manager(self) -> None:
         stanza = ""
-        while True:
+        while self._connected:
             if self.stanza != stanza:
-                await self.websocket.send_str(self.stanza)
+                await self.xmpp_send(self.stanza)
                 stanza = self.stanza
             await asyncio.sleep(1)
-
 
     async def connect_to_xmpp(self) -> None:
         async with self.http_session.ws_connect(
@@ -1237,6 +1253,7 @@ class XMPPClient:
             },
         ) as websocket:
             self.websocket = websocket
+            self._connected = True
 
             await websocket.send_str(
                 "<open xmlns='urn:ietf:params:xml:ns:xmpp-framing' to='prod.ol.epicgames.com' version='1.0' />"
@@ -1261,47 +1278,60 @@ class XMPPClient:
         self.http_session = aiohttp.ClientSession()
         self.client.loop.create_task(self.connect_to_xmpp())
 
-        while not self.ready:
+        # need to replace with asyncio event
+        while not self._ready:
             await asyncio.sleep(1)
 
-    async def close(self) -> None:
+
+    async def restart(self) -> None:
+        if self._restarting:
+            return
+
+        self._restarting = True
+
+        log.debug('Reconnecting to XMPP...')
+
+        await self._close()
+        await self.run()
+
+        await asyncio.sleep(2)
+        await self.client._reconnect_to_party()
+
+        self._restarting = False
+
+    async def _close(self) -> None:
         log.debug('Attempting to close xmpp client')
+
+        self._ready = False
+        self._connected = False
+        self._authed = False
+
         if self.websocket is not None and not self.websocket.closed:
             await self.websocket.close()
-            await self.http_session.close()
 
             while not self.websocket.closed:
                 await asyncio.sleep(0)
 
-        if self._task:
-            self._task.cancel()
+        self.websocket = None
+
+        if self.http_session:
+            await self.http_session.close()
+
+        self.http_session = None
+
+        if self._presence_task:
+            self._presence_task.cancel()
         if self._ping_task:
             self._ping_task.cancel()
 
+        self._presence_task = None
         self._ping_task = None
-        self.websocket = None
-        self.http_session = None
 
         self.client.dispatch_event('xmpp_session_close')
         log.debug('Successfully closed xmpp client')
 
         # let loop run one iteration for events to be dispatched
         await asyncio.sleep(0)
-
-    # def set_presence(self, *,
-    #                  status: Optional[Union[str, dict]] = None,
-    #                  show: Optional[str]) -> None:
-    #     if status is None:
-    #         self.xmpp_client.presence = aioxmpp.PresenceState(available=True)
-    #
-    #     _status = status if isinstance(status, dict) else {'Status': status}
-    #     self.xmpp_client.set_presence(
-    #         state=aioxmpp.PresenceState(
-    #             available=True,
-    #             show=show
-    #         ),
-    #         status=json.dumps(_status)
-    #     )
 
     def set_presence(self, *,
                      status: Optional[Union[str, dict]] = None,
@@ -1320,31 +1350,6 @@ class XMPPClient:
                 f"<show>{show}</show>"
                 f"</presence>"
             )
-
-        # await self.websocket.send_str(presence_xml)
-
-    # async def send_presence(self, to: Optional[aioxmpp.JID] = None,
-    #                         status: Optional[Union[str, dict]] = None,
-    #                         show: Optional[str] = None) -> None:
-    #     _status = {}
-    #     if status is None:
-    #         _status = None
-    #     elif isinstance(status, str):
-    #         _status['Status'] = status
-    #     elif isinstance(status, dict):
-    #         _status = status
-    #     else:
-    #         raise TypeError('status must be None, str or dict')
-    #
-    #     pres = aioxmpp.Presence(
-    #         type_=aioxmpp.PresenceType.AVAILABLE,
-    #         show=aioxmpp.PresenceShow(show),
-    #         to=to,
-    #     )
-    #
-    #     if _status is not None:
-    #         pres.status[None] = json.dumps(_status)
-    #     await self.stream.send(pres)
 
     async def send_presence(
         self,

@@ -2777,7 +2777,7 @@ class Client(BasicClient):
         self.party = None
 
         self.auto_update_status = '{current_playlist}' in self.status
-        self.current_status_playlist = 'Battle Royale - Squad'
+        self.current_status_playlist = 'Battle Royale'
 
         self.private_key = None
         self.public_key_b64 = None
@@ -3818,6 +3818,7 @@ class Client(BasicClient):
         the lobby (i.e. go to your locker and back) to see platform changes
         in the same party.
 
+
         Parameters
         ----------
         platform: :class:`Platform`
@@ -3830,11 +3831,12 @@ class Client(BasicClient):
         """
         self.platform = platform
 
-        await self.xmpp.close()
-        await self.xmpp.run()
-
-        await asyncio.sleep(2)
-        await self._reconnect_to_party()
+        # await self.xmpp._close()
+        # await self.xmpp.run()
+        #
+        # await asyncio.sleep(2)
+        # await self._reconnect_to_party()
+        await self.xmpp.restart()
 
     async def auto_update_status_text(self) -> None:
         if not self.party:
