@@ -1211,8 +1211,8 @@ class XMPPClient:
             await asyncio.sleep(10)
 
     async def parse_message(self, raw: str) -> None:
-        if '<presence' not in raw:
-            log.debug(f'Received websocket message - {raw}')
+        # if '<presence' not in raw:
+        log.debug(f'Received websocket message - {raw}')
 
         if "<stream:features" in raw and not self._authed:
             sasl_msg = base64.b64encode(
@@ -1397,10 +1397,15 @@ class XMPPClient:
         if status is None:
             self.stanza = "<presence/>"
         else:
-            _status = status if isinstance(status, dict) else {
-                "Status": status,
-                "ProductName": "Fortnite"
-            }
+            if isinstance(status, dict):
+                _status = status
+            elif self.client.party:
+                _status = self.client.party.construct_presence(text=status)
+            else:
+                _status = {
+                    "Status": status,
+                    "ProductName": "Fortnite"
+                }
 
             self.stanza = (
                 f"<presence from='{self.local_jid}'>"
@@ -1418,7 +1423,12 @@ class XMPPClient:
         if status is None:
             status_json = None
         elif isinstance(status, str):
-            status_json = json.dumps({"Status": status})
+            if self.client.party:
+                status_json = json.dumps(
+                    self.client.party.construct_presence(text=status)
+                )
+            else:
+                status_json = json.dumps({"Status": status})
         elif isinstance(status, dict):
             status_json = json.dumps(status)
         else:
