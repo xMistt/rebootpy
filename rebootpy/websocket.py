@@ -30,6 +30,7 @@ import json
 import functools
 import logging
 import base64
+import datetime
 
 from .message import FriendMessage, PartyMessage
 
@@ -166,8 +167,9 @@ class WebsocketClient:
 
         data = json.loads(raw_json[:-1]) if len(raw_json) >= 3 else {}
 
-        log.debug(f'Received websocket message with type `{message_type}` '
-                  f'with the headers {headers}` and body \n{data}.')
+        log.debug(
+            f'{datetime.datetime.now()} - Received websocket message with type'
+            f' {message_type} with the headers {headers} and body \n{data}.')
 
         if message_type == 'CONNECTED' and not self.heartbeat_started:
             self.heartbeat_started = True

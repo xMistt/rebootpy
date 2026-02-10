@@ -1211,8 +1211,8 @@ class XMPPClient:
             await asyncio.sleep(10)
 
     async def parse_message(self, raw: str) -> None:
-        # if '<presence' not in raw:
-        log.debug(f'Received websocket message - {raw}')
+        if '<presence' not in raw:
+            log.debug(f'Received websocket message - {raw}')
 
         if "<stream:features" in raw and not self._authed:
             sasl_msg = base64.b64encode(
