@@ -3919,7 +3919,7 @@ class ClientParty(PartyBase, Patchable):
         if perm == 'Noone' or (perm == 'Leader' and (self.me is not None
                                                      and not self.me.leader)):
             join_data = {
-                'bInPrivate': True
+                'bIsPrivate': True
             }
         else:
             join_data = {
@@ -3956,17 +3956,22 @@ class ClientParty(PartyBase, Patchable):
                 'FortLFG_I': '0',
                 'FortPartySize_i': 1,
                 'FortSubGame_i': 1,
-                'InUnjoinableMatch_b': False,
+                'IslandCode_s': self.playlist_info[0],
+                'IsInZone_b': False,
                 'FortGameplayStats_j': {
                     'state': '',
                     'playlist': 'None',
                     'numKills': 0,
                     'bFellToDeath': False,
                 },
+                'SocialStatus_j': {
+                    'attendingSocialEventIds': []
+                },
+                'InUnjoinableMatch_b': False,
                 'GamePlaylistName_s': self.playlist_info[0],
-                'Event_PlayersAlive_s': '0',
-                'Event_PartySize_s': str(len(self._members)),
                 'Event_PartyMaxSize_s': str(self.max_size),
+                'Event_PartySize_s': str(len(self._members)),
+                'Event_PlayersAlive_s': '0'
             },
         }
         return _default_status
