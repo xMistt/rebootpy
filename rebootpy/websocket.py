@@ -237,12 +237,6 @@ class WebsocketClient:
                 author=party._members[data['payload']['message']['senderId']],
                 content=decoded_content
             ))
-            elif (
-                message_type == 'ERROR' and
-                data.get('message') == 'The authentication token used for '
-                                       'subscribing is no longer valid.'
-            ):
-            
 
     async def connect_to_websocket(self) -> None:
         headers = {
