@@ -135,6 +135,7 @@ class WebsocketClient:
 
         self.wss_session = None
         self.websocket = None
+        self.ws_task = None
 
         self.heartbeat_started = False
 
@@ -185,9 +186,9 @@ class WebsocketClient:
                 connection_id=data['connectionId']
             )
         elif (
-                message_type == 'MESSAGE' and
-                data.get('type') == 'social.chat.v1.NEW_MESSAGE' and
-                data.get('payload').get('conversation').get('type') == 'dm'
+            message_type == 'MESSAGE' and
+            data.get('type') == 'social.chat.v1.NEW_MESSAGE' and
+            data.get('payload').get('conversation').get('type') == 'dm'
         ):
             author = self.client.get_friend(
                 data['payload']['message']['senderId']
@@ -236,6 +237,12 @@ class WebsocketClient:
                 author=party._members[data['payload']['message']['senderId']],
                 content=decoded_content
             ))
+            elif (
+                message_type == 'ERROR' and
+                data.get('message') == 'The authentication token used for '
+                                       'subscribing is no longer valid.'
+            ):
+            
 
     async def connect_to_websocket(self) -> None:
         headers = {
@@ -259,10 +266,25 @@ class WebsocketClient:
 
     async def run(self) -> None:
         await self.set_session()
-        self.client.loop.create_task(self.connect_to_websocket())
+        self.ws_task = self.client.loop.create_task(
+            self.connect_to_websocket()
+        )
 
     async def close(self) -> None:
         await self.websocket.close()
         await self.wss_session.close()
 
         self.heartbeat_started = False
+
+    async def restart(self) -> None:
+        await self.close()
+
+        if self.ws_task:
+            self.ws_task.cancel()
+            try:
+                await self.ws_task
+            except asyncio.CancelledError:
+                pass
+            self.ws_task = None
+
+        await self.run()
