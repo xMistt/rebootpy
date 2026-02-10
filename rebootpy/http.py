@@ -307,7 +307,7 @@ class FortniteContentWebsite(Route):
 
 
 class FortnitePublicService(Route):
-    BASE = 'https://fortnite-public-service-prod11.ol.epicgames.com'
+    BASE = 'https://fngw-mcp-gc-livefn.ol.epicgames.com/'
     AUTH = 'FORTNITE_ACCESS_TOKEN'
 
 
@@ -1248,8 +1248,8 @@ class HTTPClient:
 
     async def fortnite_grant_access(self, **kwargs: Any) -> Any:
         r = FortnitePublicService(
-            '/fortnite/api/game/v2/grant_access/{client_id}',
-            client_id=self.client.user.id
+            '/fortnite/api/storeaccess/v1/request_access/'
+            f'{self.client.user.id}',
         )
         return await self.post(r, json={}, **kwargs)
 
@@ -1272,8 +1272,9 @@ class HTTPClient:
         return await self.get(r)
 
     async def fortnite_get_br_inventory(self, user_id: str) -> dict:
-        r = FortnitePublicService('/fortnite/api/game/v2/'
-                                  f'br-inventory/account/{user_id}')
+        r = FortnitePublicService(
+            f'/fortnite/api/game/v2/br-inventory/account/{user_id}'
+        )
         return await self.get(r)
 
     ###################################
