@@ -237,6 +237,12 @@ class WebsocketClient:
                 author=party._members[data['payload']['message']['senderId']],
                 content=decoded_content
             ))
+        elif (
+            message_type == 'ERROR' and
+            data.get('statusCode') == 4019
+        ):
+            log.debug('STOMP authentication token is now invalid')
+            await self.restart()
 
     async def connect_to_websocket(self) -> None:
         headers = {
@@ -259,18 +265,21 @@ class WebsocketClient:
                 await self.parse_message(msg.data.decode())
 
     async def run(self) -> None:
+        log.debug('Starting STOMP websocket client')
         await self.set_session()
         self.ws_task = self.client.loop.create_task(
             self.connect_to_websocket()
         )
 
     async def close(self) -> None:
+        log.debug('Closing STOMP websocket client')
         await self.websocket.close()
         await self.wss_session.close()
 
         self.heartbeat_started = False
 
     async def restart(self) -> None:
+        log.debug('Restarting STOMP websocket client')
         await self.close()
 
         if self.ws_task:
