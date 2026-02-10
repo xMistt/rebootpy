@@ -19,6 +19,11 @@ Added
 
 - Added :attr:`PartyMember.playlist_selection` & :meth:`event_party_member_playlist_selection_change()`
 
+Bug Fixes
+~~~~~
+
+- Fixed issue where using :meth:`Client.set_presence()` or :meth:`Client.send_presence()` would cause public parties to become unjoinable.
+
 v0.9.7
 ------
 
