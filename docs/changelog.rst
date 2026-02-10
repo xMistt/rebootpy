@@ -19,6 +19,12 @@ Added
 
 - Added :attr:`PartyMember.playlist_selection` & :meth:`event_party_member_playlist_selection_change()`
 
+Removed
+~~~~~~~
+
+- Removed :meth:`Client.fetch_gold_bars()`/:meth:`Use.fetch_gold_bars()` as bars are no longer persistent.
+
+
 Bug Fixes
 ~~~~~
 
