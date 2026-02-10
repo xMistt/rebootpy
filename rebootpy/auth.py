@@ -178,10 +178,10 @@ class Auth:
         self.expires_at = from_iso(data["expires_at"])
         self.token_type = data['token_type']
         self.refresh_token = data['refresh_token']
-        self.refresh_expires = data.get('refresh_expires', 28800)
+        self.refresh_expires = data.get('refresh_expires', 7200)
         self.refresh_expires_at = data.get(
             'refresh_expires_at',
-            datetime.datetime.utcnow() + datetime.timedelta(hours=8)
+            datetime.datetime.utcnow() + datetime.timedelta(hours=2)
         )
         self.account_id = data['account_id']
         self.client_id = data['client_id']
