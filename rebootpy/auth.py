@@ -340,13 +340,6 @@ class Auth:
                 )
                 self._update_ios_data(data)
 
-                data = await self.grant_refresh_token(
-                    self.refresh_token,
-                    self.fortnite_token,
-                    priority=reauth_lock.priority
-                )
-                self._update_data(data)
-
                 data = await self.grant_chat_refresh_token(
                     self.chat_refresh_token,
                     priority=reauth_lock.priority
