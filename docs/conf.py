@@ -48,6 +48,7 @@ extensions = [
     'attributetable',
 ]
 
+toc_object_entries = False
 
 autodoc_member_order = 'bysource'
 autodoc_typehints = 'none'
