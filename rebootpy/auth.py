@@ -443,11 +443,8 @@ class ExchangeCodeAuth(Auth):
     device_id: Optional[:class:`str`]
         A 32 char hex string representing your device.
     ios_token: Optional[:class:`str`]
-        The ios token to use with authentication. You should generally
-        not need to set this manually.
-    fortnite_token: Optional[:class:`str`]
-        The fortnite token to use with authentication. You should generally
-        not need to set this manually.
+        The main Fortnite token to use with authentication. You should
+        generally not need to set this manually.
 
     Attributes
     ----------
@@ -551,11 +548,8 @@ class AuthorizationCodeAuth(ExchangeCodeAuth):
     device_id: Optional[:class:`str`]
         A 32 char hex string representing your device.
     ios_token: Optional[:class:`str`]
-        The ios token to use with authentication. You should generally
-        not need to set this manually.
-    fortnite_token: Optional[:class:`str`]
-        The fortnite token to use with authentication. You should generally
-        not need to set this manually.
+        The main Fortnite token to use with authentication. You should
+        generally not need to set this manually.
 
     Attributes
     ----------
@@ -613,11 +607,8 @@ class DeviceAuth(Auth):
     secret: :class:`str`
         The secret.
     ios_token: Optional[:class:`str`]
-        The ios token to use with authentication. You should generally
-        not need to set this manually.
-    fortnite_token: Optional[:class:`str`]
-        The fortnite token to use with authentication. You should generally
-        not need to set this manually.
+        The main Fortnite token to use with authentication. You should
+        generally not need to set this manually.
 
     Attributes
     ----------
@@ -861,11 +852,8 @@ class AdvancedAuth(Auth):
         Whether or not to delete all existing device auths when a new
         is created.
     ios_token: Optional[:class:`str`]
-        The ios token to use with authentication. You should generally
-        not need to set this manually.
-    fortnite_token: Optional[:class:`str`]
-        The fortnite token to use with authentication. You should generally
-        not need to set this manually.
+        The main Fortnite token to use with authentication. You should
+        generally not need to set this manually.
 
     Attributes
     ----------
@@ -1121,13 +1109,10 @@ class DeviceCodeAuth(Auth):
     open_link_in_browser: :class:`bool`
         Whether or not to automatically open the Epic Games login in the default browser.
     ios_token: Optional[:class:`str`]
-        The ios token to use with authentication. You should generally
-        not need to set this manually.
+        The main Fortnite token to use with authentication. You should
+        generally not need to set this manually.
     switch_token: Optional[:class:`str`]
         The switch token to use with authentication. You should generally
-        not need to set this manually.
-    fortnite_token: Optional[:class:`str`]
-        The fortnite token to use with authentication. You should generally
         not need to set this manually.
 
     Attributes

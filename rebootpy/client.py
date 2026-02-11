@@ -2766,8 +2766,7 @@ class Client(BasicClient):
 
             * ``{party_size}`` - Amount of players in the party.
             * ``{party_max_size}`` - Max size of the party.
-            * ``{current_playlist}`` - Uses the same formatting as the normal
-            client e.g. ``Battle Royale``.
+            * ``{current_playlist}`` - Uses the same formatting as the normal client e.g. ``Battle Royale``.
     away: :class:`AwayStatus`
         The away status the client should use for its presence. Defaults to
         :attr:`AwayStatus.ONLINE`.
