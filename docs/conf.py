@@ -84,7 +84,8 @@ master_doc = 'index'
 #
 html_theme = 'furo'
 html_theme_options = {
-    "globaltoc_maxdepth": 1
+    "globaltoc_maxdepth": 1,
+    "show_nav_level": 1
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
