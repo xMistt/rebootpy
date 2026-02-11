@@ -50,11 +50,10 @@ _prompt_lock = asyncio.Lock()
 class Auth:
     def __init__(self, **kwargs: Any) -> None:
         self.ios_token = kwargs.get('ios_token', 'M2Y2OWU1NmM3NjQ5NDkyYzhjYzI5ZjFhZjA4YThhMTI6YjUxZWU5Y2IxMjIzNGY1MGE2OWVmYTY3ZWY1MzgxMmU=')  # noqa
-        self.fortnite_token = kwargs.get('fortnite_token', 'ZWM2ODRiOGM2ODdmNDc5ZmFkZWEzY2IyYWQ4M2Y1YzY6ZTFmMzFjMjExZjI4NDEzMTg2MjYyZDM3YTEzZmM4NGQ=')  # noqa
         self.device_id = getattr(self, 'device_id', None) or uuid.uuid4().hex
 
         # It's recommended you only change this if you know what you're doing
-        # as certain functions/API calls may start erroring.
+        # as certain functions/API calls may start causing errors.
         self.access_token_type = kwargs.get('token_type', 'eg1')
 
     def initialize(self, client: 'BasicClient') -> None:
@@ -71,19 +70,19 @@ class Auth:
 
     @property
     def ios_authorization(self) -> str:
-        return 'bearer {0}'.format(self.ios_access_token)
+        return f'bearer {self.ios_access_token}'
 
     @property
     def chat_authorization(self) -> str:
-        return 'bearer {0}'.format(self.chat_access_token)
+        return f'bearer {self.chat_access_token}'
 
     @property
     def eas_authorization(self) -> str:
-        return 'bearer {0}'.format(self.eas_access_token)
+        return f'bearer {self.eas_access_token}'
 
     @property
     def authorization(self) -> str:
-        return 'bearer {0}'.format(self.access_token)
+        return self.ios_authorization
 
     @property
     def identifier(self) -> str:
@@ -155,23 +154,7 @@ class Auth:
         self.ios_app = data['app']
         self.ios_in_app_id = data['in_app_id']
 
-        # for compatibility, i will fully remove these once i remove all references.
-        self.access_token = data['access_token']
-        self.expires_in = data['expires_in']
-        self.expires_at = from_iso(data["expires_at"])
-        self.token_type = data['token_type']
-        self.refresh_token = data['refresh_token']
-        self.refresh_expires = data.get('refresh_expires', 7200)
-        self.refresh_expires_at = data.get(
-            'refresh_expires_at',
-            datetime.datetime.utcnow() + datetime.timedelta(hours=2)
-        )
-        self.account_id = data['account_id']
-        self.client_id = data['client_id']
-        self.internal_client = data['internal_client']
-        self.client_service = data['client_service']
-        self.app = data['app']
-        self.in_app_id = data['in_app_id']
+        self.account_id = self.ios_account_id
 
     def _update_chat_data(self, data: dict) -> None:
         self.chat_access_token = data['access_token']
@@ -295,7 +278,6 @@ class Auth:
         min_expires_at = min(
             [
                 self.ios_expires_at,
-                self.expires_at,
                 self.eas_expires_at,
                 self.chat_expires_at
             ]
@@ -1116,13 +1098,13 @@ class AdvancedAuth(Auth):
             await self.kill_other_sessions(priority=priority)
 
         data = await self.grant_chat_refresh_token(
-            self.refresh_token,
+            self.ios_refresh_token,
             priority=priority
         )
         self._update_chat_data(data)
 
         data = await self.grant_eas_refresh_token(
-            self.refresh_token,
+            self.ios_refresh_token,
             priority=priority
         )
         self._update_eas_data(data)

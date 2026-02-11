@@ -1217,7 +1217,7 @@ class XMPPClient:
 
         if "<stream:features" in raw and not self._authed:
             sasl_msg = base64.b64encode(
-                f"\x00{self.client.user.id}\x00{self.client.auth.access_token}".encode()
+                f"\x00{self.client.user.id}\x00{self.client.auth.ios_access_token}".encode()
             ).decode()
 
             await self.xmpp_send(
@@ -1291,7 +1291,7 @@ class XMPPClient:
                 async with self.http_session.ws_connect(
                     "wss://xmpp-service-prod.ol.epicgames.com",
                     headers={
-                        "Authorization": f"Bearer {self.client.auth.access_token}",
+                        "Authorization": f"Bearer {self.client.auth.ios_access_token}",
                         "Sec-WebSocket-Protocol": "xmpp"
                     },
                 ) as websocket:

@@ -2757,7 +2757,7 @@ class Client(BasicClient):
         the same as the above connector.
     status: :class:`str`
         The status you want the client to send with its presence to friends.
-        Defaults to: ``In Lobby - {current_playlist}``.
+        Defaults to: ``{current_playlist}``.
 
         .. note::
 
@@ -2767,7 +2767,7 @@ class Client(BasicClient):
             * ``{party_size}`` - Amount of players in the party.
             * ``{party_max_size}`` - Max size of the party.
             * ``{current_playlist}`` - Uses the same formatting as the normal
-            client e.g. ``Zero Build - Battle Royale - Squad``.
+            client e.g. ``Battle Royale``.
     away: :class:`AwayStatus`
         The away status the client should use for its presence. Defaults to
         :attr:`AwayStatus.ONLINE`.
