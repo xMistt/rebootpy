@@ -3,7 +3,7 @@
   --qualname-prefix: #9398a0;
   --parameters-color: #72747e;
   --definition-background-color: #f7f7f7;
-  --api-name-color: #333333;
+  --api-name-color: #efefef;
   --attr-table-title-color: #333333;
   --attr-table-text-color: #444444;
   --attr-table-badge-color: #292929;
@@ -23,7 +23,6 @@
   --color-foreground-muted: #72747e;
   --color-foreground-border: #878787;
 
-  --color-background-primary: white;
   --color-background-secondary: #f8f9fb;
   --color-background-hover: #efeff4ff;
   --color-background-hover--transparent: #efeff400;
