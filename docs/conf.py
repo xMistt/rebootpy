@@ -83,12 +83,6 @@ master_doc = 'index'
 # a list of builtin themes.
 #
 html_theme = 'furo'
-html_theme_options = {
-    "globaltoc_maxdepth": 1,
-    "show_nav_level": 1,
-    "navigation_depth": 1,
-    "collapse_navigation": True
-}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
