@@ -19,6 +19,8 @@ Added
 
 - Added :attr:`PartyMember.playlist_selection` & :meth:`event_party_member_playlist_selection_change()`
 - Added :meth:`Client.fetch_multiple_event_tokens()`/:meth:`Client.fetch_multiple_event_tokens()` & :meth:`User.fetch_event_tokens()`
+- Added :meth:`Client.fetch_multiple_flags()`/:meth:`Client.fetch_flag()` & :meth:`User.fetch_flag()`
+
 
 Removed
 ~~~~~~~

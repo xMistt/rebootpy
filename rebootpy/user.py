@@ -421,6 +421,7 @@ class UserBase:
 
     async def fetch_event_tokens(self) -> list:
         """|coro|
+
         Fetches this user's event tokens.
 
         Raises
@@ -434,6 +435,25 @@ class UserBase:
             A list of event tokens.
         """  # noqa
         return await self.client.fetch_event_tokens(
+            self.id,
+        )
+
+    async def fetch_flag(self) -> list:
+        """|coro|
+
+        Fetches this user's flag.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+
+        Returns
+        -------
+        :class:`Country` | None
+            The users flag.
+        """  # noqa
+        return await self.client.fetch_flag(
             self.id,
         )
 

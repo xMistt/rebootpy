@@ -48,7 +48,7 @@ from .user import (ClientUser, User, BlockedUser, SacSearchEntryUser,
                    UserSearchEntry)
 from .friend import Friend, IncomingPendingFriend, OutgoingPendingFriend
 from .enums import (Platform, Region, UserSearchPlatform, AwayStatus,
-                    StatsCollectionType, Season)
+                    StatsCollectionType, Season, Country)
 from .party import (DefaultPartyConfig, DefaultPartyMemberConfig, ClientParty,
                     Party)
 from .stats import StatsV2, StatsCollection, _StatsBase, CompetitiveRank
@@ -1968,8 +1968,8 @@ class BasicClient:
 
         Parameters
         ----------
-        user_id: :class:`str`
-            The id of the user you want to fetch stats for.
+        user_ids: :class:`list`
+            A list of user ids you want to fetch event tokens for.
 
         Raises
         ------
@@ -2006,7 +2006,7 @@ class BasicClient:
         Parameters
         ----------
         user_id: :class:`str`
-            The id of the user you want to fetch stats for.
+            The id of the user you want to fetch event tokens for.
 
         Raises
         ------
@@ -2019,6 +2019,67 @@ class BasicClient:
             A list of event tokens.
         """  # noqa
         data = await self.fetch_multiple_event_tokens((user_id,))
+        return data.get(user_id)
+
+    async def fetch_multiple_flags(self, user_ids: list) -> dict:
+        """|coro|
+
+        Gets the current set flags for the specified users.
+
+        Parameters
+        ----------
+        user_ids: :class:`str`
+            A list of user ids you want to fetch flags for.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+
+        Returns
+        -------
+        dict[:class:`str`, :class:`Country` | None]
+            A dictionary with user ids mapped to a flag enum.
+        """  # noqa
+        tokens = await self.fetch_multiple_event_tokens(user_ids)
+        results = {
+            user_id: next(
+                (
+                    Country(country)
+                    for token in user_tokens
+                    if token.startswith("GroupIdentity_GeoIdentity_")
+                       and token != "GroupIdentity_GeoIdentity_fortnite"
+                       and (
+                           country := token[len("GroupIdentity_GeoIdentity_"):]
+                       ) in Country._value2member_map_
+                ),
+                None
+            )
+            for user_id, user_tokens in tokens.items()
+        }
+        return results
+
+    async def fetch_flag(self, user_id: str) -> list:
+        """|coro|
+
+        Gets current set flag for the specified user.
+
+        Parameters
+        ----------
+        user_id: :class:`str`
+            The id of the user you want to fetch the flag for.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+
+        Returns
+        -------
+        :class:`Country` | None
+            The users flag.
+        """  # noqa
+        data = await self.fetch_multiple_flags((user_id,))
         return data.get(user_id)
 
     async def _multiple_stats_chunk_requester(self, user_ids: List[str], stats: List[str], *,  # noqa
