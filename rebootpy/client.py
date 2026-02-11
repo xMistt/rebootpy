@@ -749,8 +749,6 @@ class BasicClient:
         if ret is False:
             return False
 
-        await self._setup_client_user(priority=priority)
-
         if self.auth.eula_check_needed() and self.accept_eula:
             await self.auth.accept_eula(
                 priority=priority

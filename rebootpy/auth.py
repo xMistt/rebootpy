@@ -143,14 +143,35 @@ class Auth:
         self.ios_expires_at = from_iso(data["expires_at"])
         self.ios_token_type = data['token_type']
         self.ios_refresh_token = data['refresh_token']
-        self.ios_refresh_expires = data['refresh_expires']
-        self.ios_refresh_expires_at = data['refresh_expires_at']
+        self.ios_refresh_expires = data.get('refresh_expires', 7200)
+        self.ios_refresh_expires_at = data.get(
+            'refresh_expires_at',
+            datetime.datetime.utcnow() + datetime.timedelta(hours=2)
+        )
         self.ios_account_id = data['account_id']
         self.ios_client_id = data['client_id']
         self.ios_internal_client = data['internal_client']
         self.ios_client_service = data['client_service']
         self.ios_app = data['app']
         self.ios_in_app_id = data['in_app_id']
+
+        # for compatibility, i will fully remove these once i remove all references.
+        self.access_token = data['access_token']
+        self.expires_in = data['expires_in']
+        self.expires_at = from_iso(data["expires_at"])
+        self.token_type = data['token_type']
+        self.refresh_token = data['refresh_token']
+        self.refresh_expires = data.get('refresh_expires', 7200)
+        self.refresh_expires_at = data.get(
+            'refresh_expires_at',
+            datetime.datetime.utcnow() + datetime.timedelta(hours=2)
+        )
+        self.account_id = data['account_id']
+        self.client_id = data['client_id']
+        self.internal_client = data['internal_client']
+        self.client_service = data['client_service']
+        self.app = data['app']
+        self.in_app_id = data['in_app_id']
 
     def _update_chat_data(self, data: dict) -> None:
         self.chat_access_token = data['access_token']
@@ -171,24 +192,6 @@ class Auth:
         self.eas_client_id = data['client_id']
         self.eas_application_id = data['application_id']
         self.eas_scope = data['scope']
-
-    def _update_data(self, data: dict) -> None:
-        self.access_token = data['access_token']
-        self.expires_in = data['expires_in']
-        self.expires_at = from_iso(data["expires_at"])
-        self.token_type = data['token_type']
-        self.refresh_token = data['refresh_token']
-        self.refresh_expires = data.get('refresh_expires', 7200)
-        self.refresh_expires_at = data.get(
-            'refresh_expires_at',
-            datetime.datetime.utcnow() + datetime.timedelta(hours=2)
-        )
-        self.account_id = data['account_id']
-        self.client_id = data['client_id']
-        self.internal_client = data['internal_client']
-        self.client_service = data['client_service']
-        self.app = data['app']
-        self.in_app_id = data['in_app_id']
 
     async def grant_refresh_token(self, refresh_token: str, auth_token: str, *,
                                   priority: int = 0) -> dict:
@@ -213,7 +216,7 @@ class Auth:
         }
 
         return await self.client.http.account_chat_oauth_grant(
-            auth='basic {0}'.format(self.fortnite_token),
+            auth=f'basic {self.ios_token}',
             data=payload,
             priority=priority
         )
@@ -227,7 +230,7 @@ class Auth:
         }
 
         return await self.client.http.eas_token_oauth_grant(
-            auth=f"basic {self.fortnite_token}",
+            auth=f'basic {self.ios_token}',
             data=payload,
             priority=priority
         )
@@ -500,7 +503,7 @@ class ExchangeCodeAuth(Auth):
     def identifier(self) -> str:
         return self.resolved_code
 
-    async def ios_authenticate(self) -> dict:
+    async def ios_authenticate(self, priority: int = 0) -> dict:
         log.info('Exchanging code.')
         self.resolved_code = await self.resolve(self.code)
 
@@ -521,29 +524,27 @@ class ExchangeCodeAuth(Auth):
 
         return data
 
-    async def authenticate(self, **kwargs) -> None:
-        data = await self.ios_authenticate()
+    async def authenticate(self, priority: int = 0, **kwargs) -> None:
+        data = await self.ios_authenticate(priority=priority)
         self._update_ios_data(data)
 
         if self.client.kill_other_sessions:
-            await self.kill_other_sessions()
+            await self.kill_other_sessions(priority=priority)
 
-        code = await self.get_exchange_code()
-        data = await self.exchange_code_for_session(
-            self.fortnite_token,
-            code
+        chat_data, eas_data, _ = await asyncio.gather(
+            self.grant_chat_refresh_token(
+                self.ios_refresh_token,
+                priority=priority
+            ),
+            self.grant_eas_refresh_token(
+                self.ios_refresh_token,
+                priority=priority
+            ),
+            self.client._setup_client_user(priority=priority)
         )
-        self._update_data(data)
 
-        data = await self.grant_chat_refresh_token(
-            self.refresh_token,
-        )
-        self._update_chat_data(data)
-
-        data = await self.grant_eas_refresh_token(
-            self.refresh_token,
-        )
-        self._update_eas_data(data)
+        self._update_chat_data(chat_data)
+        self._update_eas_data(eas_data)
 
 
 class AuthorizationCodeAuth(ExchangeCodeAuth):
@@ -590,7 +591,7 @@ class AuthorizationCodeAuth(ExchangeCodeAuth):
                  **kwargs: Any) -> None:
         super().__init__(code, **kwargs)
 
-    async def ios_authenticate(self) -> dict:
+    async def ios_authenticate(self, priority: int = 0) -> dict:
         self.resolved_code = await self.resolve(self.code)
 
         payload = {
@@ -601,7 +602,8 @@ class AuthorizationCodeAuth(ExchangeCodeAuth):
         try:
             data = await self.client.http.account_oauth_grant(
                 auth='basic {0}'.format(self.ios_token),
-                data=payload
+                data=payload,
+                priority=priority
             )
         except HTTPException as e:
             m = 'errors.com.epicgames.account.oauth.authorization_code_not_found'  # noqa
@@ -717,25 +719,20 @@ class DeviceAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        code = await self.get_exchange_code(priority=priority)
-        data = await self.exchange_code_for_session(
-            self.fortnite_token,
-            code,
-            priority=priority
+        chat_data, eas_data, _ = await asyncio.gather(
+            self.grant_chat_refresh_token(
+                self.ios_refresh_token,
+                priority=priority
+            ),
+            self.grant_eas_refresh_token(
+                self.ios_refresh_token,
+                priority=priority
+            ),
+            self.client._setup_client_user(priority=priority)
         )
-        self._update_data(data)
 
-        data = await self.grant_chat_refresh_token(
-            self.refresh_token,
-            priority=priority
-        )
-        self._update_chat_data(data)
-
-        data = await self.grant_eas_refresh_token(
-            self.refresh_token,
-            priority=priority
-        )
-        self._update_eas_data(data)
+        self._update_chat_data(chat_data)
+        self._update_eas_data(eas_data)
 
     async def reauthenticate(self, priority: int = 0) -> None:
         """Used for reauthenticating if refreshing fails."""
@@ -784,25 +781,23 @@ class RefreshTokenAuth(Auth):
         data = await self.ios_authenticate(priority=priority)
         self._update_ios_data(data)
 
-        code = await self.get_exchange_code(priority=priority)
-        data = await self.exchange_code_for_session(
-            self.fortnite_token,
-            code,
-            priority=priority
-        )
-        self._update_data(data)
+        if self.client.kill_other_sessions:
+            await self.kill_other_sessions(priority=priority)
 
-        data = await self.grant_chat_refresh_token(
-            self.refresh_token,
-            priority=priority
+        chat_data, eas_data, _ = await asyncio.gather(
+            self.grant_chat_refresh_token(
+                self.ios_refresh_token,
+                priority=priority
+            ),
+            self.grant_eas_refresh_token(
+                self.ios_refresh_token,
+                priority=priority
+            ),
+            self.client._setup_client_user(priority=priority)
         )
-        self._update_chat_data(data)
 
-        data = await self.grant_eas_refresh_token(
-            self.refresh_token,
-            priority=priority
-        )
-        self._update_eas_data(data)
+        self._update_chat_data(chat_data)
+        self._update_eas_data(eas_data)
 
 
 class AdvancedAuth(Auth):
@@ -1012,17 +1007,9 @@ class AdvancedAuth(Auth):
         auth.initialize(self.client)
         self._used_auth = auth
 
-        data = await auth.ios_authenticate(priority=priority)
-        self._update_ios_data(data)
+        return await auth.ios_authenticate(priority=priority)
 
-        code = await auth.get_exchange_code(priority=priority)
-        return await auth.exchange_code_for_session(
-            auth.fortnite_token,
-            code,
-            priority=priority
-        )
-
-    async def ios_authenticate(self) -> dict:
+    async def ios_authenticate(self, priority: int = 0) -> dict:
         data = None
         prompt_message = ''
 
@@ -1103,27 +1090,24 @@ class AdvancedAuth(Auth):
         return data
 
     async def authenticate(self, **kwargs) -> None:
-        await self.ios_authenticate()
+        data = await self.ios_authenticate()
+        self._update_ios_data(data)
 
         if self.client.kill_other_sessions:
             await self.kill_other_sessions()
 
-        code = await self.get_exchange_code()
-        data = await self.exchange_code_for_session(
-            self.fortnite_token,
-            code
+        chat_data, eas_data, _ = await asyncio.gather(
+            self.grant_chat_refresh_token(
+                self.ios_refresh_token
+            ),
+            self.grant_eas_refresh_token(
+                self.ios_refresh_token
+            ),
+            self.client._setup_client_user()
         )
-        self._update_data(data)
 
-        data = await self.grant_chat_refresh_token(
-            self.refresh_token,
-        )
-        self._update_chat_data(data)
-
-        data = await self.grant_eas_refresh_token(
-            self.refresh_token,
-        )
-        self._update_eas_data(data)
+        self._update_chat_data(chat_data)
+        self._update_eas_data(eas_data)
 
     async def reauthenticate(self, priority: int = 0) -> None:
         log.debug('Starting reauthentication.')
@@ -1137,14 +1121,6 @@ class AdvancedAuth(Auth):
 
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
-
-        code = await self.get_exchange_code(priority=priority)
-        data = await self.exchange_code_for_session(
-            self.fortnite_token,
-            code,
-            priority=priority
-        )
-        self._update_data(data)
 
         data = await self.grant_chat_refresh_token(
             self.refresh_token,
@@ -1297,25 +1273,20 @@ class DeviceCodeAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        code = await self.get_exchange_code(priority=priority)
-        data = await self.exchange_code_for_session(
-            self.fortnite_token,
-            code,
-            priority=priority
+        chat_data, eas_data, _ = await asyncio.gather(
+            self.grant_chat_refresh_token(
+                self.ios_refresh_token,
+                priority=priority
+            ),
+            self.grant_eas_refresh_token(
+                self.ios_refresh_token,
+                priority=priority
+            ),
+            self.client._setup_client_user(priority=priority)
         )
-        self._update_data(data)
 
-        data = await self.grant_chat_refresh_token(
-            self.refresh_token,
-            priority=priority
-        )
-        self._update_chat_data(data)
-
-        data = await self.grant_eas_refresh_token(
-            self.refresh_token,
-            priority=priority
-        )
-        self._update_eas_data(data)
+        self._update_chat_data(chat_data)
+        self._update_eas_data(eas_data)
 
     async def reauthenticate(self, priority: int = 0) -> None:
         """Used for reauthenticating if refreshing fails."""
