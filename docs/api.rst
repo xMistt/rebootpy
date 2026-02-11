@@ -1,4 +1,7 @@
+:tocdepth: 1
+
 .. currentmodule:: rebootpy
+
 
 API Reference
 =============
