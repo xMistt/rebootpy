@@ -1261,9 +1261,8 @@ class HTTPClient:
                                               user_id: str,
                                               offer_id: str) -> Any:
         r = FortnitePublicService(
-            '/fortnite/api/storefront/v2/gift/check_eligibility/recipient/{user_id}/offer/{offer_id}',  # noqa
-            user_id=user_id,
-            offer_id=offer_id,
+            '/fortnite/api/storefront/v2/gift/check_eligibility/'
+            f'recipient/{user_id}/offer/{offer_id}'
         )
         return await self.get(r)
 
@@ -1854,28 +1853,6 @@ class HTTPClient:
             friend._conversation_id = conversation_data.get('conversationId')
             friend._is_reportable   = conversation_data.get('isReportable')
 
-        # previous_messages = await self.chat_get_previous_messages(
-        #     conversation_id=friend._conversation_id
-        # )
-        # latest_message = max(
-        #     (
-        #         m for m in previous_messages
-        #         if m.get("type") == "social.chat.v1.NEW_MESSAGE"
-        #            and m.get("senderId") == self.client.user.id
-        #     ),
-        #     key=lambda m: m["createdAt"],
-        #     default=None
-        # )
-        #
-        # if latest_message:
-        #     sequence = json.loads(
-        #         base64.b64decode(
-        #             latest_message.get("message", {}).get("body", {})
-        #         ).decode("utf-8")
-        #     ).get('seq', 0) + 1
-        # else:
-        #     sequence = 1
-
         body, signature = self.client.create_signed_message(
             conversation_id=friend._conversation_id,
             content=content,
@@ -1978,4 +1955,20 @@ class HTTPClient:
 
         r = PublicKeyService('/publickey/v2/publickey/')
         return await self.post(r, json=payload)
+
+    ###################################
+    #         Events Service          #
+    ###################################
+
+    async def events_get_tokens(self, account_ids: list) -> dict:
+        params = {
+            'teamAccountIds': ','.join(account_ids)
+        }
+
+        r = EventsPublicService('/api/v1/players/Fortnite/tokens')
+        data = await self.get(r, params=params)
+        return {
+            user["accountId"]: user["tokens"] for user in data["accounts"]
+        }
+
 

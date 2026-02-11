@@ -419,6 +419,24 @@ class UserBase:
             end_time=end_time
         )
 
+    async def fetch_event_tokens(self) -> list:
+        """|coro|
+        Fetches this user's event tokens.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+
+        Returns
+        -------
+        list[:class:`str`]
+            A list of event tokens.
+        """  # noqa
+        return await self.client.fetch_event_tokens(
+            self.id,
+        )
+
     def _update(self, data: dict) -> None:
         self._epicgames_display_name = data.get('displayName',
                                                 data.get('account_dn'))

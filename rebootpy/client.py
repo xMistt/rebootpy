@@ -1961,6 +1961,66 @@ class BasicClient:
 
         return StatsV2(*results) if results[0] is not None else None
 
+    async def fetch_multiple_event_tokens(self, user_ids: list) -> dict:
+        """|coro|
+
+        Gets event tokens for the specified users.
+
+        Parameters
+        ----------
+        user_id: :class:`str`
+            The id of the user you want to fetch stats for.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+
+        Returns
+        -------
+        :class:`dict`:
+            A dictionary with user ids mapped to a list of tokens.
+        """  # noqa
+        chunk_tasks = []
+        chunks = (user_ids[i:i + 100] for i in range(0, len(user_ids), 100))
+
+        for chunk in chunks:
+            task = self.http.events_get_tokens(chunk)
+            chunk_tasks.append(task)
+
+        results = {}
+        if chunk_tasks:
+            results = {
+                k: v
+                for chunk_result in await asyncio.gather(*chunk_tasks)
+                for k, v in chunk_result.items()
+            }
+
+        return results
+
+    async def fetch_event_tokens(self, user_id: str) -> list:
+        """|coro|
+
+        Gets event tokens for the specified user.
+
+        Parameters
+        ----------
+        user_id: :class:`str`
+            The id of the user you want to fetch stats for.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+
+        Returns
+        -------
+        list[:class:`str`]
+            A list of event tokens.
+        """  # noqa
+        data = await self.fetch_multiple_event_tokens((user_id,))
+        return data.get(user_id)
+
     async def _multiple_stats_chunk_requester(self, user_ids: List[str], stats: List[str], *,  # noqa
                                               collection: Optional[str] = None,
                                               start_time: Optional[DatetimeOrTimestamp] = None,  # noqa
