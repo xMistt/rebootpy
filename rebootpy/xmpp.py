@@ -260,6 +260,7 @@ class XMPPClient:
         self._connected = False
         self._restarting = False
         self._last_pong = None
+        self._xmpp_ready_event = asyncio.Event()
 
         self.resource_hex = uuid.uuid4().hex.upper()
 
@@ -1252,6 +1253,7 @@ class XMPPClient:
             )
 
             self._ready = True
+            self._xmpp_ready_event.set()
         elif 'type="result"' in raw and 'id="ping"' in raw:
             self._last_pong = datetime.datetime.now()
             self.client.dispatch_event('internal_xmpp_session_pong')
@@ -1322,9 +1324,7 @@ class XMPPClient:
         self.http_session = aiohttp.ClientSession()
         self._xmpp_task = self.client.loop.create_task(self.connect_to_xmpp())
 
-        # need to replace with asyncio event
-        while not self._ready:
-            await asyncio.sleep(1)
+        await self._xmpp_ready_event.wait()
 
     async def restart(self) -> None:
         if self._restarting:
@@ -1357,6 +1357,7 @@ class XMPPClient:
         self._ready = False
         self._connected = False
         self._authed = False
+        self._xmpp_ready_event.clear()
 
         tasks = [
             self._presence_task,

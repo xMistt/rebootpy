@@ -3053,7 +3053,7 @@ class Client(BasicClient):
     async def internal_auth_refresh_handler(self):
         try:
             log.debug('Refreshing xmpp session')
-            await self.xmpp.close()
+            await self.xmpp._close()
             await self.xmpp.run()
 
             log.debug('Refreshing websocket session')
@@ -3078,19 +3078,21 @@ class Client(BasicClient):
         if res is not None:
             return res
 
-        await self.refresh_caches(priority=priority)
-        log.debug('Successfully set up caches')
-
-        await self.xmpp.run()
-        log.debug('Connected to XMPP')
-
-        await self.websocket.run()
-        log.debug('Connected to websocket')
-
         self.generate_keypair()
-        self.key_data = await self.http.register_public_key(
-            public_key=self.public_key_b64
+
+        self.key_data, *_ = await asyncio.gather(
+            self.http.register_public_key(
+                public_key=self.public_key_b64
+            ),
+            self.refresh_caches(priority=priority),
+            self.xmpp.run(),
+            self.websocket.run(),
         )
+
+        # These are here in-case someone just has logging for rebootpy.client
+        log.debug('Successfully set up caches')
+        log.debug('Connected to XMPP')
+        log.debug('Connected to websocket')
         log.debug('Registered public key')
 
         await self.initialize_party(priority=priority)

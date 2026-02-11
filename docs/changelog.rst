@@ -13,6 +13,7 @@ Changes
 ~~~~~
 
 - (**Important**) The XMPP client has been rewritten to be entirely in aiohttp, this should just be a drop in replacement but you may encounter errors that I overlooked. If you do, please create an issue on GitHub so I can promptly fix it.
+- Startup time for both :class:`BasicClient` & :class:`Client` has been reduced in half.
 
 Added
 ~~~~~
