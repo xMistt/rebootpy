@@ -1,4 +1,6 @@
 .. currentmodule:: rebootpy
+.. toctree::
+   :maxdepth: 1
 
 API Reference
 =============
