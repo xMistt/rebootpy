@@ -83,7 +83,7 @@ master_doc = 'index'
 # a list of builtin themes.
 #
 html_theme = 'furo'
-html_theme_options {
+html_theme_options = {
     "globaltoc_maxdepth": 1
 }
 
