@@ -44,7 +44,7 @@ extensions = [
     'sphinx.ext.coverage', 
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
-    'viewcode',
+    'sphinx.ext.viewcode',
     'attributetable',
 ]
 
