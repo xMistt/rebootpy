@@ -295,6 +295,50 @@ Enumerations
     .. attribute:: CHAMPION
     .. attribute:: UNREAL
 
+.. class:: Country
+
+    An enumeration for the available selectable flags.
+
+    .. attribute:: ARGENTINA
+    .. attribute:: AUSTRALIA
+    .. attribute:: BELARUS
+    .. attribute:: BELGIUM
+    .. attribute:: BRAZIL
+    .. attribute:: CANADA
+    .. attribute:: COLOMBIA
+    .. attribute:: CZECHREPUBLIC
+    .. attribute:: DENMARK
+    .. attribute:: EGYPT
+    .. attribute:: ENGLAND
+    .. attribute:: FRANCE
+    .. attribute:: GERMANY
+    .. attribute:: GLOBAL
+    .. attribute:: ICELAND
+    .. attribute:: IRELAND
+    .. attribute:: ITALY
+    .. attribute:: JAPAN
+    .. attribute:: LATVIA
+    .. attribute:: MEXICO
+    .. attribute:: NETHERLANDS
+    .. attribute:: NEWZEALAND
+    .. attribute:: NIGERIA
+    .. attribute:: NORWAY
+    .. attribute:: POLAND
+    .. attribute:: PORTUGAL
+    .. attribute:: RUSSIA
+    .. attribute:: SAUDIARABIA
+    .. attribute:: SCOTLAND
+    .. attribute:: SOUTHKOREA
+    .. attribute:: SPAIN
+    .. attribute:: SWEDEN
+    .. attribute:: SWITZERLAND
+    .. attribute:: TURKEY
+    .. attribute:: UKRAINE
+    .. attribute:: UNITEDKINGDOM
+    .. attribute:: UNITEDSTATES
+    .. attribute:: URUGUAY
+    .. attribute:: WALES
+
 .. _rebootpy-api-events:
 
 Event Reference
