@@ -654,7 +654,7 @@ class PartyMemberMeta(MetaBase):
                     "bIsInAllSelectExperiment": False,
                     "bAllowEmoteBeatSyncing": True,
                     "bUploadLogs": False,
-                    "eOSProductUserId": self.client.auth.eos_product_user_id
+                    "eOSProductUserId": member.client.auth.eos_product_user_id
                 }
             }),
             "Default:FORTStats_j": json.dumps({
