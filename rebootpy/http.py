@@ -458,6 +458,8 @@ class HTTPClient:
             return self.client.auth.authorization
         elif u_auth == 'EAS_ACCESS_TOKEN':
             return self.client.auth.eas_authorization
+        elif u_auth == 'EOS_ACCESS_TOKEN':
+            return self.client.auth.eos_authorization
         return auth
 
     def add_header(self, key: str, val: Any) -> None:
@@ -1661,6 +1663,7 @@ class HTTPClient:
         _chat_enabled = str(config['chat_enabled']).lower()
         payload = {
             'config': {
+                'discoverability': config['discoverability'],
                 'join_confirmation': config['join_confirmation'],
                 'joinability': config['joinability'],
                 'max_size': config['max_size']
@@ -1669,23 +1672,23 @@ class HTTPClient:
                 'connection': {
                     'id': str(self.client.xmpp.local_jid),
                     'meta': {
-                        'urn:epic:conn:platform_s': self.client.platform.value,
-                        'urn:epic:conn:type_s': conn_type
-                    },
-                    'yield_leadership': conf.yield_leadership,
-                    'offline_ttl': conf.offline_ttl,
+                        'urn:epic:conn:platform_s': self.client.platform.value
+                    }
                 },
+                'meta': {
+                    'urn:epic:member:dn_s': self.client.user.display_name
+                }
             },
             'meta': {
-                'urn:epic:cfg:accepting-members_b': False,
+                'urn:epic:cfg:party-type-id_s': 'default',
                 'urn:epic:cfg:build-id_s': str(self.client.party_build_id),
                 'urn:epic:cfg:can-join_b': True,
-                'urn:epic:cfg:chat-enabled_b': _chat_enabled,
-                'urn:epic:cfg:invite-perm_s': 'Noone',
                 'urn:epic:cfg:join-request-action_s': 'Manual',
-                'urn:epic:cfg:not-accepting-members-reason_i': 0,
-                'urn:epic:cfg:party-type-id_s': 'default',
                 'urn:epic:cfg:presence-perm_s': 'Noone',
+                'urn:epic:cfg:invite-perm_s': 'Noone',
+                'urn:epic:cfg:chat-enabled_b': _chat_enabled,
+                'urn:epic:cfg:accepting-members_b': False,
+                'urn:epic:cfg:not-accepting-members-reason_i': 0,
             }
         }
 
@@ -1769,6 +1772,10 @@ class HTTPClient:
 
     async def eas_token_oauth_grant(self, **kwargs: Any) -> Any:
         r = ChatService('/epic/oauth/v1/token')
+        return await self.post(r, **kwargs)
+    
+    async def eos_token_oauth_grant(self, **kwargs: Any) -> Any:
+        r = ChatService('/auth/v1/oauth/token')
         return await self.post(r, **kwargs)
 
     async def chat_send_presence(self,
