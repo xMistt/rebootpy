@@ -608,19 +608,13 @@ class PartyMemberMeta(MetaBase):
                                     "sessionKey": ""
                                 }
                             },
-                            "MatchmakingSettingsV1": {
-                                "world": {
-                                    "iD": "",
-                                    "ownerId": "INVALID",
-                                    "name": "",
-                                    "bIsJoinable": False
-                                },
-                                "productModes": [],
-                                "privacy": "NoFill",
-                                "regionId": "EU"
+                            "MatchmakingSettingsV2": {
+                                "/Fortnite.com/BattleRoyale/Matchmaking:TeamSize": "Solo",
+                                "/Fortnite.com/Matchmaking:Region": "EU",
+                                "/Fortnite.com/Matchmaking:SquadFill": "NoFill"
                             }
                         }),
-                        "timestamp": int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
+                        "timestamp": 0,
                         "bUsingGracefulUpgrade": True,
                         "matchmakingId": uuid.uuid4().hex.upper()
                     },
@@ -643,7 +637,7 @@ class PartyMemberMeta(MetaBase):
                     "subGame": "Athena",
                     "location": "PreLobby",
                     "gameMode": "None",
-                    "voiceChatStatus": "Enabled",
+                    "voiceChatStatus": "PartyVoice",
                     "hasCompletedSTWTutorial": False,
                     "hasPurchasedSTW": False,
                     "platformSupportsSTW": True,
@@ -652,7 +646,7 @@ class PartyMemberMeta(MetaBase):
                     "bRecVoice": False,
                     "bRecText": False,
                     "bIsInAllSelectExperiment": False,
-                    "bAllowEmoteBeatSyncing": True,
+                    "bAllowEmoteBeatSyncing": False,
                     "bUploadLogs": False,
                     "eOSProductUserId": member.client.auth.eos_product_user_id
                 }
@@ -1389,7 +1383,7 @@ class PartyMeta(MetaBase):
                     ]
                 }
             }),
-            "Default:CurrentRegionId_s": "EU",
+            "Default:RegionId_s": "EU",
             "Default:PrivacySettings_j": json.dumps({
                 'PrivacySettings': privacy_settings,
             }),
