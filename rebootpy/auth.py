@@ -187,7 +187,6 @@ class Auth:
         self.eos_expires_in = data['expires_in']
         self.eos_expires_at = from_iso(data["expires_at"])
         self.eos_token_type = data['token_type']
-        self.eos_refresh_token = data['refresh_token']
         self.eos_product_user_id = data['product_user_id']
         self.eos_organization_user_id = data['organization_user_id']
         self.eos_features = data['features']
