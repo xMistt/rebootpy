@@ -183,6 +183,8 @@ class Auth:
         self.eas_scope = data['scope']
 
     def _update_eos_data(self, data: dict) -> None:
+        if data == {}:
+            return
         self.eos_access_token = data['access_token']
         self.eos_expires_in = data['expires_in']
         self.eos_expires_at = from_iso(data["expires_at"])
