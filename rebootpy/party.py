@@ -614,7 +614,7 @@ class PartyMemberMeta(MetaBase):
                                 "/Fortnite.com/Matchmaking:SquadFill": "NoFill"
                             }
                         }),
-                        "timestamp": 0,
+                        "timestamp": int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
                         "bUsingGracefulUpgrade": True,
                         "matchmakingId": uuid.uuid4().hex.upper()
                     },
@@ -637,7 +637,7 @@ class PartyMemberMeta(MetaBase):
                     "subGame": "Athena",
                     "location": "PreLobby",
                     "gameMode": "None",
-                    "voiceChatStatus": "PartyVoice",
+                    "voiceChatStatus": "Enabled",
                     "hasCompletedSTWTutorial": False,
                     "hasPurchasedSTW": False,
                     "platformSupportsSTW": True,
@@ -646,7 +646,7 @@ class PartyMemberMeta(MetaBase):
                     "bRecVoice": False,
                     "bRecText": False,
                     "bIsInAllSelectExperiment": False,
-                    "bAllowEmoteBeatSyncing": False,
+                    "bAllowEmoteBeatSyncing": True,
                     "bUploadLogs": False,
                     "eOSProductUserId": member.client.auth.eos_product_user_id
                 }
