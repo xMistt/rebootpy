@@ -184,6 +184,7 @@ class Auth:
 
     def _update_eos_data(self, data: dict) -> None:
         if data == {}:
+            self.eos_product_user_id = ""
             return
         self.eos_access_token = data['access_token']
         self.eos_expires_in = data['expires_in']
