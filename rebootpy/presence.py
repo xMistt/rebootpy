@@ -169,7 +169,7 @@ class PresenceParty:
         self.app_id = data.get('appId')
         self.build_id = data.get('buildId')
 
-        if self.build_id is not None and self.build_id.startswith('1:1:'):
+        if self.build_id is not None and self.build_id.startswith('1:3:'):
             self.net_cl = self.build_id[4:]
         else:
             self.net_cl = None

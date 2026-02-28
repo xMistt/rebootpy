@@ -31,6 +31,8 @@ import uuid
 import time
 import webbrowser
 import json
+import secrets
+import base64
 
 from random import randint
 from aioconsole import ainput
@@ -79,6 +81,10 @@ class Auth:
     @property
     def eas_authorization(self) -> str:
         return f'bearer {self.eas_access_token}'
+    
+    @property
+    def eos_authorization(self) -> str:
+        return f'bearer {self.eos_access_token}'
 
     @property
     def authorization(self) -> str:
@@ -176,6 +182,15 @@ class Auth:
         self.eas_application_id = data['application_id']
         self.eas_scope = data['scope']
 
+    def _update_eos_data(self, data: dict) -> None:
+        self.eos_access_token = data['access_token']
+        self.eos_expires_in = data['expires_in']
+        self.eos_expires_at = from_iso(data["expires_at"])
+        self.eos_token_type = data['token_type']
+        self.eos_product_user_id = data['product_user_id']
+        self.eos_organization_user_id = data['organization_user_id']
+        self.eos_features = data['features']
+
     async def grant_refresh_token(self, refresh_token: str, auth_token: str, *,
                                   priority: int = 0) -> dict:
         payload = {
@@ -217,6 +232,32 @@ class Auth:
             data=payload,
             priority=priority
         )
+    
+    async def grant_eos_external_auth_token(self,
+                                      external_auth_token: str,
+                                      priority: int = 0) -> dict:
+        payload  = {
+            "grant_type": "external_auth",
+            "external_auth_type": "epicgames_access_token",
+            "external_auth_token": external_auth_token,
+            "deployment_id": "62a9473a2dca46b29ccf17577fcf42d7",
+            "nonce": base64.urlsafe_b64encode(secrets.token_bytes(22)).decode('utf-8').rstrip('=')
+        }
+        try:
+            return await self.client.http.eos_token_oauth_grant(
+                auth=f'basic {self.ios_token}',
+                data=payload,
+                priority=priority
+            )
+        except HTTPException as e:
+            if e.message_code == "errors.com.epicgames.eos.auth.user_not_found":
+                continuation_token = e.raw.get('continuation_token')
+                return await self.client.http.eos_token_oauth_continuation(
+                    auth=f'Bearer {continuation_token}',
+                    priority=priority
+                )
+            raise
+
 
     async def get_exchange_code(self, *,
                                 auth='IOS_ACCESS_TOKEN',
@@ -279,6 +320,7 @@ class Auth:
             [
                 self.ios_expires_at,
                 self.eas_expires_at,
+                self.eos_expires_at,
                 self.chat_expires_at
             ]
         )
@@ -333,6 +375,12 @@ class Auth:
                     priority=reauth_lock.priority
                 )
                 self._update_eas_data(data)
+
+                data = await self.grant_eos_external_auth_token(
+                    self.ios_access_token,
+                    priority=reauth_lock.priority
+                )
+                self._update_eos_data(data)
             except (HTTPException, AttributeError) as exc:
                 m = 'errors.com.epicgames.account.auth_token.' \
                     'invalid_refresh_token'
@@ -503,7 +551,7 @@ class ExchangeCodeAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        chat_data, eas_data, _ = await asyncio.gather(
+        chat_data, eas_data, eos_data, _ = await asyncio.gather(
             self.grant_chat_refresh_token(
                 self.ios_refresh_token,
                 priority=priority
@@ -512,11 +560,16 @@ class ExchangeCodeAuth(Auth):
                 self.ios_refresh_token,
                 priority=priority
             ),
+            self.grant_eos_external_auth_token(
+                self.ios_access_token,
+                priority=priority
+            ),
             self.client._setup_client_user(priority=priority)
         )
 
         self._update_chat_data(chat_data)
         self._update_eas_data(eas_data)
+        self._update_eos_data(eos_data)
 
 
 class AuthorizationCodeAuth(ExchangeCodeAuth):
@@ -685,7 +738,7 @@ class DeviceAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        chat_data, eas_data, _ = await asyncio.gather(
+        chat_data, eas_data, eos_data, _ = await asyncio.gather(
             self.grant_chat_refresh_token(
                 self.ios_refresh_token,
                 priority=priority
@@ -694,11 +747,16 @@ class DeviceAuth(Auth):
                 self.ios_refresh_token,
                 priority=priority
             ),
+            self.grant_eos_external_auth_token(
+                self.ios_access_token,
+                priority=priority
+            ),
             self.client._setup_client_user(priority=priority)
         )
 
         self._update_chat_data(chat_data)
         self._update_eas_data(eas_data)
+        self._update_eos_data(eos_data)
 
     async def reauthenticate(self, priority: int = 0) -> None:
         """Used for reauthenticating if refreshing fails."""
@@ -750,7 +808,7 @@ class RefreshTokenAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        chat_data, eas_data, _ = await asyncio.gather(
+        chat_data, eas_data, eos_data, _ = await asyncio.gather(
             self.grant_chat_refresh_token(
                 self.ios_refresh_token,
                 priority=priority
@@ -759,11 +817,16 @@ class RefreshTokenAuth(Auth):
                 self.ios_refresh_token,
                 priority=priority
             ),
+            self.grant_eos_external_auth_token(
+                self.ios_access_token,
+                priority=priority
+            ),
             self.client._setup_client_user(priority=priority)
         )
 
         self._update_chat_data(chat_data)
         self._update_eas_data(eas_data)
+        self._update_eos_data(eos_data)
 
 
 class AdvancedAuth(Auth):
@@ -1059,18 +1122,22 @@ class AdvancedAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions()
 
-        chat_data, eas_data, _ = await asyncio.gather(
+        chat_data, eas_data, eos_data, _ = await asyncio.gather(
             self.grant_chat_refresh_token(
                 self.ios_refresh_token
             ),
             self.grant_eas_refresh_token(
                 self.ios_refresh_token
             ),
+            self.grant_eos_external_auth_token(
+                self.ios_access_token
+            ),
             self.client._setup_client_user()
         )
 
         self._update_chat_data(chat_data)
         self._update_eas_data(eas_data)
+        self._update_eos_data(eos_data)
 
     async def reauthenticate(self, priority: int = 0) -> None:
         log.debug('Starting reauthentication.')
@@ -1096,6 +1163,12 @@ class AdvancedAuth(Auth):
             priority=priority
         )
         self._update_eas_data(data)
+
+        data = await self.grant_eos_external_auth_token(
+            self.ios_access_token,
+            priority=priority
+        ),
+        self._update_eos_data(data)
         log.debug('Successfully reauthenticated.')
 
 
@@ -1233,7 +1306,7 @@ class DeviceCodeAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        chat_data, eas_data, _ = await asyncio.gather(
+        chat_data, eas_data, eos_data,  _ = await asyncio.gather(
             self.grant_chat_refresh_token(
                 self.ios_refresh_token,
                 priority=priority
@@ -1242,11 +1315,16 @@ class DeviceCodeAuth(Auth):
                 self.ios_refresh_token,
                 priority=priority
             ),
+            self.grant_eos_external_auth_token(
+                self.ios_access_token,
+                priority=priority
+            ),
             self.client._setup_client_user(priority=priority)
         )
 
         self._update_chat_data(chat_data)
         self._update_eas_data(eas_data)
+        self._update_eos_data(eos_data)
 
     async def reauthenticate(self, priority: int = 0) -> None:
         """Used for reauthenticating if refreshing fails."""

@@ -1314,6 +1314,10 @@ class XMPPClient:
             except asyncio.CancelledError:
                 log.debug("XMPP connect task cancelled")
                 return
+            except RuntimeError:
+                if self.http_session.closed:
+                    log.debug('aiohttp session closed, restarting now...')
+                    await self.restart()
             finally:
                 await self._close(close_http=False)
 
@@ -1362,7 +1366,8 @@ class XMPPClient:
         tasks = [
             self._presence_task,
             self._ping_task,
-            self._watchdog_task
+            self._watchdog_task,
+            self._xmpp_task
         ]
         for task in tasks:
             if task:
@@ -1371,6 +1376,7 @@ class XMPPClient:
         self._presence_task = None
         self._ping_task = None
         self._watchdog_task = None
+        self._xmpp_task = None
 
         if self.websocket is not None and not self.websocket.closed:
             try:
