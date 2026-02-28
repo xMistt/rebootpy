@@ -1561,13 +1561,13 @@ class HTTPClient:
         )
         return await self.delete(r)
 
-    async def party_leave(self, party_id: str) -> Any:
+    async def party_leave(self, party_id: str, **kwargs: Any) -> Any:
         r = PartyService(
             '/party/api/v1/Fortnite/parties/{party_id}/members/{client_id}',
             party_id=party_id,
             client_id=self.client.user.id
         )
-        return await self.delete(r)
+        return await self.delete(r, **kwargs)
 
     async def party_join_request(self, party_id: str, user_id: str) -> Any:
         payload = {
