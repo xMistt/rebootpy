@@ -1497,9 +1497,6 @@ class HTTPClient:
         )
         return await self.delete(r)
 
-    # NOTE: Deprecated since fortnite v11.30. Use param sendPing=True with
-    #       send_invite
-    # NOTE: Now used for sending invites from private parties
     async def party_send_ping(self, user_id: str) -> Any:
         payload = {
             'urn:epic:invite:platformdata_s': f'guid={uuid.uuid4().hex.upper()}',
@@ -1639,8 +1636,6 @@ class HTTPClient:
         return await self.get(r)
 
     async def party_create(self, config: dict, **kwargs: Any) -> dict:
-        conf = self.client.default_party_member_config
-        conn_type = conf.cls.CONN_TYPE
 
         _chat_enabled = str(config['chat_enabled']).lower()
         payload = {

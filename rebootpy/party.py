@@ -379,13 +379,11 @@ class Patchable:
 
     async def do_patch(self, updated: Optional[dict] = None,
                        deleted: Optional[list] = None,
-                       overridden: Optional[dict] = None,
                        **kwargs) -> None:
         raise NotImplementedError
 
     async def patch(self, updated: Optional[dict] = None,
                     deleted: Optional[list] = None,
-                    overridden: Optional[dict] = None,
                     **kwargs) -> Any:
         async with self.patch_lock:
             try:
@@ -398,7 +396,6 @@ class Patchable:
                         max_ = kwargs.pop('max', 1)
                         _updated = updated or self.meta.get_schema(max=max_)
                         _deleted = deleted or []
-                        _overridden = overridden or {}
 
                         for val in _deleted:
                             try:
@@ -409,11 +406,10 @@ class Patchable:
                         await self.do_patch(
                             updated=_updated,
                             deleted=_deleted,
-                            overridden=_overridden,
                             **kwargs
                         )
                         self.revision += 1
-                        return updated, deleted, overridden
+                        return updated, deleted
                     except HTTPException as exc:
                         m = 'errors.com.epicgames.social.party.stale_revision'
                         if exc.message_code == m:
@@ -2199,7 +2195,6 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
     async def do_patch(self, updated: Optional[dict] = None,
                        deleted: Optional[list] = None,
-                       overridden: Optional[dict] = None,
                        **kwargs) -> None:
         if self._dummy:
             return
@@ -2209,7 +2204,6 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             user_id=self.id,
             updated_meta=updated,
             deleted_meta=deleted,
-            overridden_meta=overridden,
             revision=self.revision,
             **kwargs
         )
@@ -3937,13 +3931,11 @@ class ClientParty(PartyBase, Patchable):
 
     async def do_patch(self, updated: Optional[dict] = None,
                        deleted: Optional[list] = None,
-                       overridden: Optional[dict] = None,
                        **kwargs) -> None:
         await self.client.http.party_update_meta(
             party_id=self.id,
             updated_meta=updated,
             deleted_meta=deleted,
-            overridden_meta=overridden,
             revision=self.revision,
             **kwargs
         )
@@ -4174,8 +4166,19 @@ class ClientParty(PartyBase, Patchable):
 
         if len(self._members) == self.max_size:
             raise PartyError('Party is full')
+        
+        invites = await self.fetch_invites()
 
-        await self.client.http.party_send_invite(self.id, friend.id)
+        ping = False
+        for invite in invites:
+            if invite.receiver.id == friend.id:
+                ping = True
+        if self.client.party.config['privacy']['partyType'] == 'Public':
+            ping = True
+        if ping:
+            await self.client.http.party_send_ping(friend.id)
+        else:
+            await self.client.http.party_send_invite(self.id, friend.id)
 
         invite = SentPartyInvitation(
             self.client,
