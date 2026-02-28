@@ -183,9 +183,6 @@ class Auth:
         self.eas_scope = data['scope']
 
     def _update_eos_data(self, data: dict) -> None:
-        if data == {}:
-            self.eos_product_user_id = ""
-            return
         self.eos_access_token = data['access_token']
         self.eos_expires_in = data['expires_in']
         self.eos_expires_at = from_iso(data["expires_at"])
@@ -246,12 +243,20 @@ class Auth:
             "deployment_id": "62a9473a2dca46b29ccf17577fcf42d7",
             "nonce": base64.urlsafe_b64encode(secrets.token_bytes(22)).decode('utf-8').rstrip('=')
         }
-
-        return await self.client.http.eos_token_oauth_grant(
-            auth=f'basic {self.ios_token}',
-            data=payload,
-            priority=priority
-        )
+        try:
+            return await self.client.http.eos_token_oauth_grant(
+                auth=f'basic {self.ios_token}',
+                data=payload,
+                priority=priority
+            )
+        except HTTPException as e:
+            if e.message_code == "errors.com.epicgames.eos.auth.user_not_found":
+                continuation_token = e.raw.get('continuation_token')
+                return await self.client.http.eos_token_oauth_continuation(
+                    auth=f'Bearer {continuation_token}',
+                    priority=priority
+                )
+            raise
 
 
     async def get_exchange_code(self, *,

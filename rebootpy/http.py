@@ -1748,10 +1748,11 @@ class HTTPClient:
     
     async def eos_token_oauth_grant(self, **kwargs: Any) -> Any:
         r = ChatService('/auth/v1/oauth/token')
-        try:
-            return await self.post(r, **kwargs)
-        except HTTPException:
-            return {}
+        return await self.post(r, **kwargs)
+    
+    async def eos_token_oauth_continuation(self, **kwargs: Any) -> Any:
+        r = ChatService('/auth/v1/users')
+        return await self.post(r, **kwargs)
 
     async def chat_send_presence(self,
                                  connection_id: str,
