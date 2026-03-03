@@ -89,8 +89,8 @@ class CreativeIsland:
         self._creator_name = data['creatorName']
         self._creator_account_id = data['accountId']
         self._mnemonic = data['mnemonic']
-        self._name = data['metadata']['title']
-        self._image_url = data['metadata']['image_url']
+        self._name = data['metadata'].get('title')
+        self._image_url = data['metadata'].get('image_url')
         self._version = data['version']
         self._active = data['active']
         self._created = from_iso(data['created'])
