@@ -3206,7 +3206,7 @@ class Client(BasicClient):
                     except KeyError:
                         pass
                     else:
-                        now = datetime.datetime.now(datetime.timezone.utc)
+                        now = datetime.datetime.now()
                         total_seconds = (now - disc_at).total_seconds()
                         if total_seconds < newest_conn.get('offline_ttl', 30):
                             return await self._reconnect_to_party(data=data)
