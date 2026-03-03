@@ -183,6 +183,9 @@ class Auth:
         self.eas_scope = data['scope']
 
     def _update_eos_data(self, data: dict) -> None:
+        if self.access_token_type != 'eg1':
+            return
+
         self.eos_access_token = data['access_token']
         self.eos_expires_in = data['expires_in']
         self.eos_expires_at = from_iso(data["expires_at"])
@@ -233,9 +236,14 @@ class Auth:
             priority=priority
         )
     
-    async def grant_eos_external_auth_token(self,
-                                      external_auth_token: str,
-                                      priority: int = 0) -> dict:
+    async def grant_eos_external_auth_token(
+        self,
+        external_auth_token: str,
+        priority: int = 0
+    ) -> dict:
+        if self.access_token_type != 'eg1':
+            return
+
         payload  = {
             "grant_type": "external_auth",
             "external_auth_type": "epicgames_access_token",
@@ -316,14 +324,17 @@ class Auth:
         return task is not None and not task.cancelled()
 
     async def schedule_token_refresh(self) -> None:
-        min_expires_at = min(
-            [
-                self.ios_expires_at,
-                self.eas_expires_at,
-                self.eos_expires_at,
-                self.chat_expires_at
-            ]
-        )
+        expires = [
+            self.ios_expires_at,
+            self.eas_expires_at,
+            self.chat_expires_at,
+        ]
+
+        if self.access_token_type == "eg1":
+            expires.append(self.eos_expires_at)
+
+        min_expires_at = min(expires)
+
         subtracted = min_expires_at - datetime.datetime.utcnow()
         self.token_timeout = (subtracted).total_seconds() - 300
         await asyncio.sleep(self.token_timeout)
