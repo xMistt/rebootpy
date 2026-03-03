@@ -806,6 +806,10 @@ class PartyMemberMeta(MetaBase):
                             "i": self.def_character,
                             "v": []
                         },
+                        "ab": {
+                            "i": "None",
+                            "v": []
+                        },
                         "sb": {
                             "i": "Sparks_Bass_Generic",
                             "v": ["0"]
