@@ -195,7 +195,9 @@ class Auth:
                                       priority: int = 0) -> dict:
         payload  = {
             "grant_type": "refresh_token",
-            "refresh_token": refresh_token
+            "scope": "basic_profile friends_list presence openid",
+            "refresh_token": refresh_token,
+            "deployment_id": "62a9473a2dca46b29ccf17577fcf42d7"
         }
 
         return await self.client.http.eas_token_oauth_grant(
