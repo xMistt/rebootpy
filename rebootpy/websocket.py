@@ -148,7 +148,7 @@ class WebsocketClient:
     async def send_presence(self, connection_id: str) -> None:
         await self.client.http.chat_send_presence(
             connection_id=connection_id,
-            auth=f'bearer {self.client.auth.chat_access_token}'
+            auth=f'bearer {self.client.auth.eas_access_token}'
         )
 
     async def send_heartbeat(self, delay: int) -> None:
@@ -246,7 +246,7 @@ class WebsocketClient:
 
     async def connect_to_websocket(self) -> None:
         headers = {
-            'Authorization': f'Bearer {self.client.auth.chat_access_token}',
+            'Authorization': f'Bearer {self.client.auth.eas_access_token}',
             'Epic-Connect-Protocol': 'stomp',
             "Sec-WebSocket-Protocol": "v10.stomp,v11.stomp,v12.stomp",
             'Epic-Connect-Device-Id': " ",

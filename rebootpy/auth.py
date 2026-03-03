@@ -75,10 +75,6 @@ class Auth:
         return f'bearer {self.ios_access_token}'
 
     @property
-    def chat_authorization(self) -> str:
-        return f'bearer {self.chat_access_token}'
-
-    @property
     def eas_authorization(self) -> str:
         return f'bearer {self.eas_access_token}'
     
@@ -162,16 +158,6 @@ class Auth:
 
         self.account_id = self.ios_account_id
 
-    def _update_chat_data(self, data: dict) -> None:
-        self.chat_access_token = data['access_token']
-        self.chat_expires_in = data['expires_in']
-        self.chat_expires_at = from_iso(data["expires_at"])
-        self.chat_token_type = data['token_type']
-        self.chat_refresh_token = data['refresh_token']
-        self.chat_client_id = data['client_id']
-        self.chat_application_id = data['application_id']
-        self.chat_scope = data['scope']
-
     def _update_eas_data(self, data: dict) -> None:
         self.eas_access_token = data['access_token']
         self.eas_expires_in = data['expires_in']
@@ -183,9 +169,6 @@ class Auth:
         self.eas_scope = data['scope']
 
     def _update_eos_data(self, data: dict) -> None:
-        if self.access_token_type != 'eg1':
-            return
-
         self.eos_access_token = data['access_token']
         self.eos_expires_in = data['expires_in']
         self.eos_expires_at = from_iso(data["expires_at"])
@@ -203,21 +186,6 @@ class Auth:
 
         return await self.client.http.account_oauth_grant(
             auth='basic {0}'.format(auth_token),
-            data=payload,
-            priority=priority
-        )
-
-    async def grant_chat_refresh_token(self,
-                                       refresh_token: str,
-                                       priority: int = 0) -> dict:
-        payload = {
-            "grant_type": "refresh_token",
-            "refresh_token": refresh_token,
-            "deployment_id": self.client.deployment_id
-        }
-
-        return await self.client.http.account_chat_oauth_grant(
-            auth=f'basic {self.ios_token}',
             data=payload,
             priority=priority
         )
@@ -241,8 +209,6 @@ class Auth:
         external_auth_token: str,
         priority: int = 0
     ) -> dict:
-        if self.access_token_type != 'eg1':
-            return
 
         payload  = {
             "grant_type": "external_auth",
@@ -327,11 +293,8 @@ class Auth:
         expires = [
             self.ios_expires_at,
             self.eas_expires_at,
-            self.chat_expires_at,
+            self.eos_expires_at
         ]
-
-        if self.access_token_type == "eg1":
-            expires.append(self.eos_expires_at)
 
         min_expires_at = min(expires)
 
@@ -375,12 +338,6 @@ class Auth:
                 )
                 self._update_ios_data(data)
 
-                data = await self.grant_chat_refresh_token(
-                    self.chat_refresh_token,
-                    priority=reauth_lock.priority
-                )
-                self._update_chat_data(data)
-
                 data = await self.grant_eas_refresh_token(
                     self.eas_refresh_token,
                     priority=reauth_lock.priority
@@ -388,7 +345,7 @@ class Auth:
                 self._update_eas_data(data)
 
                 data = await self.grant_eos_external_auth_token(
-                    self.ios_access_token,
+                    self.eas_access_token,
                     priority=reauth_lock.priority
                 )
                 self._update_eos_data(data)
@@ -562,23 +519,18 @@ class ExchangeCodeAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        chat_data, eas_data, eos_data, _ = await asyncio.gather(
-            self.grant_chat_refresh_token(
-                self.ios_refresh_token,
-                priority=priority
-            ),
+        eas_data, eos_data, _ = await asyncio.gather(
             self.grant_eas_refresh_token(
                 self.ios_refresh_token,
                 priority=priority
             ),
             self.grant_eos_external_auth_token(
-                self.ios_access_token,
+                self.eas_access_token,
                 priority=priority
             ),
             self.client._setup_client_user(priority=priority)
         )
 
-        self._update_chat_data(chat_data)
         self._update_eas_data(eas_data)
         self._update_eos_data(eos_data)
 
@@ -749,23 +701,18 @@ class DeviceAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        chat_data, eas_data, eos_data, _ = await asyncio.gather(
-            self.grant_chat_refresh_token(
-                self.ios_refresh_token,
-                priority=priority
-            ),
+        eas_data, eos_data, _ = await asyncio.gather(
             self.grant_eas_refresh_token(
                 self.ios_refresh_token,
                 priority=priority
             ),
             self.grant_eos_external_auth_token(
-                self.ios_access_token,
+                self.eas_access_token,
                 priority=priority
             ),
             self.client._setup_client_user(priority=priority)
         )
 
-        self._update_chat_data(chat_data)
         self._update_eas_data(eas_data)
         self._update_eos_data(eos_data)
 
@@ -819,23 +766,17 @@ class RefreshTokenAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        chat_data, eas_data, eos_data, _ = await asyncio.gather(
-            self.grant_chat_refresh_token(
-                self.ios_refresh_token,
-                priority=priority
-            ),
+        eas_data, eos_data, _ = await asyncio.gather(
             self.grant_eas_refresh_token(
                 self.ios_refresh_token,
                 priority=priority
             ),
             self.grant_eos_external_auth_token(
-                self.ios_access_token,
+                self.eas_access_token,
                 priority=priority
             ),
             self.client._setup_client_user(priority=priority)
         )
-
-        self._update_chat_data(chat_data)
         self._update_eas_data(eas_data)
         self._update_eos_data(eos_data)
 
@@ -1133,20 +1074,16 @@ class AdvancedAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions()
 
-        chat_data, eas_data, eos_data, _ = await asyncio.gather(
-            self.grant_chat_refresh_token(
-                self.ios_refresh_token
-            ),
+        eas_data, eos_data, _ = await asyncio.gather(
             self.grant_eas_refresh_token(
                 self.ios_refresh_token
             ),
             self.grant_eos_external_auth_token(
-                self.ios_access_token
+                self.eas_access_token
             ),
             self.client._setup_client_user()
         )
 
-        self._update_chat_data(chat_data)
         self._update_eas_data(eas_data)
         self._update_eos_data(eos_data)
 
@@ -1163,12 +1100,6 @@ class AdvancedAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        data = await self.grant_chat_refresh_token(
-            self.ios_refresh_token,
-            priority=priority
-        )
-        self._update_chat_data(data)
-
         data = await self.grant_eas_refresh_token(
             self.ios_refresh_token,
             priority=priority
@@ -1176,7 +1107,7 @@ class AdvancedAuth(Auth):
         self._update_eas_data(data)
 
         data = await self.grant_eos_external_auth_token(
-            self.ios_access_token,
+            self.eas_access_token,
             priority=priority
         ),
         self._update_eos_data(data)
@@ -1317,23 +1248,18 @@ class DeviceCodeAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        chat_data, eas_data, eos_data,  _ = await asyncio.gather(
-            self.grant_chat_refresh_token(
-                self.ios_refresh_token,
-                priority=priority
-            ),
+        eas_data, eos_data,  _ = await asyncio.gather(
             self.grant_eas_refresh_token(
                 self.ios_refresh_token,
                 priority=priority
             ),
             self.grant_eos_external_auth_token(
-                self.ios_access_token,
+                self.eas_access_token,
                 priority=priority
             ),
             self.client._setup_client_user(priority=priority)
         )
 
-        self._update_chat_data(chat_data)
         self._update_eas_data(eas_data)
         self._update_eos_data(eos_data)
 

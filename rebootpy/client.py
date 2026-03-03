@@ -3670,8 +3670,7 @@ class Client(BasicClient):
                     **default_schema,
                     **updated,
                     **edit_updated,
-                    **party._construct_raw_squad_assignments(),
-                    **party.meta.set_voicechat_implementation('EOSVoiceChat')
+                    **party._construct_raw_squad_assignments()
                 },
                 deleted=[*deleted, *edit_deleted],
                 priority=priority,

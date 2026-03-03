@@ -1738,12 +1738,8 @@ class HTTPClient:
     #          Chat Service           #
     ###################################
 
-    async def account_chat_oauth_grant(self, **kwargs: Any) -> Any:
-        r = ChatService('/epic/oauth/v2/token')
-        return await self.post(r, **kwargs)
-
     async def eas_token_oauth_grant(self, **kwargs: Any) -> Any:
-        r = ChatService('/epic/oauth/v1/token')
+        r = ChatService('/epic/oauth/v2/token')
         return await self.post(r, **kwargs)
     
     async def eos_token_oauth_grant(self, **kwargs: Any) -> Any:
