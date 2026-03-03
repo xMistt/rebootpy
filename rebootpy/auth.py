@@ -519,19 +519,20 @@ class ExchangeCodeAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        eas_data, eos_data, _ = await asyncio.gather(
+        eas_data, _ = await asyncio.gather(
             self.grant_eas_refresh_token(
                 self.ios_refresh_token,
-                priority=priority
-            ),
-            self.grant_eos_external_auth_token(
-                self.eas_access_token,
                 priority=priority
             ),
             self.client._setup_client_user(priority=priority)
         )
 
         self._update_eas_data(eas_data)
+
+        eos_data = await self.grant_eos_external_auth_token(
+                self.eas_access_token,
+                priority=priority
+            )
         self._update_eos_data(eos_data)
 
 
@@ -701,19 +702,21 @@ class DeviceAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        eas_data, eos_data, _ = await asyncio.gather(
+        eas_data, _ = await asyncio.gather(
             self.grant_eas_refresh_token(
                 self.ios_refresh_token,
-                priority=priority
-            ),
-            self.grant_eos_external_auth_token(
-                self.eas_access_token,
                 priority=priority
             ),
             self.client._setup_client_user(priority=priority)
         )
 
         self._update_eas_data(eas_data)
+
+        
+        eos_data = await self.grant_eos_external_auth_token(
+                self.eas_access_token,
+                priority=priority
+            )
         self._update_eos_data(eos_data)
 
     async def reauthenticate(self, priority: int = 0) -> None:
@@ -766,18 +769,20 @@ class RefreshTokenAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        eas_data, eos_data, _ = await asyncio.gather(
+        eas_data, _ = await asyncio.gather(
             self.grant_eas_refresh_token(
                 self.ios_refresh_token,
-                priority=priority
-            ),
-            self.grant_eos_external_auth_token(
-                self.eas_access_token,
                 priority=priority
             ),
             self.client._setup_client_user(priority=priority)
         )
         self._update_eas_data(eas_data)
+
+        
+        eos_data = await self.grant_eos_external_auth_token(
+                self.eas_access_token,
+                priority=priority
+            )
         self._update_eos_data(eos_data)
 
 
@@ -1074,17 +1079,19 @@ class AdvancedAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions()
 
-        eas_data, eos_data, _ = await asyncio.gather(
+        eas_data, _ = await asyncio.gather(
             self.grant_eas_refresh_token(
                 self.ios_refresh_token
-            ),
-            self.grant_eos_external_auth_token(
-                self.eas_access_token
             ),
             self.client._setup_client_user()
         )
 
         self._update_eas_data(eas_data)
+
+        
+        eos_data = await self.grant_eos_external_auth_token(
+                self.eas_access_token
+            )
         self._update_eos_data(eos_data)
 
     async def reauthenticate(self, priority: int = 0) -> None:
@@ -1248,19 +1255,21 @@ class DeviceCodeAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        eas_data, eos_data,  _ = await asyncio.gather(
+        eas_data,  _ = await asyncio.gather(
             self.grant_eas_refresh_token(
                 self.ios_refresh_token,
-                priority=priority
-            ),
-            self.grant_eos_external_auth_token(
-                self.eas_access_token,
                 priority=priority
             ),
             self.client._setup_client_user(priority=priority)
         )
 
         self._update_eas_data(eas_data)
+
+        
+        eos_data = await self.grant_eos_external_auth_token(
+                self.eas_access_token,
+                priority=priority
+            )
         self._update_eos_data(eos_data)
 
     async def reauthenticate(self, priority: int = 0) -> None:
