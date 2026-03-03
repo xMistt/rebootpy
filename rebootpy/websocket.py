@@ -148,7 +148,7 @@ class WebsocketClient:
     async def send_presence(self, connection_id: str) -> None:
         await self.client.http.chat_send_presence(
             connection_id=connection_id,
-            auth=f'bearer {self.client.auth.eas_access_token}'
+            auth="EAS_ACCESS_TOKEN"
         )
 
     async def send_heartbeat(self, delay: int) -> None:

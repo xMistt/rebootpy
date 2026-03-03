@@ -72,15 +72,15 @@ class Auth:
 
     @property
     def ios_authorization(self) -> str:
-        return f'bearer {self.ios_access_token}'
+        return f'Bearer {self.ios_access_token}'
 
     @property
     def eas_authorization(self) -> str:
-        return f'bearer {self.eas_access_token}'
+        return f'Bearer {self.eas_access_token}'
     
     @property
     def eos_authorization(self) -> str:
-        return f'bearer {self.eos_access_token}'
+        return f'Bearer {self.eos_access_token}'
 
     @property
     def authorization(self) -> str:
@@ -269,7 +269,7 @@ class Auth:
     async def kill_token(self, token: str) -> None:
         await self.client.http.account_sessions_kill_token(
             token,
-            auth='bearer {0}'.format(token)
+            auth='Bearer {0}'.format(token)
         )
 
     async def kill_other_sessions(self, auth: str = 'IOS_ACCESS_TOKEN', *,
@@ -683,7 +683,7 @@ class DeviceAuth(Auth):
                     await self.client.http.account_put_date_of_birth_correction(
                         continuation=exc.raw.get('continuation'),
                         date_of_birth=random_date,
-                        auth='bearer {0}'.format(client_access_token)
+                        auth='Bearer {0}'.format(client_access_token)
                     )
                     return await self.ios_authenticate(priority)
                 raise AuthException(
@@ -1165,7 +1165,7 @@ class DeviceCodeAuth(Auth):
         )
 
         device_code = await self.client.http.account_create_device_code(
-            auth=f'bearer {switch_token["access_token"]}',
+            auth=f'Bearer {switch_token["access_token"]}',
             headers={
                 "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -1219,7 +1219,7 @@ class DeviceCodeAuth(Auth):
                         await self.client.http.account_put_date_of_birth_correction(
                             continuation=exc.raw.get('continuation'),
                             date_of_birth=random_date,
-                            auth='bearer {0}'.format(client_access_token)
+                            auth='Bearer {0}'.format(client_access_token)
                         )
                         return await self.ios_authenticate(priority)
                     raise AuthException(
@@ -1232,7 +1232,7 @@ class DeviceCodeAuth(Auth):
             await asyncio.sleep(10)
 
         exchange_code = await self.client.http.account_get_exchange_data(
-            auth=f"bearer {exchange_access_token['access_token']}",
+            auth=f"Bearer {exchange_access_token['access_token']}",
             priority=priority
         )
 
