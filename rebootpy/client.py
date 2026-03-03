@@ -3059,6 +3059,8 @@ class Client(BasicClient):
             await self.websocket.close()
             await self.websocket.run()
 
+            await asyncio.sleep(2)
+
             await self._reconnect_to_party()
         except AttributeError:
             pass
@@ -3204,7 +3206,7 @@ class Client(BasicClient):
                     except KeyError:
                         pass
                     else:
-                        now = datetime.datetime.utcnow()
+                        now = datetime.datetime.now(datetime.timezone.utc)
                         total_seconds = (now - disc_at).total_seconds()
                         if total_seconds < newest_conn.get('offline_ttl', 30):
                             return await self._reconnect_to_party(data=data)
@@ -3885,7 +3887,7 @@ class Client(BasicClient):
 
     async def send_presence(self, status: Union[str, dict], *,
                             away: AwayStatus = AwayStatus.ONLINE,
-                            to: Optional['JID'] = None) -> None:
+                            to: Optional[str] = None) -> None:
         """|coro|
 
         Sends this status to all or one single friend.

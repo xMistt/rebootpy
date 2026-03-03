@@ -142,7 +142,7 @@ class GraphQLRequest:
         components = text.split('_')
         return components[0] + ''.join(x.title() for x in components[1:])
 
-    def __iter__(self) -> str:
+    def __iter__(self): 
         for key, value in self.__dict__.items():
             if value is None:
                 continue

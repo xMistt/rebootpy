@@ -30,7 +30,6 @@ import logging
 import uuid
 import time
 import webbrowser
-import json
 import secrets
 import base64
 
@@ -147,7 +146,7 @@ class Auth:
         self.ios_refresh_expires = data.get('refresh_expires', 7200)
         self.ios_refresh_expires_at = data.get(
             'refresh_expires_at',
-            datetime.datetime.utcnow() + datetime.timedelta(hours=2)
+            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=2)
         )
         self.ios_account_id = data['account_id']
         self.ios_client_id = data['client_id']
@@ -300,7 +299,7 @@ class Auth:
 
         min_expires_at = min(expires)
 
-        subtracted = min_expires_at - datetime.datetime.utcnow()
+        subtracted = min_expires_at - datetime.datetime.now(datetime.timezone.utc)
         self.token_timeout = (subtracted).total_seconds() - 300
         await asyncio.sleep(self.token_timeout)
 
