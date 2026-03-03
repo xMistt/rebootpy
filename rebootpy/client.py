@@ -3696,7 +3696,11 @@ class Client(BasicClient):
             party = self.construct_party(party_data)
             await party._update_members(party_data['members'])
             self.party = party
-            partyLeader = [member['account_id'] for member in party_data['members'] if member['role'] == 'CAPTAIN'][0]
+            party_leader = next(
+                member['account_id']
+                for member in party_data['members']
+                if member['role'] == 'CAPTAIN'
+            )
 
             def check(m):
                 if m.id != self.user.id:
@@ -3710,7 +3714,7 @@ class Client(BasicClient):
             )
 
             try:
-                await self.http.party_join_request(party.id, partyLeader)
+                await self.http.party_join_request(party.id, party_leader)
             except HTTPException as e:
                 if not future.cancelled():
                     future.cancel()
