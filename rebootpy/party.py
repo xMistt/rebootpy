@@ -1873,6 +1873,10 @@ class PartyMemberBase(User):
         return self.meta.location == 'InGame'
 
     @property
+    def eos_user_id(self) -> str:
+        return self.meta.eos_user_id
+
+    @property
     def match_started_at(self) -> Optional[datetime.datetime]:
         """Optional[:class:`datetime.datetime`]: The time in UTC that
         the members match started. ``None`` if not in a match.
