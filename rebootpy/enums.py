@@ -26,7 +26,6 @@ SOFTWARE.
 """
 
 import random
-import types
 
 from typing import Optional, Any
 from enum import Enum as OriginalEnum
