@@ -789,6 +789,7 @@ class BasicClient:
         self._clear_caches()
 
         if self._ready_event is not None:
+            self._ready_event.set()   # unblock any coroutines waiting on wait_until_ready()
             self._ready_event.clear()
 
         if close_http:
