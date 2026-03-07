@@ -3063,6 +3063,8 @@ class Client(BasicClient):
             await self._reconnect_to_party()
         except AttributeError:
             pass
+        except Exception:
+            pass
 
     async def _start(self, dispatch_ready: bool = True) -> None:
         if self._first_start:
