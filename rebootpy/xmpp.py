@@ -327,6 +327,8 @@ class XMPPClient:
         body = ctx.body
 
         await self.client.wait_until_ready()
+        if self.client._closing or self.client._closed:
+            return
         _payload = body['payload']
         _status = _payload['status']
         _id = _payload['accountId']
