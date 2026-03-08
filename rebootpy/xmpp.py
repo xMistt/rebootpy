@@ -451,7 +451,10 @@ class XMPPClient:
         data = self.client.get_user(account_id)
         if data is None:
             if self.client.fetch_user_data_in_events:
-                data = await self.client.fetch_user(account_id, raw=True)
+                try:
+                    data = await self.client.fetch_user(account_id, raw=True)
+                except RuntimeError:
+                    return
         else:
             data = data.get_raw()
 
@@ -469,7 +472,10 @@ class XMPPClient:
         data = self.client.get_blocked_user(account_id)
         if data is None:
             if self.client.fetch_user_data_in_events:
-                data = await self.client.fetch_user(account_id, raw=True)
+                try:
+                    data = await self.client.fetch_user(account_id, raw=True)
+                except RuntimeError:
+                    return
         else:
             data = data.get_raw()
 
