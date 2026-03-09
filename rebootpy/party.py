@@ -1323,6 +1323,64 @@ class PartyMemberMeta(MetaBase):
         final = {'MatchmakingInfo': data}
         return {key: self.set_prop(key, final)}
 
+    def set_fort_stats(
+        self,
+        fortitude: Optional[int] = None,
+        offense: Optional[int] = None,
+        resistance: Optional[int] = None,
+        tech: Optional[int] = None,
+        team_fortitude: Optional[int] = None,
+        team_offense: Optional[int] = None,
+        team_resistance: Optional[int] = None,
+        team_tech: Optional[int] = None,
+        fortitude_phoenix: Optional[int] = None,
+        offense_phoenix: Optional[int] = None,
+        resistance_phoenix: Optional[int] = None,
+        tech_phoenix: Optional[int] = None,
+        team_fortitude_phoenix: Optional[int] = None,
+        team_offense_phoenix: Optional[int] = None,
+        team_resistance_phoenix: Optional[int] = None,
+        team_tech_phoenix: Optional[int] = None
+    ) -> Dict[str, Any]:
+        key = 'Default:FORTStats_j'
+        data = (self.get_prop('Default:FORTStats_j'))['FORTStats']
+
+        if fortitude is not None:
+            data['fortitude'] = fortitude
+        if offense is not None:
+            data['offense'] = offense
+        if resistance is not None:
+            data['resistance'] = resistance
+        if tech is not None:
+            data['tech'] = tech
+        if team_fortitude is not None:
+            data['teamFortitude'] = team_fortitude
+        if team_offense is not None:
+            data['teamOffense'] = team_offense
+        if team_resistance is not None:
+            data['teamResistance'] = team_resistance
+        if team_tech is not None:
+            data['teamTech'] = team_tech
+        if fortitude_phoenix is not None:
+            data['fortitude_Phoenix'] = fortitude_phoenix
+        if offense_phoenix is not None:
+            data['offense_Phoenix'] = offense_phoenix
+        if resistance_phoenix is not None:
+            data['resistance_Phoenix'] = resistance_phoenix
+        if tech_phoenix is not None:
+            data['tech_Phoenix'] = tech_phoenix
+        if team_fortitude_phoenix is not None:
+            data['teamFortitude_Phoenix'] = team_fortitude_phoenix
+        if team_offense_phoenix is not None:
+            data['teamOffense_Phoenix'] = team_offense_phoenix
+        if team_resistance_phoenix is not None:
+            data['teamResistance_Phoenix'] = team_resistance_phoenix
+        if team_tech_phoenix is not None:
+            data['teamTech_Phoenix'] = team_tech_phoenix
+
+        final = {'FORTStats': data}
+        return {key: self.set_prop(key, final)}
+
 
 class PartyMeta(MetaBase):
     def __init__(self, party: 'PartyBase',
@@ -3385,6 +3443,91 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             keytar_variants=keytar_variants,
             microphone=microphone,
             microphone_variants=microphone_variants
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
+
+    async def set_fort_stats(
+        self,
+        fortitude: Optional[int] = None,
+        offense: Optional[int] = None,
+        resistance: Optional[int] = None,
+        tech: Optional[int] = None,
+        team_fortitude: Optional[int] = None,
+        team_offense: Optional[int] = None,
+        team_resistance: Optional[int] = None,
+        team_tech: Optional[int] = None,
+        fortitude_phoenix: Optional[int] = None,
+        offense_phoenix: Optional[int] = None,
+        resistance_phoenix: Optional[int] = None,
+        tech_phoenix: Optional[int] = None,
+        team_fortitude_phoenix: Optional[int] = None,
+        team_offense_phoenix: Optional[int] = None,
+        team_resistance_phoenix: Optional[int] = None,
+        team_tech_phoenix: Optional[int] = None
+    ) -> None:
+        """|coro|
+
+        Sets the FORT stats of the client.
+
+        Parameters
+        ----------
+        fortitude: Optional[:class:`int`]
+            The fortitude value to use.
+        offense: Optional[:class:`int`]
+            The offense value to use.
+        resistance: Optional[:class:`int`]
+            The resistance value to use.
+        tech: Optional[:class:`int`]
+            The tech value to use.
+        team_fortitude: Optional[:class:`int`]
+            The team fortitude value to use.
+        team_offense: Optional[:class:`int`]
+            The team offense value to use.
+        team_resistance: Optional[:class:`int`]
+            The team resistance value to use.
+        team_tech: Optional[:class:`int`]
+            The team tech value to use.
+        fortitude_phoenix: Optional[:class:`int`]
+            The phoenix fortitude value to use.
+        offense_phoenix: Optional[:class:`int`]
+            The phoenix offense value to use.
+        resistance_phoenix: Optional[:class:`int`]
+            The phoenix resistance value to use.
+        tech_phoenix: Optional[:class:`int`]
+            The phoenix tech value to use.
+        team_fortitude_phoenix: Optional[:class:`int`]
+            The phoenix team fortitude value to use.
+        team_offense_phoenix: Optional[:class:`int`]
+            The phoenix team offense value to use.
+        team_resistance_phoenix: Optional[:class:`int`]
+            The phoenix team resistance value to use.
+        team_tech_phoenix: Optional[:class:`int`]
+            The phoenix team tech value to use.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        prop = self.meta.set_fort_stats(
+            fortitude=fortitude,
+            offense=offense,
+            resistance=resistance,
+            tech=tech,
+            team_fortitude=team_fortitude,
+            team_offense=team_offense,
+            team_resistance=team_resistance,
+            team_tech=team_tech,
+            fortitude_phoenix=fortitude_phoenix,
+            offense_phoenix=offense_phoenix,
+            resistance_phoenix=resistance_phoenix,
+            tech_phoenix=tech_phoenix,
+            team_fortitude_phoenix=team_fortitude_phoenix,
+            team_offense_phoenix=team_offense_phoenix,
+            team_resistance_phoenix=team_resistance_phoenix,
+            team_tech_phoenix=team_tech_phoenix
         )
 
         if not self.edit_lock.locked():
