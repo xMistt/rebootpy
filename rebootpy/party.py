@@ -35,7 +35,7 @@ from typing import (TYPE_CHECKING, Iterable, Optional, Any, List, Dict, Union,
 from collections import OrderedDict
 
 from .enums import Enum, Region
-from .errors import PartyError, Forbidden, HTTPException, NotFound
+from .errors import PartyError, Forbidden, HTTPException
 from .user import User
 from .friend import Friend
 from .enums import (PartyPrivacy, PartyDiscoverability, PartyJoinability,
@@ -999,6 +999,11 @@ class PartyMemberMeta(MetaBase):
         return base['PackedState']['location']
 
     @property
+    def eos_user_id(self) -> str:
+        base = self.get_prop('Default:PackedState_j')
+        return base['PackedState']['eOSProductUserId']
+
+    @property
     def has_preloaded(self) -> bool:
         base = self.get_prop('Default:LobbyState_j')
         return base['LobbyState']['hasPreloadedAthena']
@@ -1299,6 +1304,14 @@ class PartyMemberMeta(MetaBase):
 
         if playlist:
             island['LinkId'] = playlist
+            if "solo" in playlist.lower():
+                island['MatchmakingSettingsV2']['/Fortnite.com/BattleRoyale/Matchmaking:TeamSize'] = 'Solo'
+            elif "duo" in playlist.lower():
+                island['MatchmakingSettingsV2']['/Fortnite.com/BattleRoyale/Matchmaking:TeamSize'] = 'Duo'
+            elif "trio" in playlist.lower():
+                island['MatchmakingSettingsV2']['/Fortnite.com/BattleRoyale/Matchmaking:TeamSize'] = 'Trio'
+            elif "squad" in playlist.lower():
+                island['MatchmakingSettingsV2']['/Fortnite.com/BattleRoyale/Matchmaking:TeamSize'] = 'Squad'
         if version:
             data['playlistVersion'] = version
 
@@ -1457,7 +1470,7 @@ class PartyMeta(MetaBase):
         return {_key: self.set_prop(_key, key)}
 
     def set_fill(self, val: str) -> Dict[str, Any]:
-        key = 'Default:AthenaSquadFill_b'
+        key = 'Default:PreferredPrivacy_s'
         return {key: self.set_prop(key, (str(val)).lower())}
 
     def set_privacy(self, privacy: dict) -> Tuple[dict, list]:
@@ -1515,10 +1528,6 @@ class PartyMeta(MetaBase):
             self.party._config_cache.update(config)
 
         return updated, deleted, config
-
-    def set_voicechat_implementation(self, value: str) -> Dict[str, str]:
-        key = 'VoiceChat:implementation_s'
-        return {key: self.set_prop(key, value)}
 
 
 class PartyMemberBase(User):
@@ -1862,6 +1871,10 @@ class PartyMemberBase(User):
             ``True`` if this member is in a match else ``False``.
         """
         return self.meta.location == 'InGame'
+
+    @property
+    def eos_user_id(self) -> str:
+        return self.meta.eos_user_id
 
     @property
     def match_started_at(self) -> Optional[datetime.datetime]:

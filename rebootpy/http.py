@@ -142,7 +142,7 @@ class GraphQLRequest:
         components = text.split('_')
         return components[0] + ''.join(x.title() for x in components[1:])
 
-    def __iter__(self) -> str:
+    def __iter__(self): 
         for key, value in self.__dict__.items():
             if value is None:
                 continue
@@ -1738,12 +1738,8 @@ class HTTPClient:
     #          Chat Service           #
     ###################################
 
-    async def account_chat_oauth_grant(self, **kwargs: Any) -> Any:
-        r = ChatService('/epic/oauth/v2/token')
-        return await self.post(r, **kwargs)
-
     async def eas_token_oauth_grant(self, **kwargs: Any) -> Any:
-        r = ChatService('/epic/oauth/v1/token')
+        r = ChatService('/epic/oauth/v2/token')
         return await self.post(r, **kwargs)
     
     async def eos_token_oauth_grant(self, **kwargs: Any) -> Any:
