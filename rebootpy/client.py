@@ -3059,6 +3059,8 @@ class Client(BasicClient):
             await self.websocket.close()
             await self.websocket.run()
 
+            await asyncio.sleep(2)
+
             await self._reconnect_to_party()
         except AttributeError:
             pass
@@ -3204,7 +3206,7 @@ class Client(BasicClient):
                     except KeyError:
                         pass
                     else:
-                        now = datetime.datetime.utcnow()
+                        now = datetime.datetime.now()
                         total_seconds = (now - disc_at).total_seconds()
                         if total_seconds < newest_conn.get('offline_ttl', 30):
                             return await self._reconnect_to_party(data=data)
@@ -3670,8 +3672,7 @@ class Client(BasicClient):
                     **default_schema,
                     **updated,
                     **edit_updated,
-                    **party._construct_raw_squad_assignments(),
-                    **party.meta.set_voicechat_implementation('EOSVoiceChat')
+                    **party._construct_raw_squad_assignments()
                 },
                 deleted=[*deleted, *edit_deleted],
                 priority=priority,
@@ -3696,6 +3697,11 @@ class Client(BasicClient):
             party = self.construct_party(party_data)
             await party._update_members(party_data['members'])
             self.party = party
+            party_leader = next(
+                member['account_id']
+                for member in party_data['members']
+                if member['role'] == 'CAPTAIN'
+            )
 
             def check(m):
                 if m.id != self.user.id:
@@ -3709,7 +3715,7 @@ class Client(BasicClient):
             )
 
             try:
-                await self.http.party_join_request(party.id)
+                await self.http.party_join_request(party.id, party_leader)
             except HTTPException as e:
                 if not future.cancelled():
                     future.cancel()
@@ -3881,7 +3887,7 @@ class Client(BasicClient):
 
     async def send_presence(self, status: Union[str, dict], *,
                             away: AwayStatus = AwayStatus.ONLINE,
-                            to: Optional['JID'] = None) -> None:
+                            to: Optional[str] = None) -> None:
         """|coro|
 
         Sends this status to all or one single friend.

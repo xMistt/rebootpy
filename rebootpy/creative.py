@@ -24,11 +24,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import re
 import datetime
-import json
 
-from typing import TYPE_CHECKING, Optional, List
+from typing import TYPE_CHECKING, List
 
 from .utils import from_iso
 
@@ -89,8 +87,8 @@ class CreativeIsland:
         self._creator_name = data['creatorName']
         self._creator_account_id = data['accountId']
         self._mnemonic = data['mnemonic']
-        self._name = data['metadata']['title']
-        self._image_url = data['metadata']['image_url']
+        self._name = data['metadata'].get('title')
+        self._image_url = data['metadata'].get('image_url')
         self._version = data['version']
         self._active = data['active']
         self._created = from_iso(data['created'])
