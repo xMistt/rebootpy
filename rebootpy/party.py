@@ -1051,6 +1051,35 @@ class PartyMemberMeta(MetaBase):
 
         return playlist_id
 
+    @property
+    def backpack_rating(self) -> float:
+        prop = self.get_prop('Default:CampaignBackpackRating_d')
+        return float(prop)
+
+    @property
+    def hero_loadout_rating(self) -> float:
+        prop = self.get_prop('Default:CampaignCommanderLoadoutRating_d')
+        return float(prop)
+
+    @property
+    def power_level(self) -> float:
+        prop = self.get_prop('Default:FORTStats_j')
+        stats = prop.get('FORTStats', {})
+
+        fort_total = sum(
+            stats.get(k, 0) for k in (
+                "fortitude", "offense", "resistance", "tech"
+            )
+        ) * 4
+
+        fort_power_level = max(
+            k for k, v in fort_mappings.items() if v <= fort_total
+        )
+
+        return (
+            fort_power_level + self.backpack_rating + self.hero_loadout_rating
+        ) / 3
+
     def maybesub(self, def_: Any) -> Any:
         return def_ if def_ else 'None'
 
@@ -2011,6 +2040,12 @@ class PartyMemberBase(User):
             ``True`` if this member is ready else ``False``.
         """
         return self.ready is ReadyState.READY
+
+    @property
+    def power_level(self) -> float:
+        """:class:`int`: This members STW power level, may be off by 1.
+        """
+        return self.meta.power_level
 
     def _update_connection(self, data: Optional[Union[list, dict]]) -> None:
         if data:
