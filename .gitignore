@@ -117,6 +117,5 @@ examples/api_integrations/terax_api.py
 device_auths.json
 config.json
 variant_examples.txt
-stw.py
 
 .DS_Store

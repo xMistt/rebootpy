@@ -41,6 +41,7 @@ from .friend import Friend
 from .enums import (PartyPrivacy, PartyDiscoverability, PartyJoinability,
                     DefaultCharactersChapter3, Region, ReadyState, Platform)
 from .utils import MaybeLock, to_iso, from_iso
+from .stw import fort_mappings
 
 if TYPE_CHECKING:
     from .client import Client
@@ -1380,6 +1381,14 @@ class PartyMemberMeta(MetaBase):
 
         final = {'FORTStats': data}
         return {key: self.set_prop(key, final)}
+
+    def set_backpack_rating(self, rating: int) -> Dict[str, Any]:
+        key = 'Default:CampaignBackpackRating_d'
+        return {key: self.set_prop(key, f"{rating}.000000")}
+
+    def set_hero_loadout_rating(self, rating: int) -> Dict[str, Any]:
+        key = 'Default:CampaignCommanderLoadoutRating_d'
+        return {key: self.set_prop(key, f"{rating}.000000")}
 
 
 class PartyMeta(MetaBase):
@@ -3354,40 +3363,6 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
 
-    async def request_playlist(self, playlist_id: str) -> None:
-        """|coro|
-
-        Request a playlist to update the party to, a real client should
-        always grant this request.
-
-        Raises
-        ------
-        HTTPException
-            An error occurred while requesting.
-        """
-        prop = self.meta.set_requested_playlist(
-            playlist_id=playlist_id
-        )
-
-        if not self.edit_lock.locked():
-            await self.patch(updated=prop)
-
-        try:
-            await self.client.wait_for(
-                event='party_playlist_change',
-                check=lambda party, before, after: after[0] == playlist_id,
-                timeout=5
-            )
-        except asyncio.TimeoutError:
-            pass
-        finally:
-            prop = self.meta.set_requested_playlist(
-                playlist_id=''
-            )
-
-            if not self.edit_lock.locked():
-                return await self.patch(updated=prop)
-
     async def set_instruments(self,
                               bass: Optional[str] = None,
                               bass_variants: Optional[str] = None,
@@ -3532,6 +3507,86 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
+
+    async def set_backpack_rating(self, rating: int) -> None:
+        """|coro|
+
+        Sets the backpack rating value of the client.
+
+        Parameters
+        ----------
+        rating: :class:`int`
+            The backpack rating to use.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        prop = self.meta.set_backpack_rating(
+            rating=rating
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
+
+    async def set_hero_loadout_rating(self, rating: int) -> None:
+        """|coro|
+
+        Sets the hero loadout rating value of the client.
+
+        Parameters
+        ----------
+        rating: :class:`int`
+            The hero loadout rating to use.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        prop = self.meta.set_hero_loadout_rating(
+            rating=rating
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
+
+    async def set_power_level(self, power_level: int) -> None:
+        """|coro|
+
+        Sets the power level of the client.
+
+        Parameters
+        ----------
+        power_level: :class:`int`
+            The power level value to use.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+
+        fort_values = fort_mappings.get(power_level) / 16
+
+        prop = self.meta.set_fort_stats(
+            fortitude=fort_values,
+            offense=fort_values,
+            resistance=fort_values,
+            tech=fort_values,
+        )
+
+        prop2 = self.meta.set_hero_loadout_rating(
+            rating=power_level
+        )
+
+        prop3 = self.meta.set_backpack_rating(
+            rating=power_level
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated={**prop, **prop2, **prop3})
 
 
 class PartyBase:
