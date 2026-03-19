@@ -369,15 +369,16 @@ class Season(Enum):
 
 
 class RankingType(Enum):
-    BATTLE_ROYALE   = 'ranked-br'
-    ZERO_BUILD      = 'ranked-zb'
-    ROCKET_RACING   = 'delmar-competitive'
-    RELOAD          = 'ranked_blastberry_build'
-    RELOAD_ZB       = 'ranked_blastberry_nobuild'
-    BALLISTIC       = 'ranked-feral'
-    OG              = 'ranked-figment-build'
-    OG_ZERO_BUILD   = 'ranked-figment-nobuild'
-    CROWN_JAM       = 'ranked-pimlico'
+    BATTLE_ROYALE_LEGACY    = 'ranked-br'
+    ZERO_BUILD              = 'ranked-zb'
+    ROCKET_RACING           = 'delmar-competitive'
+    RELOAD                  = 'ranked_blastberry_build'
+    RELOAD_ZB               = 'ranked_blastberry_nobuild'
+    BALLISTIC               = 'ranked-feral'
+    OG                      = 'ranked-figment-build'
+    OG_ZERO_BUILD           = 'ranked-figment-nobuild'
+    CROWN_JAM               = 'ranked-pimlico'
+    BATTLE_ROYALE           = 'ranked-br-combined'
 
 
 class Rank(Enum):
