@@ -744,7 +744,7 @@ class PartyMemberMeta(MetaBase):
             }),
             "Default:MpLoadout1_j": json.dumps({
                 "MpLoadout1": {
-                    "s": json.dumps({
+                    "s": {
                         "ac": {
                             "i": self.def_character,
                             "v": []
@@ -809,7 +809,7 @@ class PartyMemberMeta(MetaBase):
                             "i": "ID_Wheel_OEM",
                             "v": ["0"]
                         }
-                    })
+                    }
                 }
             }),
             "Default:MpLoadout2_j": json.dumps({
