@@ -796,42 +796,94 @@ class PartyMemberMeta(MetaBase):
                     "passLevel": 1
                 }
             }),
-            "Default:MpLoadout_j": json.dumps({
-                "MpLoadout": {
-                    "d": json.dumps({
-                        "ag": {
-                            "i": "DefaultGlider",
-                            "v": []
-                        },
+            "Default:MpLoadout1_j": json.dumps({
+                "MpLoadout1": {
+                    "s": {
                         "ac": {
                             "i": self.def_character,
-                            "v": []
+                            "v": ["0"]
                         },
                         "ab": {
                             "i": "None",
                             "v": []
                         },
+                        "ap": {
+                            "i": "DefaultPickaxe",
+                            "v": ["0"]
+                        },
+                        "ag": {
+                            "i": "DefaultGlider",
+                            "v": ["0"]
+                        },
+                        "at": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "mm": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "li": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "lc": {
+                            "i": "DefaultColor15",
+                            "v": []
+                        },
+                        "vb": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "vs": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "vw": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "vd": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "vo": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "vws": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "vds": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "vos": {
+                            "i": "None",
+                            "v": []
+                        },
                         "sb": {
                             "i": "Sparks_Bass_Generic",
-                            "v": ["0"]
+                            "v": []
                         },
                         "sg": {
                             "i": "Sparks_Guitar_Generic",
-                            "v": ["0"]
+                            "v": []
                         },
                         "sd": {
                             "i": "Sparks_Drum_Generic",
-                            "v": ["0"]
+                            "v": []
                         },
                         "sk": {
                             "i": "Sparks_Keytar_Generic",
-                            "v": ["0"]
+                            "v": []
                         },
                         "sm": {
                             "i": "Sparks_Mic_Generic",
-                            "v": ["0"]
+                            "v": []
                         }
-                    })
+                    }
                 }
             }),
             "Default:DownloadOnDemandProgress_d": "0.000000",
