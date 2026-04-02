@@ -1748,7 +1748,7 @@ class PartyMemberBase(User):
             return asset
 
     @property
-    def pickaxe(self) -> str:
+    def scratchpad(self) -> str:
         """:class:`str`: The scratchpad data this member currently has.
         """
         return self.meta.scratchpad
