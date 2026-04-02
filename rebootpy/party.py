@@ -1746,6 +1746,12 @@ class PartyMemberBase(User):
 
     @property
     def pickaxe(self) -> str:
+        """:class:`str`: The scratchpad data this member currently has.
+        """
+        return self.meta.scratchpad
+    
+    @property
+    def pickaxe(self) -> str:
         """:class:`str`: The pickaxe id of the pickaxe this member currently
         has equipped.
         """
