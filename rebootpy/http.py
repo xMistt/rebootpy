@@ -307,7 +307,7 @@ class FortniteContentWebsite(Route):
 
 
 class FortnitePublicService(Route):
-    BASE = 'https://fngw-mcp-gc-livefn.ol.epicgames.com/'
+    BASE = 'https://fngw-mcp-gc-livefn.ol.epicgames.com'
     AUTH = 'FORTNITE_ACCESS_TOKEN'
 
 
