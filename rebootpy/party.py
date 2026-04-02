@@ -899,7 +899,7 @@ class PartyMemberMeta(MetaBase):
     
     @property
     def mp_loadout(self) -> str:
-        base = json.loads(self.get_prop('Default:MpLoadout1_j'))
+        base = self.get_prop('Default:MpLoadout1_j')
         return base['MpLoadout1']['s']
 
     @property
