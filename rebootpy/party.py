@@ -1215,13 +1215,19 @@ class PartyMemberMeta(MetaBase):
 
         if character is not None:
             mp_loadout['ac']['i'] = character
-        if backpack is not None:
-            mp_loadout['ab']['i'] = backpack.split('.')[-1]
         if pickaxe is not None:
             mp_loadout['ap']['i'] = pickaxe
+        if backpack is not None:
+            if not mp_loadout['ab']:
+                mp_loadout['ab'] = {'i': '', 'v': []}
+            mp_loadout['ab']['i'] = backpack.split('.')[-1]
         if contrail is not None:
+            if not mp_loadout['at']:
+                mp_loadout['at'] = {'i': '', 'v': []}
             mp_loadout['at']['i'] = self.maybesub(contrail)
         if shoes is not None:
+            if not mp_loadout['as']:
+                mp_loadout['as'] = {'i': '', 'v': []}
             mp_loadout['as']['i'] = self.maybesub(contrail)
         if scratchpad is not None:
             data['scratchpad'] = scratchpad
