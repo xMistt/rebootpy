@@ -169,7 +169,7 @@ class WebsocketClient:
         data = json.loads(raw_json[:-1]) if len(raw_json) >= 3 else {}
 
         log.debug(
-            f'{datetime.datetime.now()} - Received websocket message with type'
+            f'{datetime.datetime.now(datetime.timezone.utc)} - Received websocket message with type'
             f' {message_type} with the headers {headers} and body \n{data}.')
 
         if message_type == 'CONNECTED' and not self.heartbeat_started:

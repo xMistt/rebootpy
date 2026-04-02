@@ -1172,7 +1172,7 @@ class XMPPClient:
             log.debug(f'last pong: {self._last_pong}')
             if (
                 self._last_pong is not None and
-                datetime.datetime.now() - self._last_pong
+                datetime.datetime.now(datetime.timezone.utc) - self._last_pong
                 > datetime.timedelta(seconds=20)
             ):
                 log.debug(
@@ -1255,7 +1255,7 @@ class XMPPClient:
             self._ready = True
             self._xmpp_ready_event.set()
         elif 'type="result"' in raw and 'id="ping"' in raw:
-            self._last_pong = datetime.datetime.now()
+            self._last_pong = datetime.datetime.now(datetime.timezone.utc)
             self.client.dispatch_event('internal_xmpp_session_pong')
             log.debug(f'Received XMPP pong')
         else:

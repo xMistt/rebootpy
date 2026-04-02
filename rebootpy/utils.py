@@ -95,12 +95,14 @@ def from_iso(iso: str) -> datetime.datetime:
     :class:`datetime.datetime`
     """
     if isinstance(iso, datetime.datetime):
-        return iso
+        return iso if iso.tzinfo else iso.replace(tzinfo=datetime.timezone.utc)
 
     try:
-        return datetime.datetime.strptime(iso, '%Y-%m-%dT%H:%M:%S.%fZ')
+        dt = datetime.datetime.strptime(iso, '%Y-%m-%dT%H:%M:%S.%fZ')
     except ValueError:
-        return datetime.datetime.strptime(iso, '%Y-%m-%dT%H:%M:%SZ')
+        dt = datetime.datetime.strptime(iso, '%Y-%m-%dT%H:%M:%SZ')
+
+    return dt.replace(tzinfo=datetime.timezone.utc)
 
 
 def to_iso(dt: datetime.datetime) -> str:
