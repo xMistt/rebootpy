@@ -1730,7 +1730,7 @@ class HTTPClient:
         r = HabaneroService(f'/api/v1/games/fortnite/trackprogress/{user_id}')
         return await self.get(r)
 
-    async def get_active_tracks(self, time: datetime.datetime = datetime.datetime.now()) -> list:
+    async def get_active_tracks(self, time: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)) -> list:
         r = HabaneroService(f'/api/v1/games/fortnite/tracks/activeBy/{to_iso(time)}')
         return await self.get(r)
 

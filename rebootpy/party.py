@@ -41,6 +41,7 @@ from .friend import Friend
 from .enums import (PartyPrivacy, PartyDiscoverability, PartyJoinability,
                     DefaultCharactersChapter3, Region, ReadyState, Platform)
 from .utils import MaybeLock, to_iso, from_iso
+from .stw import fort_mappings
 
 if TYPE_CHECKING:
     from .client import Client
@@ -795,42 +796,94 @@ class PartyMemberMeta(MetaBase):
                     "passLevel": 1
                 }
             }),
-            "Default:MpLoadout_j": json.dumps({
-                "MpLoadout": {
-                    "d": json.dumps({
-                        "ag": {
-                            "i": "DefaultGlider",
-                            "v": []
-                        },
+            "Default:MpLoadout1_j": json.dumps({
+                "MpLoadout1": {
+                    "s": {
                         "ac": {
                             "i": self.def_character,
-                            "v": []
+                            "v": ["0"]
                         },
                         "ab": {
                             "i": "None",
                             "v": []
                         },
+                        "ap": {
+                            "i": "DefaultPickaxe",
+                            "v": ["0"]
+                        },
+                        "ag": {
+                            "i": "DefaultGlider",
+                            "v": ["0"]
+                        },
+                        "at": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "mm": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "li": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "lc": {
+                            "i": "DefaultColor15",
+                            "v": []
+                        },
+                        "vb": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "vs": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "vw": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "vd": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "vo": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "vws": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "vds": {
+                            "i": "None",
+                            "v": []
+                        },
+                        "vos": {
+                            "i": "None",
+                            "v": []
+                        },
                         "sb": {
                             "i": "Sparks_Bass_Generic",
-                            "v": ["0"]
+                            "v": []
                         },
                         "sg": {
                             "i": "Sparks_Guitar_Generic",
-                            "v": ["0"]
+                            "v": []
                         },
                         "sd": {
                             "i": "Sparks_Drum_Generic",
-                            "v": ["0"]
+                            "v": []
                         },
                         "sk": {
                             "i": "Sparks_Keytar_Generic",
-                            "v": ["0"]
+                            "v": []
                         },
                         "sm": {
                             "i": "Sparks_Mic_Generic",
-                            "v": ["0"]
+                            "v": []
                         }
-                    })
+                    }
                 }
             }),
             "Default:DownloadOnDemandProgress_d": "0.000000",
@@ -1049,6 +1102,35 @@ class PartyMemberMeta(MetaBase):
         playlist_id = json.loads(island['island'])['LinkId']
 
         return playlist_id
+
+    @property
+    def backpack_rating(self) -> float:
+        prop = self.get_prop('Default:CampaignBackpackRating_d')
+        return float(prop)
+
+    @property
+    def hero_loadout_rating(self) -> float:
+        prop = self.get_prop('Default:CampaignCommanderLoadoutRating_d')
+        return float(prop)
+
+    @property
+    def power_level(self) -> float:
+        prop = self.get_prop('Default:FORTStats_j')
+        stats = prop.get('FORTStats', {})
+
+        fort_total = sum(
+            stats.get(k, 0) for k in (
+                "fortitude", "offense", "resistance", "tech"
+            )
+        ) * 4
+
+        fort_power_level = max(
+            k for k, v in fort_mappings.items() if v <= fort_total
+        )
+
+        return (
+            fort_power_level + self.backpack_rating + self.hero_loadout_rating
+        ) / 3
 
     def maybesub(self, def_: Any) -> Any:
         return def_ if def_ else 'None'
@@ -1322,6 +1404,72 @@ class PartyMemberMeta(MetaBase):
 
         final = {'MatchmakingInfo': data}
         return {key: self.set_prop(key, final)}
+
+    def set_fort_stats(
+        self,
+        fortitude: Optional[int] = None,
+        offense: Optional[int] = None,
+        resistance: Optional[int] = None,
+        tech: Optional[int] = None,
+        team_fortitude: Optional[int] = None,
+        team_offense: Optional[int] = None,
+        team_resistance: Optional[int] = None,
+        team_tech: Optional[int] = None,
+        fortitude_phoenix: Optional[int] = None,
+        offense_phoenix: Optional[int] = None,
+        resistance_phoenix: Optional[int] = None,
+        tech_phoenix: Optional[int] = None,
+        team_fortitude_phoenix: Optional[int] = None,
+        team_offense_phoenix: Optional[int] = None,
+        team_resistance_phoenix: Optional[int] = None,
+        team_tech_phoenix: Optional[int] = None
+    ) -> Dict[str, Any]:
+        key = 'Default:FORTStats_j'
+        data = (self.get_prop('Default:FORTStats_j'))['FORTStats']
+
+        if fortitude is not None:
+            data['fortitude'] = fortitude
+        if offense is not None:
+            data['offense'] = offense
+        if resistance is not None:
+            data['resistance'] = resistance
+        if tech is not None:
+            data['tech'] = tech
+        if team_fortitude is not None:
+            data['teamFortitude'] = team_fortitude
+        if team_offense is not None:
+            data['teamOffense'] = team_offense
+        if team_resistance is not None:
+            data['teamResistance'] = team_resistance
+        if team_tech is not None:
+            data['teamTech'] = team_tech
+        if fortitude_phoenix is not None:
+            data['fortitude_Phoenix'] = fortitude_phoenix
+        if offense_phoenix is not None:
+            data['offense_Phoenix'] = offense_phoenix
+        if resistance_phoenix is not None:
+            data['resistance_Phoenix'] = resistance_phoenix
+        if tech_phoenix is not None:
+            data['tech_Phoenix'] = tech_phoenix
+        if team_fortitude_phoenix is not None:
+            data['teamFortitude_Phoenix'] = team_fortitude_phoenix
+        if team_offense_phoenix is not None:
+            data['teamOffense_Phoenix'] = team_offense_phoenix
+        if team_resistance_phoenix is not None:
+            data['teamResistance_Phoenix'] = team_resistance_phoenix
+        if team_tech_phoenix is not None:
+            data['teamTech_Phoenix'] = team_tech_phoenix
+
+        final = {'FORTStats': data}
+        return {key: self.set_prop(key, final)}
+
+    def set_backpack_rating(self, rating: int) -> Dict[str, Any]:
+        key = 'Default:CampaignBackpackRating_d'
+        return {key: self.set_prop(key, f"{rating}.000000")}
+
+    def set_hero_loadout_rating(self, rating: int) -> Dict[str, Any]:
+        key = 'Default:CampaignCommanderLoadoutRating_d'
+        return {key: self.set_prop(key, f"{rating}.000000")}
 
 
 class PartyMeta(MetaBase):
@@ -1944,6 +2092,12 @@ class PartyMemberBase(User):
             ``True`` if this member is ready else ``False``.
         """
         return self.ready is ReadyState.READY
+
+    @property
+    def power_level(self) -> float:
+        """:class:`int`: This members STW power level, may be off by 1.
+        """
+        return self.meta.power_level
 
     def _update_connection(self, data: Optional[Union[list, dict]]) -> None:
         if data:
@@ -3296,40 +3450,6 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
 
-    async def request_playlist(self, playlist_id: str) -> None:
-        """|coro|
-
-        Request a playlist to update the party to, a real client should
-        always grant this request.
-
-        Raises
-        ------
-        HTTPException
-            An error occurred while requesting.
-        """
-        prop = self.meta.set_requested_playlist(
-            playlist_id=playlist_id
-        )
-
-        if not self.edit_lock.locked():
-            await self.patch(updated=prop)
-
-        try:
-            await self.client.wait_for(
-                event='party_playlist_change',
-                check=lambda party, before, after: after[0] == playlist_id,
-                timeout=5
-            )
-        except asyncio.TimeoutError:
-            pass
-        finally:
-            prop = self.meta.set_requested_playlist(
-                playlist_id=''
-            )
-
-            if not self.edit_lock.locked():
-                return await self.patch(updated=prop)
-
     async def set_instruments(self,
                               bass: Optional[str] = None,
                               bass_variants: Optional[str] = None,
@@ -3389,6 +3509,171 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
+
+    async def set_fort_stats(
+        self,
+        fortitude: Optional[int] = None,
+        offense: Optional[int] = None,
+        resistance: Optional[int] = None,
+        tech: Optional[int] = None,
+        team_fortitude: Optional[int] = None,
+        team_offense: Optional[int] = None,
+        team_resistance: Optional[int] = None,
+        team_tech: Optional[int] = None,
+        fortitude_phoenix: Optional[int] = None,
+        offense_phoenix: Optional[int] = None,
+        resistance_phoenix: Optional[int] = None,
+        tech_phoenix: Optional[int] = None,
+        team_fortitude_phoenix: Optional[int] = None,
+        team_offense_phoenix: Optional[int] = None,
+        team_resistance_phoenix: Optional[int] = None,
+        team_tech_phoenix: Optional[int] = None
+    ) -> None:
+        """|coro|
+
+        Sets the FORT stats of the client.
+
+        Parameters
+        ----------
+        fortitude: Optional[:class:`int`]
+            The fortitude value to use.
+        offense: Optional[:class:`int`]
+            The offense value to use.
+        resistance: Optional[:class:`int`]
+            The resistance value to use.
+        tech: Optional[:class:`int`]
+            The tech value to use.
+        team_fortitude: Optional[:class:`int`]
+            The team fortitude value to use.
+        team_offense: Optional[:class:`int`]
+            The team offense value to use.
+        team_resistance: Optional[:class:`int`]
+            The team resistance value to use.
+        team_tech: Optional[:class:`int`]
+            The team tech value to use.
+        fortitude_phoenix: Optional[:class:`int`]
+            The phoenix fortitude value to use.
+        offense_phoenix: Optional[:class:`int`]
+            The phoenix offense value to use.
+        resistance_phoenix: Optional[:class:`int`]
+            The phoenix resistance value to use.
+        tech_phoenix: Optional[:class:`int`]
+            The phoenix tech value to use.
+        team_fortitude_phoenix: Optional[:class:`int`]
+            The phoenix team fortitude value to use.
+        team_offense_phoenix: Optional[:class:`int`]
+            The phoenix team offense value to use.
+        team_resistance_phoenix: Optional[:class:`int`]
+            The phoenix team resistance value to use.
+        team_tech_phoenix: Optional[:class:`int`]
+            The phoenix team tech value to use.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        prop = self.meta.set_fort_stats(
+            fortitude=fortitude,
+            offense=offense,
+            resistance=resistance,
+            tech=tech,
+            team_fortitude=team_fortitude,
+            team_offense=team_offense,
+            team_resistance=team_resistance,
+            team_tech=team_tech,
+            fortitude_phoenix=fortitude_phoenix,
+            offense_phoenix=offense_phoenix,
+            resistance_phoenix=resistance_phoenix,
+            tech_phoenix=tech_phoenix,
+            team_fortitude_phoenix=team_fortitude_phoenix,
+            team_offense_phoenix=team_offense_phoenix,
+            team_resistance_phoenix=team_resistance_phoenix,
+            team_tech_phoenix=team_tech_phoenix
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
+
+    async def set_backpack_rating(self, rating: int) -> None:
+        """|coro|
+
+        Sets the backpack rating value of the client.
+
+        Parameters
+        ----------
+        rating: :class:`int`
+            The backpack rating to use.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        prop = self.meta.set_backpack_rating(
+            rating=rating
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
+
+    async def set_hero_loadout_rating(self, rating: int) -> None:
+        """|coro|
+
+        Sets the hero loadout rating value of the client.
+
+        Parameters
+        ----------
+        rating: :class:`int`
+            The hero loadout rating to use.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        prop = self.meta.set_hero_loadout_rating(
+            rating=rating
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
+
+    async def set_power_level(self, power_level: int) -> None:
+        """|coro|
+
+        Sets the power level of the client.
+
+        Parameters
+        ----------
+        power_level: :class:`int`
+            The power level value to use.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+
+        fort_values = fort_mappings.get(power_level) / 16
+
+        prop = self.meta.set_fort_stats(
+            fortitude=fort_values,
+            offense=fort_values,
+            resistance=fort_values,
+            tech=fort_values,
+        )
+
+        prop2 = self.meta.set_hero_loadout_rating(
+            rating=power_level
+        )
+
+        prop3 = self.meta.set_backpack_rating(
+            rating=power_level
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated={**prop, **prop2, **prop3})
 
 
 class PartyBase:
