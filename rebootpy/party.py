@@ -594,6 +594,7 @@ class PartyMemberMeta(MetaBase):
                         "bUsingGracefulUpgrade": True,
                         "matchmakingId": uuid.uuid4().hex.upper()
                     },
+                    "bHasOwnerStartedMM": False,
                     "bIsEligible": True,
                     "islandSelection": {
                         "island": json.dumps({
@@ -620,6 +621,8 @@ class PartyMemberMeta(MetaBase):
                     "playlistVersion": 0,
                     "maxMatchmakingDelay": 0,
                     "readyStatus": "NotReady",
+                    "readyStatusMMId": "",
+                    "result": "CanceledMemberError",
                     "stayTogetherHash": 0
                 }
             }),
