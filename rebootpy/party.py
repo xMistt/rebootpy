@@ -3106,15 +3106,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
                                   ) -> None:
         """|coro|
 
-        Sets the battlepass info of the client.
-
-        .. warning::
-
-            None of this is shown visually in-game anymore, including level
-            (you will need to use the ``season_level`` parameter in
-            :meth:`ClientPartyMember.set_banner()` to show visual level) but
-            will be kept in the library since it is still set by the real
-            game client.
+        Sets the battlepass info of the client including the clients level.
 
         Parameters
         ----------
