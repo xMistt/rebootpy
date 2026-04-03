@@ -594,6 +594,7 @@ class PartyMemberMeta(MetaBase):
                         "bUsingGracefulUpgrade": True,
                         "matchmakingId": uuid.uuid4().hex.upper()
                     },
+                    "bHasOwnerStartedMM": False,
                     "bIsEligible": True,
                     "islandSelection": {
                         "island": json.dumps({
@@ -611,7 +612,7 @@ class PartyMemberMeta(MetaBase):
                                 "/Fortnite.com/Matchmaking:SquadFill": "NoFill"
                             }
                         }),
-                        "timestamp": int(datetime.datetime.now(datetime.timezone.utc).timestamp()),
+                        "timestamp": 0,
                         "bUsingGracefulUpgrade": True,
                         "matchmakingId": uuid.uuid4().hex.upper()
                     },
@@ -620,6 +621,8 @@ class PartyMemberMeta(MetaBase):
                     "playlistVersion": 0,
                     "maxMatchmakingDelay": 0,
                     "readyStatus": "NotReady",
+                    "readyStatusMMId": "",
+                    "result": "CanceledMemberError",
                     "stayTogetherHash": 0
                 }
             }),
@@ -676,6 +679,8 @@ class PartyMemberMeta(MetaBase):
             }),
             "Default:CampaignInfo_j": json.dumps({
                 "CampaignInfo": {
+                    "bIsMatchmakingIntoHestiaBeauty": False,
+                    "hestiaBeautySessionId": "",
                     "matchmakingLevel": 0,
                     "zoneInstanceId": "",
                     "homeBaseVersion": 1
@@ -734,62 +739,6 @@ class PartyMemberMeta(MetaBase):
             }),
             "Default:CampaignBackpackRating_d": "0.000000",
             "Default:CampaignCommanderLoadoutRating_d": "0.000000",
-            "Default:AthenaCosmeticLoadout_j": json.dumps({
-                "AthenaCosmeticLoadout": {
-                    "characterPrimaryAssetId": f"AthenaCharacter:{self.def_character}",
-                    "characterEKey": "",
-                    "backpackDef": "None",
-                    "backpackEKey": "",
-                    "pickaxeDef": "/Game/Athena/Items/Cosmetics/Pickaxes/DefaultPickaxe.DefaultPickaxe",
-                    "pickaxeEKey": "",
-                    "contrailDef": "/Game/Athena/Items/Cosmetics/Contrails/DefaultContrail.DefaultContrail",
-                    "contrailEKey": "",
-                    "shoesDef": "None",
-                    "shoesEKey": "",
-                    "mimosaDef": "None",
-                    "mimosaEKey": "",
-                    "randomDefaultCosmeticHash": random.randint(100000000, 9999999999),
-                    "cosmeticVariantPrimaryAssets": [],
-                    "scratchpad": [],
-                    "cosmeticStats": [
-                        {
-                            "statName": "HabaneroProgression",
-                            "statValue": 0
-                        },
-                        {
-                            "statName": "TotalVictoryCrowns",
-                            "statValue": 0
-                        },
-                        {
-                            "statName": "TotalRoyalRoyales",
-                            "statValue": 0
-                        },
-                        {
-                            "statName": "HasCrown",
-                            "statValue": 0
-                        }
-                    ]
-                }
-            }),
-            "Default:AthenaCosmeticLoadoutVariants_j": json.dumps({
-                "AthenaCosmeticLoadoutVariants": {
-                    "vL": {},
-                    "vD": {},
-                    "fT": False
-                }
-            }),
-            "Default:ArbitraryCustomDataStore_j": json.dumps({
-                "ArbitraryCustomDataStore": [
-                    "None"
-                ]
-            }),
-            "Default:AthenaBannerInfo_j": json.dumps({
-                "AthenaBannerInfo": {
-                    "bannerIconId": "StandardBanner20",
-                    "bannerColorId": "DefaultColor2",
-                    "seasonLevel": 1
-                }
-            }),
             "Default:BattlePassInfo_j": json.dumps({
                 "BattlePassInfo": {
                     "bHasPurchasedPass": False,
@@ -801,88 +750,74 @@ class PartyMemberMeta(MetaBase):
                     "s": {
                         "ac": {
                             "i": self.def_character,
-                            "v": ["0"]
+                            "v": []
                         },
-                        "ab": {
-                            "i": "None",
+                        "ag": {
+                            "i": "DefaultGlider",
                             "v": []
                         },
                         "ap": {
                             "i": "DefaultPickaxe",
-                            "v": ["0"]
-                        },
-                        "ag": {
-                            "i": "DefaultGlider",
-                            "v": ["0"]
-                        },
-                        "at": {
-                            "i": "None",
-                            "v": []
-                        },
-                        "mm": {
-                            "i": "None",
-                            "v": []
-                        },
-                        "li": {
-                            "i": "None",
                             "v": []
                         },
                         "lc": {
-                            "i": "DefaultColor15",
+                            "i": "DefaultColor1",
                             "v": []
                         },
-                        "vb": {
-                            "i": "None",
-                            "v": []
-                        },
-                        "vs": {
-                            "i": "None",
-                            "v": []
-                        },
-                        "vw": {
-                            "i": "None",
-                            "v": []
-                        },
-                        "vd": {
-                            "i": "None",
-                            "v": []
-                        },
-                        "vo": {
-                            "i": "None",
-                            "v": []
-                        },
-                        "vws": {
-                            "i": "None",
-                            "v": []
-                        },
-                        "vds": {
-                            "i": "None",
-                            "v": []
-                        },
-                        "vos": {
-                            "i": "None",
+                        "li": {
+                            "i": "StandardBanner1",
                             "v": []
                         },
                         "sb": {
                             "i": "Sparks_Bass_Generic",
-                            "v": []
-                        },
-                        "sg": {
-                            "i": "Sparks_Guitar_Generic",
-                            "v": []
+                            "v": ["0"]
                         },
                         "sd": {
                             "i": "Sparks_Drum_Generic",
-                            "v": []
+                            "v": ["0"]
+                        },
+                        "sg": {
+                            "i": "Sparks_Guitar_Generic",
+                            "v": ["0"]
                         },
                         "sk": {
                             "i": "Sparks_Keytar_Generic",
-                            "v": []
+                            "v": ["0"]
                         },
                         "sm": {
                             "i": "Sparks_Mic_Generic",
-                            "v": []
+                            "v": ["0"]
+                        },
+                        "vd": {
+                            "i": "ID_DriftTrail_Standard",
+                            "v": ["0"]
+                        },
+                        "vds": {
+                            "i": "ID_DriftTrail_Standard",
+                            "v": ["0"]
+                        },
+                        "vo": {
+                            "i": "ID_Booster_Standard",
+                            "v": ["0"]
+                        },
+                        "vos": {
+                            "i": "ID_Booster_Standard",
+                            "v": ["0"]
+                        },
+                        "vw": {
+                            "i": "ID_Wheel_OEM",
+                            "v": ["0"]
+                        },
+                        "vws": {
+                            "i": "ID_Wheel_OEM",
+                            "v": ["0"]
                         }
+                    }
+                }
+            }),
+            "Default:MpLoadout2_j": json.dumps({
+                "MpLoadout2": {
+                    "s": {
                     }
                 }
             }),
@@ -905,7 +840,34 @@ class PartyMemberMeta(MetaBase):
                 }
             }),
             "Default:CrossplayPreference_s": "OptedIn",
-            "Default:JoinMethod_s": "Creation", #FIX
+            "Default:JoinMethod_s": "Creation",
+            "Default:LoadoutMeta_j": json.dumps({
+                "LoadoutMeta": {
+                    "enKeys": [],
+                    "force": 0,
+                    "rand": random.randint(100000000, 9999999999),
+                    "scratchpad": [],
+                    "stats": [
+                        {
+                            "statName": "TotalVictoryCrowns",
+                            "statValue": 0
+                        },
+                        {
+                            "statName": "TotalRoyalRoyales",
+                            "statValue": 0
+                        },
+                        {
+                            "statName": "HasCrown",
+                            "statValue": 0
+                        },
+                        {
+                            "statName": "HabaneroProgression",
+                            "statValue": 0
+                        }
+                    ],
+                    "vAssets": []
+                }
+            }),
             "Default:JoinInProgressData_j": json.dumps({
                 "JoinInProgressData": {
                     "request": {
@@ -937,87 +899,87 @@ class PartyMemberMeta(MetaBase):
     def input(self) -> str:
         base = self.get_prop('Default:LobbyState_j')
         return base['LobbyState'].get('currentInputType', 'None')
+    
+    @property
+    def mp_loadout(self) -> str:
+        base = self.get_prop('Default:MpLoadout1_j')
+        return base['MpLoadout1']['s']
 
     @property
     def outfit(self) -> str:
-        base = self.get_prop('Default:AthenaCosmeticLoadout_j')
-        return base['AthenaCosmeticLoadout'].get('characterPrimaryAssetId', 'None')
+        base = self.mp_loadout
+        return base.get('ac', {}).get('i', 'None')
 
     @property
     def backpack(self) -> str:
-        base = self.get_prop('Default:AthenaCosmeticLoadout_j')
-        return base['AthenaCosmeticLoadout'].get('backpackDef', 'None')
+        base = self.mp_loadout
+        return base.get('ab', {}).get('i', 'None')
 
     @property
     def pickaxe(self) -> str:
-        base = self.get_prop('Default:AthenaCosmeticLoadout_j')
-        return base['AthenaCosmeticLoadout'].get('pickaxeDef', 'None')
+        base = self.mp_loadout
+        return base.get('ap', {}).get('i', 'None')
+    
+    @property
+    def kicks(self) -> str:
+        base = self.mp_loadout
+        return base.get('as', {}).get('i', 'None')
 
     @property
     def contrail(self) -> str:
-        base = self.get_prop('Default:AthenaCosmeticLoadout_j')
-        return base['AthenaCosmeticLoadout'].get('contrailDef', 'None')
-
-    @property
-    def kicks(self) -> str:
-        base = self.get_prop('Default:AthenaCosmeticLoadout_j')
-        return base['AthenaCosmeticLoadout'].get('shoesDef', 'None')
-
-    @property
-    def variants(self) -> List[Dict[str, str]]:
-        base = self.get_prop('Default:AthenaCosmeticLoadoutVariants_j')
-        return base['AthenaCosmeticLoadoutVariants'].get('vD', {})
+        base = self.mp_loadout
+        return base.get('at', {}).get('i', 'None')
 
     @property
     def outfit_variants(self) -> List[Dict[str, str]]:
-        return self.variants.get('athenaCharacter', {}).get('i', [])
+        base = self.mp_loadout
+        return base.get('ac', {}).get('v', [])
 
     @property
     def backpack_variants(self) -> List[Dict[str, str]]:
-        return self.variants.get('athenaBackpack', {}).get('i', [])
+        base = self.mp_loadout
+        return base.get('ab', {}).get('v', [])
 
     @property
     def pickaxe_variants(self) -> List[Dict[str, str]]:
-        return self.variants.get('athenaPickaxe', {}).get('i', [])
+        base = self.mp_loadout
+        return base.get('ap', {}).get('v', [])
 
     @property
     def kicks_variants(self) -> List[Dict[str, str]]:
-        return self.variants.get('CosmeticShoes', {}).get('i', [])
-      
+        base = self.mp_loadout
+        return base.get('as', {}).get('v', [])
+
     @property
     def contrail_variants(self) -> List[Dict[str, str]]:
-        return self.variants.get('athenaContrail', {}).get('i', [])
+        base = self.mp_loadout
+        return base.get('at', {}).get('v', [])
 
     @property
     def scratchpad(self) -> list:
-        base = self.get_prop('Default:AthenaCosmeticLoadout_j')
-        return base['AthenaCosmeticLoadout'].get('scratchpad', [])
+        base = self.get_prop('Default:LoadoutMeta_j')
+        return base['LoadoutMeta'].get('scratchpad', [])
 
     @property
     def has_crown(self) -> list:
-        base = self.get_prop('Default:AthenaCosmeticLoadout_j')
-        return base['AthenaCosmeticLoadout'].get(
-            'cosmeticStats', [{}, {}, {}, {"statName": "HasCrown", "statValue": 0}]
+        base = self.get_prop('Default:LoadoutMeta_j')
+        return base['LoadoutMeta'].get(
+            'stats', [{}, {}, {"statName": "HasCrown", "statValue": 0}, {}]
         )[3]['statValue']
 
     @property
     def victory_crowns(self) -> list:
-        base = self.get_prop('Default:AthenaCosmeticLoadout_j')
-        return base['AthenaCosmeticLoadout'].get(
-            'cosmeticStats', [{}, {}, {"statName": "TotalRoyalRoyales", "statValue": 0}, {}]
+        base = self.get_prop('Default:LoadoutMeta_j')
+        return base['LoadoutMeta'].get(
+            'stats', [{}, {"statName": "TotalRoyalRoyales", "statValue": 0}, {}, {}]
         )[2]['statValue']
 
     @property
     def rank(self) -> list:
-        base = self.get_prop('Default:AthenaCosmeticLoadout_j')
-        return base['AthenaCosmeticLoadout'].get(
-            'cosmeticStats', [{"statName": "HabaneroProgression", "statValue": 0}, {}, {}, {}]
+        base = self.get_prop('Default:LoadoutMeta_j')
+        return base['LoadoutMeta'].get(
+            'stats', [{}, {}, {}, {"statName": "HabaneroProgression", "statValue": 0}]
         )[0]['statValue']
-
-    @property
-    def custom_data_store(self) -> list:
-        base = self.get_prop('Default:ArbitraryCustomDataStore_j')
-        return base['ArbitraryCustomDataStore']
 
     @property
     def emote(self) -> str:
@@ -1026,12 +988,12 @@ class PartyMemberMeta(MetaBase):
 
     @property
     def banner(self) -> Tuple[str, str, int]:
-        base = self.get_prop('Default:AthenaBannerInfo_j')
-        banner_info = base['AthenaBannerInfo']
+        base = self.mp_loadout
 
-        return (banner_info.get('bannerIconId'),
-                banner_info.get('bannerColorId'),
-                banner_info.get('seasonLevel'))
+        return (
+            base.get('li', {}).get('i', 'None'),
+            base.get('lc', {}).get('i', 'None')
+        )
 
     @property
     def battlepass_info(self) -> Tuple[bool, int]:
@@ -1052,7 +1014,7 @@ class PartyMemberMeta(MetaBase):
         return base['PackedState']['location']
 
     @property
-    def eos_user_id(self) -> str:
+    def eos_product_user_id(self) -> str:
         base = self.get_prop('Default:PackedState_j')
         return base['PackedState']['eOSProductUserId']
 
@@ -1212,19 +1174,16 @@ class PartyMemberMeta(MetaBase):
         return {key: self.set_prop(key, final)}
 
     def set_banner(self, banner_icon: Optional[str] = None, *,
-                   banner_color: Optional[str] = None,
-                   season_level: Optional[int] = None) -> Dict[str, Any]:
-        key = 'Default:AthenaBannerInfo_j'
-        data = (self.get_prop(key))['AthenaBannerInfo']
+                   banner_color: Optional[str] = None) -> Dict[str, Any]:
+        data = self.mp_loadout
 
         if banner_icon is not None:
-            data['bannerIconId'] = banner_icon
+            data['li']['i'] = banner_icon
         if banner_color is not None:
-            data['bannerColorId'] = banner_color
-        if season_level is not None:
-            data['seasonLevel'] = season_level
+            data['lc']['i'] = banner_color
 
-        final = {'AthenaBannerInfo': data}
+        final = {'MpLoadout1': {"s": data}}
+        key = 'Default:MpLoadout1_j'
         return {key: self.set_prop(key, final)}
 
     def set_battlepass_info(self, has_purchased: Optional[bool] = None,
@@ -1243,80 +1202,60 @@ class PartyMemberMeta(MetaBase):
 
     def set_cosmetic_loadout(self, *,
                              character: Optional[str] = None,
-                             character_ekey: Optional[str] = None,
                              backpack: Optional[str] = None,
-                             backpack_ekey: Optional[str] = None,
                              pickaxe: Optional[str] = None,
-                             pickaxe_ekey: Optional[str] = None,
                              contrail: Optional[str] = None,
-                             contrail_ekey: Optional[str] = None,
                              shoes: Optional[str] = None,
-                             shoes_ekey: Optional[str] = None,
                              scratchpad: Optional[list] = None,
                              has_crown: Optional[bool] = None,
                              victory_crowns: Optional[int] = None,
                              rank: Optional[int] = None
                              ) -> Dict[str, Any]:
-        mp_loadout = json.loads(self.get_prop('Default:MpLoadout_j')['MpLoadout']['d'])
+        mp_loadout = self.mp_loadout
 
-        prop = self.get_prop('Default:AthenaCosmeticLoadout_j')
-        data = prop['AthenaCosmeticLoadout']
+        prop = self.get_prop('Default:LoadoutMeta_j')
+        data = prop['LoadoutMeta']
 
         if character is not None:
-            data['characterPrimaryAssetId'] = f'AthenaCharacter:{character}'
             mp_loadout['ac']['i'] = character
-        if character_ekey is not None:
-            data['characterEKey'] = character_ekey
-        if backpack is not None:
-            data['backpackDef'] = self.maybesub(backpack)
-            mp_loadout['ab']['i'] = backpack.split('.')[-1]
-        if backpack_ekey is not None:
-            data['backpackEKey'] = backpack_ekey
         if pickaxe is not None:
-            data['pickaxeDef'] = pickaxe
-        if pickaxe_ekey is not None:
-            data['pickaxeEKey'] = pickaxe_ekey
+            mp_loadout['ap']['i'] = pickaxe
+        if backpack is not None:
+            if not mp_loadout.get('ab'):
+                mp_loadout['ab'] = {'i': '', 'v': []}
+            mp_loadout['ab']['i'] = backpack.split('.')[-1]
         if contrail is not None:
-            data['contrailDef'] = self.maybesub(contrail)
-        if contrail_ekey is not None:
-            data['contrailEKey'] = contrail_ekey
+            if not mp_loadout.get('at'):
+                mp_loadout['at'] = {'i': '', 'v': []}
+            mp_loadout['at']['i'] = self.maybesub(contrail)
         if shoes is not None:
-            data['shoesDef'] = self.maybesub(shoes)
-        if shoes_ekey is not None:
-            data['shoesEKey'] = shoes_ekey
+            if not mp_loadout.get('as'):
+                mp_loadout['as'] = {'i': '', 'v': []}
+            mp_loadout['as']['i'] = self.maybesub(contrail)
         if scratchpad is not None:
             data['scratchpad'] = scratchpad
         if has_crown is not None:
-            data['cosmeticStats'][3]['statValue'] = has_crown
+            data['stats'][2]['statValue'] = has_crown
         if victory_crowns is not None:
-            data['cosmeticStats'][2]['statValue'] = victory_crowns
+            data['stats'][1]['statValue'] = victory_crowns
         if rank is not None:
-            data['cosmeticStats'][0]['statValue'] = rank
+            data['stats'][4]['statValue'] = rank
 
-        mp_final = {'MpLoadout': {"d": json.dumps(mp_loadout)}}
-        mp_key = 'Default:MpLoadout_j'
+        mp_final = {'MpLoadout1': {"s": mp_loadout}}
+        mp_key = 'Default:MpLoadout1_j'
 
-        final = {'AthenaCosmeticLoadout': data}
-        key = 'Default:AthenaCosmeticLoadout_j'
+        final = {'LoadoutMeta': data}
+        key = 'Default:LoadoutMeta_j'
 
         return {key: self.set_prop(key, final), mp_key: self.set_prop(mp_key, mp_final)}
 
     def set_variants(self, variants: List[dict]) -> Dict[str, Any]:
-        final = {
-            'AthenaCosmeticLoadoutVariants': {
-                'vL': {},
-                'vD': variants,
-                'fT': False
-            }
-        }
-        key = 'Default:AthenaCosmeticLoadoutVariants_j'
-        return {key: self.set_prop(key, final)}
+        data = self.mp_loadout
 
-    def set_custom_data_store(self, value: list) -> Dict[str, Any]:
-        final = {
-            'ArbitraryCustomDataStore': value
-        }
-        key = 'Default:ArbitraryCustomDataStore_j'
+        data['ac']['v'] = variants
+
+        final = {'MpLoadout1': {"s": data}}
+        key = 'Default:MpLoadout1_j'
         return {key: self.set_prop(key, final)}
 
     def set_match_state(self, location: str = None) -> Dict[str, Any]:
@@ -1341,8 +1280,7 @@ class PartyMemberMeta(MetaBase):
                         microphone_variants: Optional[dict] = None
                         ) -> Dict[str, Any]:
 
-        prop = self.get_prop('Default:MpLoadout_j')
-        data = json.loads(prop['MpLoadout']['d'])
+        data = self.mp_loadout
 
         if bass is not None:
             data['sb']['i'] = bass
@@ -1365,8 +1303,8 @@ class PartyMemberMeta(MetaBase):
         if microphone_variants is not None:
             data['sm']['v'] = microphone_variants
 
-        final = {'MpLoadout': {"d": json.dumps(data)}}
-        key = 'Default:MpLoadout_j'
+        final = {'MpLoadout1': {"s": data}}
+        key = 'Default:MpLoadout1_j'
         return {key: self.set_prop(key, final)}
 
     def set_ready_state(self, state: str) -> Dict[str, Any]:
@@ -1527,6 +1465,7 @@ class PartyMeta(MetaBase):
             }),
             "Default:PartyIsJoinedInProgress_b": "false",
             "Default:GameSessionKey_s": "",
+            "Default:HestiaBeautyGameSessionId_s": "",
             "Default:AllowJoinInProgress_b": "false",
             "Default:MatchmakingDelay_U": "0",
             "Default:CreativeInGameReadyCheckStatus_s": "None",
@@ -1789,65 +1728,51 @@ class PartyMemberBase(User):
         """:class:`str`: The CID of the outfit this user currently has
         equipped.
         """
-        parts = self.meta.outfit.split(':')
-        return parts[1] if len(parts) > 1 and parts[1] else None
+        return self.meta.outfit
 
     @property
     def backpack(self) -> str:
         """:class:`str`: The BID of the backpack this member currently has equipped.
         ``None`` if no backpack is equipped.
         """
-        asset = self.meta.backpack
-        if '/petcarriers/' not in asset.lower():
-            result = re.search(r".*\.([^\'\"]*)", asset.strip("'"))
-
-            if result is not None and result.group(1) != 'None':
-                return result.group(1)
-
+        asset = self.meta.backpack 
+        if not (asset.startswith('PetCarrier_') and asset.startswith('BID_533_MechanicalEngineer')):
+            return asset
     @property
     def pet(self) -> str:
         """:class:`str`: The ID of the pet this member currently has equipped.
         ``None`` if no pet is equipped.
         """
         asset = self.meta.backpack
-        if '/petcarriers/' in asset.lower():
-            result = re.search(r".*\.([^\'\"]*)", asset.strip("'"))
+        if asset.startswith('PetCarrier_') and asset.startswith('BID_533_MechanicalEngineer'):
+            return asset
 
-            if result is not None and result.group(1) != 'None':
-                return result.group(1)
-
+    @property
+    def scratchpad(self) -> str:
+        """:class:`str`: The scratchpad data this member currently has.
+        """
+        return self.meta.scratchpad
+    
     @property
     def pickaxe(self) -> str:
         """:class:`str`: The pickaxe id of the pickaxe this member currently
         has equipped.
         """
-        asset = self.meta.pickaxe
-        result = re.search(r".*\.([^\'\"]*)", asset.strip("'"))
-
-        if result is not None and result.group(1) != 'None':
-            return result.group(1)
+        return self.meta.pickaxe
 
     @property
     def contrail(self) -> str:
         """:class:`str`: The contrail id of the contrail this member currently
         has equipped.
         """
-        asset = self.meta.contrail
-        result = re.search(r".*\.([^\'\"]*)", asset.strip("'"))
-
-        if result is not None and result[1] != 'None':
-            return result.group(1)
+        return self.meta.contrail
 
     @property
     def kicks(self) -> str:
         """:class:`str`: The kicks id of the kicks this member currently
         has equipped.
         """
-        asset = self.meta.kicks
-        result = re.search(r".*\.([^\'\"]*)", asset.strip("'"))
-
-        if result is not None and result[1] != 'None':
-            return result.group(1)
+        return self.meta.kicks
 
     @property
     def outfit_variants(self) -> List[Dict[str, str]]:
@@ -1927,18 +1852,6 @@ class PartyMemberBase(User):
         return [tuple(d.values()) for d in self.meta.scratchpad]
 
     @property
-    def corruption(self) -> Optional[float]:
-        """Optional[float]: The corruption value this member is using. ``None``
-        if no corruption value is set.
-        """
-        data = self.meta.custom_data_store
-        if isinstance(data, list) and data:
-            try:
-                return float(data[0])
-            except (TypeError, ValueError):
-                pass
-
-    @property
     def has_crown(self) -> bool:
         """:class:`int`: If this member currently has a crown or not.
         """
@@ -1995,7 +1908,7 @@ class PartyMemberBase(User):
 
         Example output: ::
 
-            ('standardbanner15', 'defaultcolor15', 50)
+            ('standardbanner1', 'defaultcolor1')
         """
         return self.meta.banner
 
@@ -2021,8 +1934,8 @@ class PartyMemberBase(User):
         return self.meta.location == 'InGame'
 
     @property
-    def eos_user_id(self) -> str:
-        return self.meta.eos_user_id
+    def eos_product_user_id(self) -> str:
+        return self.meta.eos_product_user_id
 
     @property
     def match_started_at(self) -> Optional[datetime.datetime]:
@@ -2524,8 +2437,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             return await self.patch(updated=prop)
 
     async def set_outfit(self, asset: Optional[str] = None, *,
-                         key: Optional[str] = None,
-                         variants: Optional[List[Dict[str, str]]] = None,
+                         variants: Optional[List[str]] = None,
                          enlightenment: Optional[Union[List, Tuple]] = None,
                          corruption: Optional[float] = None
                          ) -> None:
@@ -2577,8 +2489,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             An error occurred while requesting.
         """
         if not asset:
-            prop = self.meta.get_prop('Default:AthenaCosmeticLoadout_j')
-            asset = prop['AthenaCosmeticLoadout']['characterPrimaryAssetId']
+            asset = self.meta.outfit
 
         if enlightenment is not None:
             if len(enlightenment) != 2:
@@ -2593,40 +2504,26 @@ class ClientPartyMember(PartyMemberBase, Patchable):
                 ]
 
         if corruption is not None:
-            corruption = ['{:.4f}'.format(corruption)]
-            variants = [
-                {'c': "Corruption", 'v': 'FloatSlider', 'dE': 1}
-            ] + (variants or [])
-        else:
-            corruption = self.meta.custom_data_store
+            corruption = '{:.4f}'.format(corruption)
+            variants = [corruption] + (variants or [])
 
-        current = self.meta.variants
+        current = self.meta.outfit_variants
         if variants is not None:
-            current['AthenaCharacter'] = {'i': variants}
-        else:
-            try:
-                del current['AthenaCharacter']
-            except KeyError:
-                pass
+            current = variants
 
         prop = self.meta.set_cosmetic_loadout(
             character=asset,
-            character_ekey=key,
             scratchpad=enlightenment
         )
         prop2 = self.meta.set_variants(
             variants=current
         )
-        prop3 = self.meta.set_custom_data_store(
-            value=corruption
-        )
 
         if not self.edit_lock.locked():
-            return await self.patch(updated={**prop, **prop2, **prop3})
+            return await self.patch(updated={**prop, **prop2})
 
     async def set_backpack(self, asset: Optional[str] = None, *,
-                           key: Optional[str] = None,
-                           variants: Optional[List[Dict[str, str]]] = None,
+                           variants: Optional[List[str]] = None,
                            enlightenment: Optional[Union[List, Tuple]] = None,
                            corruption: Optional[float] = None
                            ) -> None:
@@ -2679,12 +2576,8 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         HTTPException
             An error occurred while requesting.
         """
-        if asset is not None:
-            if asset != '' and '.' not in asset:
-                asset = f'/BRCosmetics/Athena/Items/Cosmetics/Backpacks/{asset}.{asset}'
-        else:
-            prop = self.meta.get_prop('Default:AthenaCosmeticLoadout_j')
-            asset = prop['AthenaCosmeticLoadout']['backpackDef']
+        if not asset:
+            asset = self.meta.backpack
 
         if enlightenment is not None:
             if len(enlightenment) != 2:
@@ -2699,36 +2592,23 @@ class ClientPartyMember(PartyMemberBase, Patchable):
                 ]
 
         if corruption is not None:
-            corruption = ['{:.4f}'.format(corruption)]
-            variants = [
-                {'c': "Corruption", 'v': 'FloatSlider', 'dE': 1}
-            ] + (variants or [])
-        else:
-            corruption = self.meta.custom_data_store
+            corruption = '{:.4f}'.format(corruption)
+            variants = [corruption] + (variants or [])
 
-        current = self.meta.variants
+        current = self.meta.backpack_variants
         if variants is not None:
-            current['AthenaBackpack'] = {'i': variants}
-        else:
-            try:
-                del current['AthenaBackpack']
-            except KeyError:
-                pass
+            current = variants
 
         prop = self.meta.set_cosmetic_loadout(
             backpack=asset,
-            backpack_ekey=key,
             scratchpad=enlightenment
         )
         prop2 = self.meta.set_variants(
             variants=current
         )
-        prop3 = self.meta.set_custom_data_store(
-            value=corruption
-        )
 
         if not self.edit_lock.locked():
-            return await self.patch(updated={**prop, **prop2, **prop3})
+            return await self.patch(updated={**prop, **prop2})
 
     async def clear_backpack(self) -> None:
         """|coro|
@@ -2743,8 +2623,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         await self.set_backpack(asset="")
 
     async def set_pet(self, asset: Optional[str] = None, *,
-                      key: Optional[str] = None,
-                      variants: Optional[List[Dict[str, str]]] = None
+                      variants: Optional[List[str]] = None
                       ) -> None:
         """|coro|
 
@@ -2773,32 +2652,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         HTTPException
             An error occurred while requesting.
         """
-        if asset is not None:
-            if asset != '' and '.' not in asset:
-                asset = f'/BRCosmetics/Athena/Items/Cosmetics/PetCarriers/{asset}.{asset}'
-        else:
-            prop = self.meta.get_prop('Default:AthenaCosmeticLoadout_j')
-            asset = prop['AthenaCosmeticLoadout']['backpackDef']
-
-        new = self.meta.variants
-        if variants is not None:
-            new['AthenaBackpack'] = {'i': variants}
-        else:
-            try:
-                del new['AthenaBackpack']
-            except KeyError:
-                pass
-
-        prop = self.meta.set_cosmetic_loadout(
-            backpack=asset,
-            backpack_ekey=key,
-        )
-        prop2 = self.meta.set_variants(
-            variants=new
-        )
-
-        if not self.edit_lock.locked():
-            return await self.patch(updated={**prop, **prop2})
+        return await self.set_backpack(asset=asset, variants=variants)
 
     async def clear_pet(self) -> None:
         """|coro|
@@ -2813,8 +2667,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         await self.set_backpack(asset="")
 
     async def set_pickaxe(self, asset: Optional[str] = None, *,
-                          key: Optional[str] = None,
-                          variants: Optional[List[Dict[str, str]]] = None
+                          variants: Optional[List[str]] = None
                           ) -> None:
         """|coro|
 
@@ -2843,25 +2696,15 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         HTTPException
             An error occurred while requesting.
         """
-        if asset is not None:
-            if asset != '' and '.' not in asset:
-                asset = f'/BRCosmetics/Athena/Items/Cosmetics/PickAxes/{asset}.{asset}'
-        else:
-            prop = self.meta.get_prop('Default:AthenaCosmeticLoadout_j')
-            asset = prop['AthenaCosmeticLoadout']['pickaxeDef']
+        if not asset:
+            asset = self.meta.pickaxe
 
-        new = self.meta.variants
+        new = self.meta.pickaxe_variants
         if variants is not None:
-            new['AthenaPickaxe'] = {'i': variants}
-        else:
-            try:
-                del new['AthenaPickaxe']
-            except KeyError:
-                pass
+            new = variants
 
         prop = self.meta.set_cosmetic_loadout(
-            pickaxe=asset,
-            pickaxe_ekey=key,
+            pickaxe=asset
         )
         prop2 = self.meta.set_variants(
             variants=new
@@ -2871,7 +2714,6 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             return await self.patch(updated={**prop, **prop2})
 
     async def set_contrail(self, asset: Optional[str] = None, *,
-                           key: Optional[str] = None,
                            variants: Optional[List[Dict[str, str]]] = None
                            ) -> None:
         """|coro|
@@ -2901,25 +2743,15 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         HTTPException
             An error occurred while requesting.
         """
-        if asset is not None:
-            if asset != '' and '.' not in asset:
-                asset = f'/BRCosmetics/Athena/Items/Cosmetics/Contrails/{asset}.{asset}'
-        else:
-            prop = self.meta.get_prop('Default:AthenaCosmeticLoadout_j')
-            asset = prop['AthenaCosmeticLoadout']['contrailDef']
+        if not asset:
+            asset = self.meta.contrail
 
-        new = self.meta.variants
+        new = self.meta.contrail_variants
         if variants is not None:
-            new['AthenaContrail'] = {'i': variants}
-        else:
-            try:
-                del new['AthenaContrail']
-            except KeyError:
-                pass
+            new = variants
 
         prop = self.meta.set_cosmetic_loadout(
-            contrail=asset,
-            contrail_ekey=key,
+            contrail=asset
         )
         prop2 = self.meta.set_variants(
             variants=new
@@ -2957,25 +2789,15 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         HTTPException
             An error occurred while requesting.
         """
-        if asset is not None:
-            if asset != '' and '.' not in asset:
-                asset = f'/CosmeticShoes/Assets/Items/Cosmetics/{asset}.{asset}'
-        else:
-            prop = self.meta.get_prop('Default:AthenaCosmeticLoadout_j')
-            asset = prop['AthenaCosmeticLoadout']['shoesDef']
+        if not asset:
+            asset = self.meta.kicks
 
-        new = self.meta.variants
+        new = self.meta.kicks_variants
         if variants is not None:
-            new['CosmeticShoes'] = {'i': variants}
-        else:
-            try:
-                del new['CosmeticShoes']
-            except KeyError:
-                pass
+            new = variants
 
         prop = self.meta.set_cosmetic_loadout(
-            shoes=asset,
-            shoes_ekey=key,
+            shoes=asset
         )
         prop2 = self.meta.set_variants(
             variants=new
@@ -3252,8 +3074,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             return await self.patch(updated=prop)
 
     async def set_banner(self, icon: Optional[str] = None,
-                         color: Optional[str] = None,
-                         season_level: Optional[int] = None) -> None:
+                         color: Optional[str] = None) -> None:
         """|coro|
 
         Sets the banner of the client.
@@ -3266,9 +3087,6 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         color: Optional[:class:`str`]
             The color to use.
             *Defaults to defaultcolor15*
-        season_level: Optional[:class:`int`]
-            The season level.
-            *Defaults to 1*
 
         Raises
         ------
@@ -3277,8 +3095,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         """
         prop = self.meta.set_banner(
             banner_icon=icon,
-            banner_color=color,
-            season_level=season_level
+            banner_color=color
         )
 
         if not self.edit_lock.locked():
