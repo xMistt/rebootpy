@@ -6,7 +6,7 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
-v1.0.0 (pre-release)
+v1.0.0
 ------
 
 Changes
@@ -14,6 +14,7 @@ Changes
 
 - (**Important**) The XMPP client has been rewritten to be entirely in aiohttp, this should just be a drop in replacement but you may encounter errors that I overlooked. If you do, please create an issue on GitHub so I can promptly fix it.
 - Startup time for both :class:`BasicClient` & :class:`Client` has been reduced in half.
+- (**Breaking**) Removed the `season_level` attribute from :meth:`ClientPartyMember.set_banner()`, use :meth:`ClientPartyMember.set_battlepass_info()` instead to set the visual level of the client.
 
 Added
 ~~~~~
@@ -27,6 +28,7 @@ Removed
 ~~~~~~~
 
 - Removed :meth:`Client.fetch_gold_bars()`/:meth:`User.fetch_gold_bars()` as bars are no longer persistent.
+- Removed :attr:`PartyMember.corruption` as corruption is now a variant.
 
 
 Bug Fixes
