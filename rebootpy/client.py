@@ -743,6 +743,15 @@ class BasicClient:
         data['extraExternalAuths'] = extra_ext_data
         self.user = ClientUser(self, data)
 
+    async def _fetch_user_agent(self, platform: str = 'Windows', priority: int = 0):
+        build_version = await self.http.launcher_get_build(
+            platform=platform,
+            priority=priority
+        )
+
+        if build_version and build_version.count('-'):
+            self.build = build_version.rsplit('-', 1)[0]
+
     async def _login(self, priority: int = 0) -> None:
         log.debug('Running authenticating')
         ret = await self.auth._authenticate(priority=priority)

@@ -520,20 +520,21 @@ class ExchangeCodeAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        eas_data, _ = await asyncio.gather(
+        eas_data, *_ = await asyncio.gather(
             self.grant_eas_refresh_token(
                 self.ios_refresh_token,
                 priority=priority
             ),
-            self.client._setup_client_user(priority=priority)
+            self.client._setup_client_user(priority=priority),
+            self.client._fetch_user_agent(priority=priority)
         )
 
         self._update_eas_data(eas_data)
 
         eos_data = await self.grant_eos_external_auth_token(
-                self.eas_access_token,
-                priority=priority
-            )
+            self.eas_access_token,
+            priority=priority
+        )
         self._update_eos_data(eos_data)
 
 
@@ -703,12 +704,13 @@ class DeviceAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        eas_data, _ = await asyncio.gather(
+        eas_data, *_ = await asyncio.gather(
             self.grant_eas_refresh_token(
                 self.ios_refresh_token,
                 priority=priority
             ),
-            self.client._setup_client_user(priority=priority)
+            self.client._setup_client_user(priority=priority),
+            self.client._fetch_user_agent(priority=priority)
         )
 
         self._update_eas_data(eas_data)
@@ -770,12 +772,13 @@ class RefreshTokenAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        eas_data, _ = await asyncio.gather(
+        eas_data, *_ = await asyncio.gather(
             self.grant_eas_refresh_token(
                 self.ios_refresh_token,
                 priority=priority
             ),
-            self.client._setup_client_user(priority=priority)
+            self.client._setup_client_user(priority=priority),
+            self.client._fetch_user_agent(priority=priority)
         )
         self._update_eas_data(eas_data)
 
@@ -1080,11 +1083,12 @@ class AdvancedAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions()
 
-        eas_data, _ = await asyncio.gather(
+        eas_data, *_ = await asyncio.gather(
             self.grant_eas_refresh_token(
-                self.ios_refresh_token
+                self.ios_refresh_token,
             ),
-            self.client._setup_client_user()
+            self.client._setup_client_user(),
+            self.client._fetch_user_agent()
         )
 
         self._update_eas_data(eas_data)
@@ -1256,21 +1260,21 @@ class DeviceCodeAuth(Auth):
         if self.client.kill_other_sessions:
             await self.kill_other_sessions(priority=priority)
 
-        eas_data,  _ = await asyncio.gather(
+        eas_data, *_ = await asyncio.gather(
             self.grant_eas_refresh_token(
                 self.ios_refresh_token,
                 priority=priority
             ),
-            self.client._setup_client_user(priority=priority)
+            self.client._setup_client_user(priority=priority),
+            self.client._fetch_user_agent(priority=priority)
         )
 
         self._update_eas_data(eas_data)
-
         
         eos_data = await self.grant_eos_external_auth_token(
-                self.eas_access_token,
-                priority=priority
-            )
+            self.eas_access_token,
+            priority=priority
+        )
         self._update_eos_data(eos_data)
 
     async def reauthenticate(self, priority: int = 0) -> None:
