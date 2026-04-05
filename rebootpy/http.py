@@ -361,6 +361,11 @@ class PublicKeyService(Route):
     AUTH = 'FORTNITE_ACCESS_TOKEN'
 
 
+class LauncherPublicService(Route):
+    BASE = 'https://launcher-public-service-prod06.ol.epicgames.com'
+    AUTH = 'FORTNITE_ACCESS_TOKEN'
+
+
 def create_aiohttp_closed_event(session) -> asyncio.Event:
     """Work around aiohttp issue that doesn't properly close transports on exit.
 
@@ -443,7 +448,7 @@ class HTTPClient:
 
     @property
     def user_agent(self) -> str:
-        return 'Fortnite/{0.client.build} {0.client.os}'.format(self)
+        return f'Fortnite/{self.client.build} {self.client.os}'
 
     def get_auth(self, auth: str) -> str:
         u_auth = auth.upper()
@@ -1950,4 +1955,18 @@ class HTTPClient:
             user["accountId"]: user["tokens"] for user in data["accounts"]
         }
 
+    ###################################
+    #        Launcher Service         #
+    ###################################
 
+    async def launcher_get_build(self, platform: str, **kwargs: Any) -> str:
+        params = {
+            'label': 'Live'
+        }
+
+        r = LauncherPublicService(
+            f'/launcher/api/public/assets/{platform}/'
+            '5cb97847cee34581afdbc445400e2f77/FortniteContentBuilds'
+        )
+        data = await self.get(r, params=params, **kwargs)
+        return data.get('buildVersion')
