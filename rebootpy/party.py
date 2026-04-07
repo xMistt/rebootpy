@@ -1275,8 +1275,8 @@ class PartyMemberMeta(MetaBase):
             mp_loadout['ab']['i'] = backpack.split('.')[-1]
         if contrail is not None:
             if not mp_loadout.get('at'):
-                contrail['at'] = {'i': '', 'v': []}
-            if backpack == '':
+                mp_loadout['at'] = {'i': '', 'v': []}
+            if contrail == '':
                 del mp_loadout['at']
             mp_loadout['at']['i'] = self.maybesub(contrail)
         if shoes is not None:
