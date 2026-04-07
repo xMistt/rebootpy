@@ -891,6 +891,11 @@ class PartyMemberMeta(MetaBase):
             fut.add_done_callback(lambda *args: self.meta_ready_event.set())
 
     @property
+    def matchmaking_info(self) -> bool:
+        base = self.get_prop('Default:MatchmakingInfo_j')
+        return base['MatchmakingInfo']
+
+    @property
     def ready(self) -> bool:
         base = self.get_prop('Default:MatchmakingInfo_j')
         return base['MatchmakingInfo'].get('readyStatus', 'NotReady')
@@ -931,6 +936,11 @@ class PartyMemberMeta(MetaBase):
         return base.get('at', {}).get('i', 'None')
 
     @property
+    def sidekick(self) -> str:
+        base = self.mp_loadout
+        return base.get('mm', {}).get('i', 'None')
+
+    @property
     def outfit_variants(self) -> List[Dict[str, str]]:
         base = self.mp_loadout
         return base.get('ac', {}).get('v', [])
@@ -954,6 +964,11 @@ class PartyMemberMeta(MetaBase):
     def contrail_variants(self) -> List[Dict[str, str]]:
         base = self.mp_loadout
         return base.get('at', {}).get('v', [])
+
+    @property
+    def sidekick_variants(self) -> List[Dict[str, str]]:
+        base = self.mp_loadout
+        return base.get('mm', {}).get('v', [])
 
     @property
     def scratchpad(self) -> list:
@@ -985,6 +1000,11 @@ class PartyMemberMeta(MetaBase):
     def emote(self) -> str:
         base = self.get_prop('Default:FrontendEmote_j')
         return base['FrontendEmote'].get('pickable', 'None')
+    
+    @property
+    def jam(self) -> str:
+        base = self.get_prop('Default:FrontendSparksSongPart_j')
+        return base['FrontendSparksSongPart'].get('pickable', 'None')
 
     @property
     def banner(self) -> Tuple[str, str, int]:
@@ -1165,12 +1185,38 @@ class PartyMemberMeta(MetaBase):
         if emote is not None:
             data['pickable'] = self.maybesub(emote)
         if emote_ekey is not None:
-            data['emoteItemDefEncryptionKey'] = emote_ekey
+            data['emoteEKey'] = emote_ekey
         if section is not None:
             data['emoteSection'] = section
 
         final = {'FrontendEmote': data}
         key = 'Default:FrontendEmote_j'
+        return {key: self.set_prop(key, final)}
+    
+    def set_jam(self, emote: Optional[str] = None, *,
+                  emote_ekey: Optional[str] = None,
+                  section: Optional[int] = None) -> Dict[str, Any]:
+        data = (self.get_prop('Default:FrontendEmote_j'))['FrontendEmote']
+
+        if emote is not None:
+            data['pickable'] = self.maybesub(emote)
+        if emote_ekey is not None:
+            data['emoteEKey'] = emote_ekey
+        if section is not None:
+            data['emoteSection'] = section
+
+        final = {'FrontendEmote': data}
+        key = 'Default:FrontendEmote_j'
+        jam_key = 'Default:FrontendSparksSongPart_j'
+        return {key: self.set_prop(key, final), jam_key: self.set_prop(jam_key, final)}
+    
+    def hifive_sidekick(self, anim_type: Optional[str] = 'Interact') -> Dict[str, Any]:
+        data = (self.get_prop('Default:FrontendMimosa_j'))['FrontendMimosa']
+
+        data['frontendMimosaAnimType'] = anim_type
+
+        final = {'FrontendMimosa': data}
+        key = 'Default:FrontendMimosa_j'
         return {key: self.set_prop(key, final)}
 
     def set_banner(self, banner_icon: Optional[str] = None, *,
@@ -1205,6 +1251,7 @@ class PartyMemberMeta(MetaBase):
                              backpack: Optional[str] = None,
                              pickaxe: Optional[str] = None,
                              contrail: Optional[str] = None,
+                             sidekick: Optional[str] = None,
                              shoes: Optional[str] = None,
                              scratchpad: Optional[list] = None,
                              has_crown: Optional[bool] = None,
@@ -1223,15 +1270,27 @@ class PartyMemberMeta(MetaBase):
         if backpack is not None:
             if not mp_loadout.get('ab'):
                 mp_loadout['ab'] = {'i': '', 'v': []}
+            if backpack == '':
+                del mp_loadout['ab']
             mp_loadout['ab']['i'] = backpack.split('.')[-1]
         if contrail is not None:
             if not mp_loadout.get('at'):
-                mp_loadout['at'] = {'i': '', 'v': []}
+                contrail['at'] = {'i': '', 'v': []}
+            if backpack == '':
+                del mp_loadout['at']
             mp_loadout['at']['i'] = self.maybesub(contrail)
         if shoes is not None:
             if not mp_loadout.get('as'):
                 mp_loadout['as'] = {'i': '', 'v': []}
+            if shoes == '':
+                del mp_loadout['as']
             mp_loadout['as']['i'] = self.maybesub(contrail)
+        if sidekick is not None:
+            if not mp_loadout.get('mm'):
+                mp_loadout['mm'] = {'i': '', 'v': []}
+            if sidekick == '':
+                del mp_loadout['mm']
+            mp_loadout['mm']['i'] = self.maybesub(sidekick)
         if scratchpad is not None:
             data['scratchpad'] = scratchpad
         if has_crown is not None:
@@ -1249,10 +1308,10 @@ class PartyMemberMeta(MetaBase):
 
         return {key: self.set_prop(key, final), mp_key: self.set_prop(mp_key, mp_final)}
 
-    def set_variants(self, variants: List[dict]) -> Dict[str, Any]:
+    def set_variants(self, variants: List[dict], _type: str) -> Dict[str, Any]:
         data = self.mp_loadout
 
-        data['ac']['v'] = variants
+        data[_type]['v'] = variants
 
         final = {'MpLoadout1': {"s": data}}
         key = 'Default:MpLoadout1_j'
@@ -1714,6 +1773,11 @@ class PartyMemberBase(User):
             return from_iso(disconnected_at)
 
     @property
+    def matchmaking_info(self) -> dict:
+        """:dict:`MatchmakingInfo`: The members matchmaking info."""
+        return self.meta.matchmaking_info
+
+    @property
     def ready(self) -> ReadyState:
         """:class:`ReadyState`: The members ready state."""
         return ReadyState(self.meta.ready)
@@ -1773,6 +1837,13 @@ class PartyMemberBase(User):
         has equipped.
         """
         return self.meta.kicks
+    
+    @property
+    def sidekick(self) -> str:
+        """:class:`str`: The sidekick id of the sidekick this member currently
+        has equipped.
+        """
+        return self.meta.sidekick
 
     @property
     def outfit_variants(self) -> List[Dict[str, str]]:
@@ -1843,6 +1914,20 @@ class PartyMemberBase(User):
             :meth:`ClientPartyMember.set_contrail()`.
         """
         return self.meta.contrail_variants
+    
+    @property
+    def sidekick_variants(self) -> List[Dict[str, str]]:
+        """:class:`list`: A list containing the raw variants data for the
+        currently equipped sidekick.
+
+        .. warning::
+
+            Variants doesn't seem to follow much logic. Therefore this returns
+            the raw variants data received from fortnite's service. This can
+            be directly passed with the ``variants`` keyword to
+            :meth:`ClientPartyMember.set_sidekick()`.
+        """
+        return self.meta.sidekick_variants
 
     @property
     def enlightenments(self) -> List[Tuple[int, int]]:
@@ -1877,6 +1962,13 @@ class PartyMemberBase(User):
         """
         return self.meta.rank
 
+    @property
+    def jam(self) -> Optional[str]:
+        """Optional[:class:`str`]: The SparksSongPart of the jam this member is
+        currently playing. ``None`` if no jam is currently playing.
+        """
+        return self.meta.jam
+    
     @property
     def emote(self) -> Optional[str]:
         """Optional[:class:`str`]: The EID of the emote this member is
@@ -2516,7 +2608,8 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             scratchpad=enlightenment
         )
         prop2 = self.meta.set_variants(
-            variants=current
+            variants=current,
+            _type='ac'
         )
 
         if not self.edit_lock.locked():
@@ -2604,7 +2697,8 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             scratchpad=enlightenment
         )
         prop2 = self.meta.set_variants(
-            variants=current
+            variants=current,
+            _type='ab'
         )
 
         if not self.edit_lock.locked():
@@ -2707,7 +2801,8 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             pickaxe=asset
         )
         prop2 = self.meta.set_variants(
-            variants=new
+            variants=new,
+            _type='ap'
         )
 
         if not self.edit_lock.locked():
@@ -2754,7 +2849,8 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             contrail=asset
         )
         prop2 = self.meta.set_variants(
-            variants=new
+            variants=new,
+            _type='at'
         )
 
         if not self.edit_lock.locked():
@@ -2800,7 +2896,8 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             shoes=asset
         )
         prop2 = self.meta.set_variants(
-            variants=new
+            variants=new,
+            _type='as'
         )
 
         if not self.edit_lock.locked():
@@ -2817,6 +2914,64 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             An error occurred while requesting.
         """
         await self.set_kicks(asset="")
+    
+    async def set_sidekick(self,
+                        asset: Optional[str] = None, *,
+                        variants: Optional[List[Dict[str, str]]] = None
+                        ) -> None:
+        """|coro|
+    
+        Sets the sidekick of the client.
+
+        Parameters
+        ----------
+        asset: Optional[:class:`str`]
+            | The ID of the sidekick.
+            | Defaults to the last set sidekick.
+
+            .. note::
+
+                Cosmetics other than outfits require a path, usually the
+                correct path will be set by default, but you really should
+                handle this just in case. Read more about it
+                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
+        key: Optional[:class:`str`]
+            The encryption key to use for this sidekick.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        if not asset:
+            asset = self.meta.sidekick
+
+        new = self.meta.sidekick_variants
+        if variants is not None:
+            new = variants
+
+        prop = self.meta.set_cosmetic_loadout(
+            sidekick=asset
+        )
+        prop2 = self.meta.set_variants(
+            variants=new,
+            _type='mm'
+        )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated={**prop, **prop2})
+
+    async def clear_sidekick(self) -> None:
+        """|coro|
+
+        Clears the currently set sidekick.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        await self.set_sidekick(asset="")
 
     async def equip_crown(self, hold_crown: int = True) -> None:
         """|coro|
@@ -2965,7 +3120,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         if asset != '' and '.' not in asset:
             asset = f'/SparksSongTemplates/Items/JamEmotes/{asset}.{asset}'
 
-        prop = self.meta.set_emote(
+        prop = self.meta.set_jam(
             emote=asset,
             emote_ekey=key,
             section=section
@@ -3034,11 +3189,50 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
+    
+    async def hifive_sidekick(self, run_for: Optional[float] = 3) -> None:
+        """|coro|
+
+        Hi fives the sidekick of the client.
+
+        Parameters
+        ----------
+        run_for: Optional[:class:`float`]
+            Seconds the hi five should run for before being cancelled. ``None``
+            means it will run indefinitely and you can then clear it with
+            :meth:`PartyMember.clear_hifive()`. Defaults to ``2`` seconds which
+            is roughly the time a hi five naturally plays for. Note that a
+            hi five is only cleared visually and audibly when the hi five
+            naturally ends, not when :meth:`PartyMember.clear_emote()` is
+            called.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        if self.meta.sidekick == 'None':
+            return
+
+        prop = self.meta.hifive_sidekick()
+
+        if run_for is not None:
+            self.clear_hifive_task = self.client.loop.create_task(
+                self._schedule_clear_hifive(run_for)
+            )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
 
     def _cancel_clear_emote(self) -> None:
         if (self.clear_emote_task is not None
                 and not self.clear_emote_task.cancelled()):
             self.clear_emote_task.cancel()
+    
+    def _cancel_clear_hifive(self) -> None:
+        if (self.clear_hifive_task is not None
+                and not self.clear_hifive_task.cancelled()):
+            self.clear_hifive_task.cancel()
 
     async def _schedule_clear_emote(self, seconds: Union[int, float]) -> None:
         await asyncio.sleep(seconds)
@@ -3046,6 +3240,17 @@ class ClientPartyMember(PartyMemberBase, Patchable):
 
         try:
             await self.clear_emote()
+        except HTTPException as exc:
+            m = 'errors.com.epicgames.social.party.member_not_found'
+            if m != exc.message_code:
+                raise
+    
+    async def _schedule_clear_hifive(self, seconds: Union[int, float]) -> None:
+        await asyncio.sleep(seconds)
+        self.clear_hifive_task = None
+
+        try:
+            await self.clear_hifive()
         except HTTPException as exc:
             m = 'errors.com.epicgames.social.party.member_not_found'
             if m != exc.message_code:
@@ -3069,6 +3274,26 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         )
 
         self._cancel_clear_emote()
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
+        
+    async def clear_hifive(self) -> None:
+        """|coro|
+
+        Clears/stops the hi five currently playing.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+
+        prop = self.meta.hifive_sidekick(
+            anim_type='None'
+        )
+
+        self._cancel_clear_hifive()
 
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
