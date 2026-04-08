@@ -1210,7 +1210,7 @@ class PartyMemberMeta(MetaBase):
         jam_key = 'Default:FrontendSparksSongPart_j'
         return {key: self.set_prop(key, final), jam_key: self.set_prop(jam_key, final)}
     
-    def hifive_sidekick(self, anim_type: Optional[str] = 'Interact') -> Dict[str, Any]:
+    def set_sidekick_emote(self, anim_type: str) -> Dict[str, Any]:
         data = (self.get_prop('Default:FrontendMimosa_j'))['FrontendMimosa']
 
         data['frontendMimosaAnimType'] = anim_type
@@ -2630,12 +2630,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             | The BID of the backpack.
             | Defaults to the last set backpack.
 
-            .. note::
-
-                Cosmetics other than outfits require a path, usually the
-                correct path will be set by default, but you really should
-                handle this just in case. Read more about it
-                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
+            
         key: Optional[:class:`str`]
             The encryption key to use for this backpack.
         variants: Optional[:class:`list`]
@@ -2729,12 +2724,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             | The ID of the pet.
             | Defaults to the last set pet.
 
-            .. note::
-
-                Cosmetics other than outfits require a path, usually the
-                correct path will be set by default, but you really should
-                handle this just in case. Read more about it
-                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
+            
         key: Optional[:class:`str`]
             The encryption key to use for this pet.
         variants: Optional[:class:`list`]
@@ -2773,12 +2763,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             | The PID of the pickaxe.
             | Defaults to the last set pickaxe.
 
-            .. note::
-
-                Cosmetics other than outfits require a path, usually the
-                correct path will be set by default, but you really should
-                handle this just in case. Read more about it
-                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
+            
         key: Optional[:class:`str`]
             The encryption key to use for this pickaxe.
         variants: Optional[:class:`list`]
@@ -2821,12 +2806,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             | The ID of the contrail.
             | Defaults to the last set contrail.
 
-            .. note::
-
-                Cosmetics other than outfits require a path, usually the
-                correct path will be set by default, but you really should
-                handle this just in case. Read more about it
-                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
+            
         key: Optional[:class:`str`]
             The encryption key to use for this contrail.
         variants: Optional[:class:`list`]
@@ -2871,12 +2851,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             | The ID of the kicks.
             | Defaults to the last set of kicks.
 
-            .. note::
-
-                Cosmetics other than outfits require a path, usually the
-                correct path will be set by default, but you really should
-                handle this just in case. Read more about it
-                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
+            
         key: Optional[:class:`str`]
             The encryption key to use for these kicks.
 
@@ -2929,12 +2904,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             | The ID of the sidekick.
             | Defaults to the last set sidekick.
 
-            .. note::
-
-                Cosmetics other than outfits require a path, usually the
-                correct path will be set by default, but you really should
-                handle this just in case. Read more about it
-                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
+            
         key: Optional[:class:`str`]
             The encryption key to use for this sidekick.
 
@@ -3044,12 +3014,7 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         asset: :class:`str`
             The EID of the emote.
 
-            .. note::
-
-                Cosmetics other than outfits require a path, usually the
-                correct path will be set by default, but you really should
-                handle this just in case. Read more about it
-                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
+            
         run_for: Optional[:class:`float`]
             Seconds the emote should run for before being cancelled. ``None``
             (default) means it will run indefinitely and you can then clear it
@@ -3147,13 +3112,6 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         ----------
         asset: :class:`str`
             The ID of the emoji.
-
-            .. note::
-
-                Cosmetics other than outfits require a path, usually the
-                correct path will be set by default, but you really should
-                handle this just in case. Read more about it
-                `here <https://rebootpy.readthedocs.io/en/latest/faq.html#why-are-some-cosmetics-invisible-dances-not-playing>`_.
         run_for: Optional[:class:`float`]
             Seconds the emoji should run for before being cancelled. ``None``
             means it will run indefinitely and you can then clear it with
@@ -3190,21 +3148,24 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
     
-    async def hifive_sidekick(self, run_for: Optional[float] = 3) -> None:
+    async def set_sidekick_emote(self, asset: str, run_for: float = 3) -> None:
         """|coro|
 
-        Hi fives the sidekick of the client.
+        Sets the emote of your client's sidekick.
 
         Parameters
         ----------
+        asset: :class:`str`
+            The ID of sidekick emote, known values are `Emote` to dance &
+            `Interact` to hi-five.
         run_for: Optional[:class:`float`]
             Seconds the hi five should run for before being cancelled. ``None``
             means it will run indefinitely and you can then clear it with
-            :meth:`PartyMember.clear_hifive()`. Defaults to ``2`` seconds which
-            is roughly the time a hi five naturally plays for. Note that a
-            hi five is only cleared visually and audibly when the hi five
-            naturally ends, not when :meth:`PartyMember.clear_emote()` is
-            called.
+            :meth:`PartyMember.clear_sidekick_emote()`. Defaults to
+            ``2`` seconds which is roughly the time a sidekick emote visually
+            plays for. Note that a hi five is only cleared visually and audibly
+            when the hi five naturally ends, not when
+            :meth:`PartyMember.clear_sidekick_emote()` is called.
 
         Raises
         ------
@@ -3214,11 +3175,13 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         if self.meta.sidekick == 'None':
             return
 
-        prop = self.meta.hifive_sidekick()
+        prop = self.meta.set_sidekick_emote(
+            anim_type=asset
+        )
 
         if run_for is not None:
-            self.clear_hifive_task = self.client.loop.create_task(
-                self._schedule_clear_hifive(run_for)
+            self.clear_sidekick_emote_task = self.client.loop.create_task(
+                self._schedule_clear_sidekick_emote(run_for)
             )
 
         if not self.edit_lock.locked():
@@ -3229,10 +3192,10 @@ class ClientPartyMember(PartyMemberBase, Patchable):
                 and not self.clear_emote_task.cancelled()):
             self.clear_emote_task.cancel()
     
-    def _cancel_clear_hifive(self) -> None:
-        if (self.clear_hifive_task is not None
-                and not self.clear_hifive_task.cancelled()):
-            self.clear_hifive_task.cancel()
+    def _cancel_clear_sidekick_emote(self) -> None:
+        if (self.clear_sidekick_emote_task is not None
+                and not self.clear_sidekick_emote_task.cancelled()):
+            self.clear_sidekick_emote_task.cancel()
 
     async def _schedule_clear_emote(self, seconds: Union[int, float]) -> None:
         await asyncio.sleep(seconds)
@@ -3245,12 +3208,12 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             if m != exc.message_code:
                 raise
     
-    async def _schedule_clear_hifive(self, seconds: Union[int, float]) -> None:
+    async def _schedule_clear_sidekick_emote(self, seconds: Union[int, float]) -> None:
         await asyncio.sleep(seconds)
-        self.clear_hifive_task = None
+        self.clear_sidekick_emote_task = None
 
         try:
-            await self.clear_hifive()
+            await self.clear_sidekick_emote()
         except HTTPException as exc:
             m = 'errors.com.epicgames.social.party.member_not_found'
             if m != exc.message_code:
@@ -3278,10 +3241,10 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
         
-    async def clear_hifive(self) -> None:
+    async def clear_sidekick_emote(self) -> None:
         """|coro|
 
-        Clears/stops the hi five currently playing.
+        Clears/stops the current sidekick emote playing.
 
         Raises
         ------
@@ -3289,11 +3252,11 @@ class ClientPartyMember(PartyMemberBase, Patchable):
             An error occurred while requesting.
         """
 
-        prop = self.meta.hifive_sidekick(
+        prop = self.meta.set_sidekick_emote(
             anim_type='None'
         )
 
-        self._cancel_clear_hifive()
+        self._cancel_clear_sidekick_emote()
 
         if not self.edit_lock.locked():
             return await self.patch(updated=prop)
