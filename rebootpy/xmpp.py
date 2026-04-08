@@ -60,7 +60,8 @@ _member_meta_attrs = ('ready', 'input', 'outfit',
                       'pickaxe_variants', 'contrail_variants',
                       'lobby_map_marker_is_visible',
                       'lobby_map_marker_coordinates', 'playlist_selection',
-                      'matchmaking_info',)
+                      'matchmaking_info', 'sidekick', 'sidekick_variants',
+                      'jam',)
 
 
 def is_RandALCat(c: str) -> bool:
