@@ -6,7 +6,7 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
-v1.0.1 (pre-release)
+v1.0.1
 ------
 
 Thanks to `Charlesbug <https://github.com/charlesbug>`_ for adding most of this update.
