@@ -9,8 +9,6 @@ You can also view the changelog of the original library, fortnitepy, `here <http
 v1.0.2 (pre-release)
 ------
 
-Thanks to `Charlesbug <https://github.com/charlesbug>`_ for adding most of this update.
-
 Added
 ~~~~~
 
