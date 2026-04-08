@@ -927,7 +927,7 @@ class XMPPClient:
 
         def _dispatch(key, member, pre_value, value):
             self.client.dispatch_event(
-                'party_member_{0}_change'.format(key),
+                f'party_member_{key}_change',
                 member,
                 pre_value,
                 value

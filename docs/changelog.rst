@@ -6,6 +6,19 @@ Changelog
 Detailed version changes.
 You can also view the changelog of the original library, fortnitepy, `here <https://fortnitepy.readthedocs.io/en/latest/changelog.html>`_.
 
+v1.0.1 (pre-release)
+------
+
+Thanks to `Charlesbug <https://github.com/charlesbug>`_ for adding most of this update.
+
+Added
+~~~~~
+
+- Added :meth:`ClientPartyMember.set_sidekick()`, :meth:`ClientPartyMember.clear_sidekick()`, :meth:`ClientPartyMember.hifive_sidekick()` & :meth:`ClientPartyMember.clear_hifive()`
+- Added :meth:`event_party_member_matchmaking_info_change()`, :meth:`event_party_member_sidekick_change()`, :meth:`event_party_member_sidekick_variants_change()` & :meth:`event_party_member_jam_change()`
+- Added :attr:`PartyMember.jam`
+
+
 v1.0.0
 ------
 
