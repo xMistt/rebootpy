@@ -59,7 +59,8 @@ _member_meta_attrs = ('ready', 'input', 'outfit',
                       'outfit_variants', 'backpack_variants',
                       'pickaxe_variants', 'contrail_variants',
                       'lobby_map_marker_is_visible',
-                      'lobby_map_marker_coordinates', 'playlist_selection',)
+                      'lobby_map_marker_coordinates', 'playlist_selection',
+                      'matchmaking_info',)
 
 
 def is_RandALCat(c: str) -> bool:
