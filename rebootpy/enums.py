@@ -379,6 +379,7 @@ class RankingType(Enum):
     OG_ZERO_BUILD           = 'ranked-figment-nobuild'
     CROWN_JAM               = 'ranked-pimlico'
     BATTLE_ROYALE           = 'ranked-br-combined'
+    ARENAS_BOXFIGHTS        = 'ranked-squareclub'
 
 
 class Rank(Enum):
