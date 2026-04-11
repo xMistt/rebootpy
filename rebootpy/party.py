@@ -692,6 +692,10 @@ class PartyMemberMeta(MetaBase):
                     "frontendMimosaInstanceId": ""
                 }
             }),
+            "CosmeticLoadout:LoadoutSchema_Mimosa": json.dumps({
+                "loadoutSlots": [],
+                "shuffleType": "DISABLED"
+            }),
             "Default:FrontendEmote_j": json.dumps({
                 "FrontendEmote": {
                     "pickable": "None",
@@ -787,6 +791,10 @@ class PartyMemberMeta(MetaBase):
                         "sm": {
                             "i": "Sparks_Mic_Generic",
                             "v": ["0"]
+                        },
+                        "mm": {
+                            "i": "None",
+                            "v": []
                         },
                         "vd": {
                             "i": "ID_DriftTrail_Standard",
@@ -1284,7 +1292,7 @@ class PartyMemberMeta(MetaBase):
                 mp_loadout['as'] = {'i': '', 'v': []}
             if shoes == '':
                 del mp_loadout['as']
-            mp_loadout['as']['i'] = self.maybesub(contrail)
+            mp_loadout['as']['i'] = self.maybesub(shoes)
         if sidekick is not None:
             if not mp_loadout.get('mm'):
                 mp_loadout['mm'] = {'i': '', 'v': []}
@@ -1316,7 +1324,111 @@ class PartyMemberMeta(MetaBase):
         final = {'MpLoadout1': {"s": data}}
         key = 'Default:MpLoadout1_j'
         return {key: self.set_prop(key, final)}
-
+    
+    def set_custom_data_store(self, value: list) -> Dict[str, Any]:
+        final = {
+            'ArbitraryCustomDataStore': value
+        }
+        key = 'Default:ArbitraryCustomDataStore_j'
+        return {key: self.set_prop(key, final)}
+    
+    def set_mimosa_loadout(self,
+                          asset: Optional[str] = None,
+                          item_customizations: Optional[List[Dict[str, str]]] = None,
+                          companion_id: Optional[str] = None,
+                          instance_id: Optional[str] = None
+                          ) -> Dict[str, Any]:
+        """Sets the Mimosa (pet) loadout with new schema.
+        
+        Parameters
+        ----------
+        asset: Optional[:class:`str`]
+            The full asset ID for the pet (e.g., 'CosmeticMimosa:companion_ripequiver:uuid')
+        item_customizations: Optional[List[Dict[:class:`str`, :class:`str`]]]
+            List of customization dictionaries with channelTag, variantTag, and optional additionalData
+        companion_id: Optional[:class:`str`]
+            The companion ID for MpLoadout (e.g., 'Companion_RipeQuiver')
+        instance_id: Optional[:class:`str`]
+            The instance UUID for the pet
+        
+        Returns
+        -------
+        Dict[:class:`str`, Any]
+            The property update dictionary
+        """
+        result = {}
+        loadout_slots = []
+        
+        if asset is not None and asset != '' and asset.lower() != 'none':
+            slot = {
+                "slotTemplate": "CosmeticLoadoutSlotTemplate:LoadoutSlot_MimosaMain",
+                "equippedItemId": asset,
+            }
+            
+            if item_customizations:
+                slot["itemCustomizations"] = item_customizations
+            else:
+                slot["itemCustomizations"] = []
+            
+            loadout_slots.append(slot)
+        
+        final = {
+            "loadoutSlots": loadout_slots,
+            "shuffleType": "DISABLED"
+        }
+        
+        key = 'CosmeticLoadout:LoadoutSchema_Mimosa'
+        result[key] = self.set_prop(key, final)
+        
+        mp_loadout = self.mp_loadout
+        
+        if companion_id and companion_id.lower() != 'none':
+            mm_values = ['', ''] 
+            
+            if item_customizations:
+                for custom in item_customizations:
+                    channel = custom.get('channelTag', '')
+                    if channel == 'Companion.Emote':
+                        emote = custom.get('variantTag', '')
+                        if emote.startswith('Emote.'):
+                            emote = emote.replace('Emote.', '')
+                        mm_values[0] = emote
+                    elif channel == 'Particle':
+                        particle = custom.get('additionalData', '')
+                        if particle:
+                            if ':' in particle:
+                                particle = particle.split(':')[1]
+                            mm_values[1] = particle
+                    elif channel == 'Outfit':
+                        variant = custom.get('variantTag', 'Stage1')
+                        if variant.startswith('Stage'):
+                            stage_num = variant.replace('Stage', '')
+                            mm_values.append(stage_num)
+            
+            while len(mm_values) < 7:
+                mm_values.append('0')
+            
+            mp_loadout['mm'] = {
+                'i': companion_id,
+                'v': mm_values
+            }
+        else:
+            mp_loadout['mm'] = {
+                'i': 'None',
+                'v': []
+            }
+        
+        mp_final = {'MpLoadout1': {"s": mp_loadout}}
+        mp_key = 'Default:MpLoadout1_j'
+        result[mp_key] = self.set_prop(mp_key, mp_final)
+        
+        if instance_id:
+            frontend_mimosa = self.get_prop('Default:FrontendMimosa_j')
+            frontend_mimosa['FrontendMimosa']['frontendMimosaInstanceId'] = instance_id
+            mimosa_key = 'Default:FrontendMimosa_j'
+            result[mimosa_key] = self.set_prop(mimosa_key, frontend_mimosa)
+        
+        return result
     def set_match_state(self, location: str = None) -> Dict[str, Any]:
         data = (self.get_prop('Default:PackedState_j'))
 
@@ -1810,7 +1922,23 @@ class PartyMemberBase(User):
         asset = self.meta.backpack
         if asset.startswith('PetCarrier_') and asset.startswith('BID_533_MechanicalEngineer'):
             return asset
-
+        
+    @property
+    def companion(self) -> Optional[str]:
+        """:class:`str`: The companion ID of the pet this member currently has
+        equipped via the Mimosa loadout schema. ``None`` if no companion is equipped.
+        
+        Returns the companion ID like 'Companion_SitPlant', 'Companion_RipeQuiver', etc.
+        """
+        try:
+            mm = self.meta.mp_loadout.get('mm', {})
+            companion_id = mm.get('i')
+            if companion_id and companion_id != 'None':
+                return companion_id
+        except (KeyError, TypeError):
+            pass
+        return None
+    
     @property
     def scratchpad(self) -> str:
         """:class:`str`: The scratchpad data this member currently has.
@@ -2750,6 +2878,112 @@ class ClientPartyMember(PartyMemberBase, Patchable):
         """
         await self.set_backpack(asset="")
 
+    async def set_companion(self, asset: Optional[str] = None, *,
+                          emote: Optional[str] = None) -> None:
+        """|coro|
+
+        Sets the pet of the client using the Mimosa loadout schema.
+
+        Parameters
+        ----------
+        asset: Optional[:class:`str`]
+            | The companion ID (e.g., 'companion_ripequiver' or 'Companion_RipeQuiver').
+            | Defaults to the last set pet.
+        emote: Optional[:class:`str`]
+            | The emote tag for the companion (e.g., 'CompanionEmoteEmpty', 'CompanionEmoteHappy').
+            | If not provided, no emote customization is applied.
+        
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        if asset is not None and asset != '' and asset.lower() != 'none':
+            companion_id = asset
+            if '/' in asset or '.' in asset:
+                import re
+                match = re.search(r'([^/]+)\.([^.]+)$', asset)
+                if match:
+                    companion_id = match.group(2)
+            
+            mp_companion_id = companion_id
+            if not mp_companion_id.startswith('Companion_'):
+                parts = mp_companion_id.replace('companion_', '').split('_')
+                mp_companion_id = 'Companion_' + ''.join(word.capitalize() for word in parts)
+            
+            
+            if 'CosmeticMimosa:' not in asset:
+                if not asset.lower().startswith('companion_'):
+                    asset = 'companion_' + asset.lower().replace('companion_', '')
+                mimosa_asset = f'CosmeticMimosa:{asset}'
+            else:
+                mimosa_asset = asset
+            
+            # Build item customizations if emote is provided
+            item_customizations = None
+            if emote:
+                item_customizations = [
+                    {
+                        "channelTag": "Companion.Emote",
+                        "variantTag": f"Emote.{emote}" if not emote.startswith('Emote.') else emote
+                    }
+                ]
+            
+            prop = self.meta.set_mimosa_loadout(
+                asset=mimosa_asset,
+                companion_id=mp_companion_id,
+                item_customizations=item_customizations
+            )
+        else:
+            prop = self.meta.set_mimosa_loadout(
+                asset=None,
+                companion_id=None
+            )
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=prop)
+    
+    async def clear_companion(self) -> None:
+        """|coro|
+
+        Clears the currently set pet.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        await self.set_companion(asset=None)
+
+    async def companion_interact(self) -> None:
+        """|coro|
+
+        Makes the companion perform its interact animation (pet the companion).
+
+        Parameters
+        ----------
+        emote: Optional[:class:`str`]
+            The emote tag to equip before interacting (e.g., 'CompanionEmoteEmpty'). 
+            If None, uses the currently equipped emote.
+
+        Raises
+        ------
+        HTTPException
+            An error occurred while requesting.
+        """
+        updated = {}
+        
+        prop = self.meta.get_prop('Default:FrontendMimosa_j')
+        frontend_mimosa = prop['FrontendMimosa']
+        frontend_mimosa['frontendMimosaAnimType'] = 'Interact'
+        
+        final = {'FrontendMimosa': frontend_mimosa}
+        key = 'Default:FrontendMimosa_j'
+        updated[key] = self.meta.set_prop(key, final)
+
+        if not self.edit_lock.locked():
+            return await self.patch(updated=updated)
+        
     async def set_pickaxe(self, asset: Optional[str] = None, *,
                           variants: Optional[List[str]] = None
                           ) -> None:
