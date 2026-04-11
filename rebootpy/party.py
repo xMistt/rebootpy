@@ -1284,7 +1284,7 @@ class PartyMemberMeta(MetaBase):
                 mp_loadout['as'] = {'i': '', 'v': []}
             if shoes == '':
                 del mp_loadout['as']
-            mp_loadout['as']['i'] = self.maybesub(contrail)
+            mp_loadout['as']['i'] = self.maybesub(shoes)
         if sidekick is not None:
             if not mp_loadout.get('mm'):
                 mp_loadout['mm'] = {'i': '', 'v': []}
