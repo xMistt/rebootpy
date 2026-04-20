@@ -798,6 +798,7 @@ class BasicClient:
         self._clear_caches()
 
         if self._ready_event is not None:
+            self._ready_event.set()   # unblock any coroutines waiting on wait_until_ready()
             self._ready_event.clear()
 
         if close_http:
@@ -3072,6 +3073,8 @@ class Client(BasicClient):
 
             await self._reconnect_to_party()
         except AttributeError:
+            pass
+        except Exception:
             pass
 
     async def _start(self, dispatch_ready: bool = True) -> None:
