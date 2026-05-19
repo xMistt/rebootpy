@@ -1764,7 +1764,7 @@ class HTTPClient:
             payload = {
                 "status": "online",
                 "props": {
-                    "EOS_Platform": "WIN",
+                    "EOS_Platform": self.client.platform.value,
                     "EOS_IntegratedPlatform": "EGS",
                     "EOS_OnlinePlatformType": "100",
                     "EOS_ProductVersion": self.client.build,
@@ -1934,7 +1934,7 @@ class HTTPClient:
                 "TmV": "2",
                 "Pub": self.client.key_data.get("jwt"),
                 "Sig": signature,
-                "PlfNm": "WIN",
+                "PlfNm": self.client.platform.value,
                 "PlfId": self.client.user.id,
             },
         }
@@ -1991,7 +1991,7 @@ class HTTPClient:
                 "Pub": self.client.key_data.get("jwt"),
                 "Sig": signature,
                 "NPM": "1",
-                "PlfNm": "WIN",
+                "PlfNm": self.client.platform.value,
                 "PlfId": self.client.user.id,
             },
         }
