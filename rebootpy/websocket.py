@@ -51,118 +51,6 @@ def decode_message_body(body: str) -> str:
         return body
 
 
-# Epic for some reason will deny the websocket request if the request line
-# doesn't have the absolute url so we need to monekypatch the aiohttp
-# function ourselves. This is taken from ClientRequestBase in client_reqrep.py
-# and will continously need to be updated if aiohttp makes breaking changes.
-class WebsocketRequest(aiohttp.client_reqrep.ClientRequest):
-    async def send(self, conn: "Connection") -> "ClientResponse":
-        # Specify request target:
-        # - CONNECT request must send authority form URI
-        # - not CONNECT proxy must send absolute form URI
-        # - most common is origin form URI
-        if self.method == hdrs.METH_CONNECT:
-            connect_host = self.url.host_subcomponent
-            assert connect_host is not None
-            path = f"{connect_host}:{self.url.port}"
-        elif self.proxy and not self.is_ssl():
-            path = str(self.url)
-        else:
-            path = self.url.raw_path_qs
-
-        protocol = conn.protocol
-        assert protocol is not None
-        writer = StreamWriter(
-            protocol,
-            self.loop,
-            on_chunk_sent=(
-                functools.partial(self._on_chunk_request_sent, self.method, self.url)
-                if self._traces
-                else None
-            ),
-            on_headers_sent=(
-                functools.partial(self._on_headers_request_sent, self.method, self.url)
-                if self._traces
-                else None
-            ),
-        )
-
-        if self.compress:
-            writer.enable_compression(self.compress)  # type: ignore[arg-type]
-
-        if self.chunked is not None:
-            writer.enable_chunking()
-
-        # set default content-type
-        if (
-                self.method in self.POST_METHODS
-                and (
-                self._skip_auto_headers is None
-                or hdrs.CONTENT_TYPE not in self._skip_auto_headers
-        )
-                and hdrs.CONTENT_TYPE not in self.headers
-        ):
-            self.headers[hdrs.CONTENT_TYPE] = "application/octet-stream"
-
-        v = self.version
-        if hdrs.CONNECTION not in self.headers:
-            if conn._connector.force_close:
-                if v == HttpVersion11:
-                    self.headers[hdrs.CONNECTION] = "close"
-            elif v == HttpVersion10:
-                self.headers[hdrs.CONNECTION] = "keep-alive"
-
-        # status + headers
-        status_line = (
-            f"{self.method} https://connect.epicgames.dev/ HTTP/{v.major}.{v.minor}"
-            if "/stomp" in path
-            else f"{self.method} {path} HTTP/{v.major}.{v.minor}"
-        )
-        # original line:
-        # status_line = f"{self.method} {path} HTTP/{v.major}.{v.minor}"
-
-        # Buffer headers for potential coalescing with body
-        await writer.write_headers(status_line, self.headers)
-
-        task: asyncio.Task[None] | None
-        if self._body or self._continue is not None or protocol.writing_paused:
-            coro = self.write_bytes(writer, conn, self._get_content_length())
-            if sys.version_info >= (3, 12):
-                # Optimization for Python 3.12, try to write
-                # bytes immediately to avoid having to schedule
-                # the task on the event loop.
-                task = asyncio.Task(coro, loop=self.loop, eager_start=True)
-            else:
-                task = self.loop.create_task(coro)
-            if task.done():
-                task = None
-            else:
-                self._writer = task
-        else:
-            # We have nothing to write because
-            # - there is no body
-            # - the protocol does not have writing paused
-            # - we are not waiting for a 100-continue response
-            protocol.start_timeout()
-            writer.set_eof()
-            task = None
-        response_class = self.response_class
-        assert response_class is not None
-        self.response = response_class(
-            self.method,
-            self.original_url,
-            writer=task,
-            continue100=self._continue,
-            timer=self._timer,
-            request_info=self.request_info,
-            traces=self._traces,
-            loop=self.loop,
-            session=self._session,
-            stream_writer=writer,
-        )
-        return self.response
-
-
 class WebsocketClient:
     def __init__(self, client) -> None:
         self.client = client
@@ -176,10 +64,7 @@ class WebsocketClient:
         self.connection_id = None
 
     async def set_session(self) -> None:
-        self.wss_session = aiohttp.ClientSession(
-            skip_auto_headers=["Accept", "Accept-Encoding", "User-Agent"],
-            request_class=WebsocketRequest
-        )
+        self.wss_session = aiohttp.ClientSession()
 
     async def send_presence(self, connection_id: str) -> None:
         await self.client.http.chat_send_presence(
@@ -334,7 +219,7 @@ class WebsocketClient:
             'Epic-Connect-Device-Id': " ",
         }
         async with self.wss_session.ws_connect(
-            "wss://connect.epicgames.dev/stomp",
+            "wss://connect.epicgames.dev/",
             protocols=['stomp'],
             headers=headers
         ) as websocket:
