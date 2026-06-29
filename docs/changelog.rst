@@ -13,6 +13,7 @@ Bug Fixes
 ~~~~~
 
 - Fixed issue where public parties didn't appear public.
+- Fixed presence not working due to internal aiohttp changes.
 
 v1.0.3
 ------
