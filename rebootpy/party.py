@@ -1647,16 +1647,15 @@ class PartyMeta(MetaBase):
             if curr_priv['partyType'] != privacy.value['partyType']:
                 continue
 
-            try:
-                if (curr_priv['partyInviteRestriction']
-                        != privacy.value['partyInviteRestriction']):
-                    continue
+            # Meta uses the server-side names, PartyPrivacy values the short
+            # ones — same mapping as ClientParty._update.
+            if (curr_priv.get('partyInviteRestriction')
+                    != privacy.value['inviteRestriction']):
+                continue
 
-                if (curr_priv['bOnlyLeaderFriendsCanJoin']
-                        != privacy.value['bOnlyLeaderFriendsCanJoin']):
-                    continue
-            except KeyError:
-                pass
+            if (curr_priv.get('bOnlyLeaderFriendsCanJoin')
+                    != privacy.value['onlyLeaderFriendsCanJoin']):
+                continue
 
             return privacy
 
